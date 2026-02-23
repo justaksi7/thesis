@@ -105,8 +105,64 @@ Microservices und Event-Driven Architecture sind zwei eng miteinander verbundene
 die die Grundlage moderner Cloud-nativer Software bildern \cite{Fowler2024Microservices}\cite{Katzer2024Serverless}.
 Während Microservices die strukturelle Aufteilung einer Anwendung in unabhängige, lose gekoppelte Dienste 
 beschreibt\cite{Fowler2024Microservices}, definiert \ac{EDA} ein Kommunikationsmuster,
-bei dem Dienste über Ereignisse miteinander interagieren, anstatt direkt synchron zu kommunizieren\cite{Katzer2024Serverless}.
+bei dem Dienste über Ereignisse miteinander interagieren, anstatt direkt synchron zu kommunizieren\cite{AWSEventDrivenArchitecture}.
 Zusammen bilden \ac{EDA} und Microservices das Fundament für moderne, skalierbare, resiliente und
 reaktive Systeme.
 
 \subsection{Microservices}
+Die Microservices-Architektur ist ein Ansatz zur Entwicklung einer einzelnen Anwendung als einer Sammlung kleiner, unabhängiger Dienste. Jeder Dienst läuft in einem eigenen Prozess und kommuniziert über leichtgewichtige Mechanismen, häufig eine HTTP-Ressourcen-API \cite{Fowler2024Microservices}. Diese Dienste sind um die Geschäftslogik der Anwendung herum organisiert und können vollständig automatisiert und unabhängig voneinander bereitgestellt werden.
+
+Zu den zentralen Merkmalen von Microservices gehört die unabhängige Bereitstellung, die es erlaubt, 
+jeden Dienst separat zu entwickeln, zu testen und zu deployen, ohne andere Teile der Anwendung zu 
+beeinträchtigen. Dies ermöglicht schnellere Release-Zyklen und geringere Risiken bei Updates.
+Ein weiteres charakteristisches Merkmal ist die dezentrale Datenverwaltung: 
+Im Gegenteil zu monolithischen Anwendungen, die oft eine gemeinsame Datenbank nutzen, 
+bevorzugt die Microservices-Architektur das Prinzip „Database per Service“. 
+Jeder Service verwaltet seine eigene, private Datenbank, was die Kopplung reduziert. 
+Darüber hinaus können Dienste unabhängig voneinander skaliert werden. 
+Funktionen, die sich oft wiederholen, wie etwa ein Bestellservice, können auf mehr Ressourcen verteilt werden 
+als sich weniger oft wiederholende Funktionen, was zu einer effizienteren Ressourcennutzung führt. 
+Schließlich ermöglicht die technologische Vielfalt, dass Teams für jeden Microservice die am besten
+ geeignete Programmiersprache, Datenbank oder das passende Framework wählen können\cite{Fowler2024Microservices}.
+
+ \begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/monolith-vs-microservices.png}
+ \caption{Monolith vs Microservices \href{https://vivasoftltd.com/trade-offs-for-monoliths-and-microservices/}{[source]}}
+ \label{fig:chapter02:EDA}
+\end{figure}
+Die Entkopplung durch Microservices bringt jedoch auch neue Herausforderungen mit sich, 
+insbesondere bei der Kommunikation und der Wahrung der Datenkonsistenz über mehrere Dienste hinweg\cite{Fowler2024Microservices}.
+Genau hier setzt die  \ac{EDA} an, die eine asynchrone und lose gekoppelte Kommunikation ermöglicht\cite{AWSEventDrivenArchitecture}.
+
+\subsection{Event-Driven Architecture}
+Die Event-Driven Architecture ist ein Architekturmuster für Microservices, bei dem der Datenfluss im System durch 
+Ereignisse (Events) gesteuert wird. Ein Event ist eine Zustandsänderung innerhalb eines
+Systems, wie zum Beispiel „Bestelleingang“, „Zahlungseingang“ oder „Artikelversand“.
+Anstatt dass Dienste direkt miteinander synchron kommunizieren, etwa mittels HTTP-Request und Response,
+kommunizieren sie asynchron über asynchrone Events\cite{AWSEventDrivenArchitecture}.\\
+Die Kernkomponenten einer \ac{EDA} umfassen den Event Producer, der ein Event erzeugt und publiziert, 
+ohne in der Regel zu wissen, welche anderen Dienste dieses Event konsumieren werden\cite{AzureEventDrivenArchitecture}. 
+Ein Event Broker, eine Middleware-Komponente wie Apache Kafka, RabbitMQ, AWS \ac{SNS} / \ac{SQS}, 
+Azure Queue Storage oder Azure Service Bus, nimmt die Events von den Producern entgegen, 
+speichert sie persistent und leitet sie an Consumer weiter. Der Broker entkoppelt Producer und Consumer 
+vollständig voneinander. Die Event Consumer abonnieren Events und reagieren darauf, 
+wobei sie selbst wieder neue Events publizieren können\cite{AzureEventDrivenArchitecture}.
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/EDA.png}
+ \caption{EDA-Struktur \cite{AzureEventDrivenArchitecture}}
+ \label{fig:chapter02:monolith-vs-microservices}
+\end{figure}
+
+\subsubsection{Zusammenspiel von Microservices und EDA}
+Die Kombination von Microservices und \ac{EDA} adressiert zentrale Herausforderungen verteilter Systeme. 
+Durch lose Kopplung müssen Dienste keine Kenntnis voneinander haben: Ein Producer publiziert ein Event, 
+ohne die Consumer zu kennen. Fällt ein Consumer aus, bleibt der Producer funktionsfähig, 
+was die Ausfallsicherheit erhöht\cite{Rocha2021Practical}.
+Für diese Arbeit ist dieses Zusammenspiel fundamental. Serverless-Funktionen \ac{FaaS} wie AWS Lambda 
+werden durch Events ausgelöst\cite{AWSLambdaDocs} und sie können auch selber Events auslösen, sie sind 
+also eine der beliebtesten Optionen für Event-Consumer und -Producer\cite{AWSLambdaDocs} und im Kontext 
+von Serverless-Computing bildet \ac{FaaS} das Herzsück der Anwendungslogik\cite{Katzer2024Serverless}.
+
+
