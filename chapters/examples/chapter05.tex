@@ -1,0 +1,23 @@
+\chapter{Theoriebezug}
+\label{ch:chapter05}
+
+Dieses Kapitel verankert die Arbeit theoretisch und erläutert, warum die gewählten Konzepte und Modelle für die Untersuchung des sprachspezifischen Overheads von OpenTelemetry in Serverless-Umgebungen geeignet sind.
+
+\paragraph{Zentrale theoretische Bezugspunkte\\}
+Im Folgenden werden die wichtigsten theoretischen Konzepte und Modelle vorgestellt, die als Grundlage für die Arbeit dienen:
+\begin{itemize}
+	\item \textbf{OpenTelemetry}\cite{OpenTelemetryDocs}:
+	In dieser Dokumentation wird beschrieben, wie OpenTelemetry als Framework funktioniert
+   und wie die Instrumentierung und Export von Telemetriedaten umgesetzt werden können.
+	\item \textbf{AWS Distro for  OpenTelemetry (ADOT)}\cite{AWSLambdaBestPractices}: stellt die konkrete Implementierung von OpenTelemetry
+   in AWS Lambda dar und definiert die Konfigurationsmöglichkeiten für Sampling-Strategien. Wie auch in der Dokumentation erwäht,
+    ist OpenTelemetry der de-facto-Standard für Cloud-Native-Observability und ADOT ist die offizielle Integration dafür, daher haben sie 
+    eine sehr hohe Praxisrelevanz. Aus diesem Grund wird in dieser Arbeit ADOT als OpenTelemetry-Implementierung verwendet. 
+  \item \textbf{Messmethodik}\cite{10254754}: bietet ein reproduzierbares Benchmark-Set zur Abbildung der häufigsten Serverless-Interaktionsmechanismen
+   (siehe Kapitel \ref{ch:chapter02}). Da die geplante Bachelorarbeit auf dieser Studie aufbaut, werden die gleichen Benchmarks verwendet, um konsistente und vergleichbare Ergebnisse zu erhalten.
+  \item \textbf{Lambda Metriken}\cite{CloudWatchLambdaMonitoring}: erläutert das Monitoring von Lambda-Funktionen mittels CloudWatch-Metriken
+   (Duration, Memory Usage, Init Duration) zur Erfassung des Overheads. Durch Lambda Metriken können die Benchmarks aus \cite{10254754} 
+   direkt operationalisiert und deren Overhead gemessen werden, daher ist ihre Verwendung in dieser Arbeit essenziell.
+\end{itemize}
+
+Die obengennten theoretischen Konzepte und Modelle sind runtime-neutral und können auf alle drei betrachteten Programmiersprachen angewendet werden.

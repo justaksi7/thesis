@@ -1,0 +1,29 @@
+ \chapter{Stand der Forschung}
+    \label{ch:chapter06}
+    
+    In diesem Kapitel wird der aktuelle Stand der Forschung zu dem in dieser Arbeit behandelten Thema dargestellt. Es werden relevante Studien vorgestellt, die als Grundlage für die weitere Untersuchung dienen.
+    \paragraph{Relevante Studien\\}
+      In \cite{Rodriguez2024Evaluation} wird anhand einer standarrisierten Architektur die Performance von verschiedenen Programmiersprachen (Java, Python, NodeJS) auf AWS Lambda 
+      für CRUD-Operationen untersucht. Dabei werden Metriken wie Skalierbarkeit, Cold-Start-Zeiten, Runtime für Leseoperationen analysiert.
+      Java zegit die längsten Cold-Start-Zeiten für alle CRUD-Operationen, jedoch sind
+      die Metriken Runtime und Skalierbarkeit bei Hot-Starts sehr variabel. Je nach Anzahl der gleichzeitigen 
+      Ausführungen (Concurrent Executions also Lambda Concurrency) ist die Execution Time für Leseoperationen 
+      in Java oder In Python am besten, wobei NodeJS tendenziell immmer entweder 
+      die zweitbeste oder die schlechteste Performance zeigt.
+      Java zeigt die beste Performance bei hohem verfügbaren Speicher und eine erheblich schlechtere Performance bei niedrigem Speicher.
+      insgesamt ist die Performance von den drei Sprachen jedoch sehr nuanciert und hängt stark von der
+      Anzahl der gleichzeitigen Ausführungen und dem verfügbaren Speicher ab.
+      Diese Arbeit liefert leider wiedersprüchliche Ergebnisse zur Runtime für Leseoperationen da sie an zwei verschidenen Stellen 
+      unterschiedliche Ergebnisse präsentiert. Daher ist es auch nicht klar nachvollzierbar, ob Java oder Python die bessere Performance bei Leseoperationen zeigt.
+      Das einzige klare Ergebnis ist, dass Java die längsten Cold-Start-Zeiten hat.\\
+
+    
+      In \cite{10254754} wird der Performance-Overhead von verschiedenen Distributed Tracing Tools (OpenTelemetry, Zipkin usw.)
+      für die 5 Benchmarks aus Abbildung \ref{fig:chapter02:benchmarks} in NodeJS auf AWS Lambda untersucht.
+       Meine Arbeit baut auf dieser Studie auf, indem sie den Overhead von OpenTelemetry in verschiedenen Programmiersprachen 
+       (Java, Python, NodeJS) anhand der gleichen Benchmarks vergleicht. Die Zentrale Fragestellung meiner Arbeit stammt aus dem
+       Abschnitt "Conclusion" dieser Studie, in dem die Autoren vorschlagen, den sprachspezifischen Overhead von Tracing-Tools zu untersuchen.
+    
+
+    Desweiteren ist der Fakt, dass Instrumentierung mit Telemetrie-Tools einen Overhead verursacht in mehreren wissenschaftlichen Arbeiten 
+    beschrieben worden \cite{Karkan2024PerformanceOverhead,10643888,10254754,Datadog2025Optimizing,Zaigam2025DistributedTracing}.

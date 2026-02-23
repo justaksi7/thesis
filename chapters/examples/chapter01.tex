@@ -1,29 +1,132 @@
 \chapter{Einleitung}
 \label{ch:intro}
-Lorem ipsum at nusquam appellantur his, labitur bonorum pri no \citep{dueck:trio}. His no decore nemore graecis. In eos meis nominavi, liber soluta vim cu. Sea commune suavitate interpretaris eu, vix eu libris efficiantur.
+Serverlose Anwendungen sind in den letzten Jahren immer beliebter geworden \cite{MarketsandMarkets2025ServerlessComputing} da sie es Entwicklern ermöglichen,
+sich auf die tatsächliche Geschäftslogik und die Implementierung der Anwendungen zu konzentrieren, während der 
+Cloud-Anbieter die zugrunde liegende Infrastruktur zur Verfügung stellt und verwaltet. Mit der zunhemenden Verbreitung
+und der wachsenden Komplextiät von serverlosen Architekturen, steigen auch die Anforderungen an die Observability dieser
+Systeme. Distributed Tracing Frameworks haben sich hierzu als zentrale Lösung für das Observability-Problem 
+solcher Systeme etabliert \cite{majors2026observability}. OpenTelemetry ist hierbei der De-facto-Standard für die Erfassung und Export von 
+Telemetrie-Daten \cite{AWSLambdaBestPractices}.
 
 %
 % Section: Motivation
 %
-\section{Motivation}
+\section{Motivation und Problemstellung}
 \label{sec:intro:motivation}
-\graffito{Note: The content of this chapter is just some dummy text. It is not a real language.}
-Illo principalmente su nos. Non message \emph{occidental} angloromanic da. Debitas effortio simplificate sia se, auxiliar summarios da que, se avantiate publicationes via. Pan in terra summarios, capital interlingua se que. Al via multo esser specimen, campo responder que da. Le usate medical addresses pro, europa origine sanctificate nos se. Cras faucibus, leo ac adipiscing adipiscing, erat justo vulputate arcu, non sollicitudin ipsum dolor eget lectus. Nulla sed mi non ipsum varius consequat sit amet nec ipsum. Donec ac elit id nibh pretium pulvinar non ut ipsum. Integer congue iaculis augue ac porttitor. Suspendisse sed enim ac eros hendrerit adipiscing. Integer elit libero, lacinia vitae pharetra a, ullamcorper vitae metus. In tempor, est id imperdiet pulvinar, tellus nibh lacinia diam, a eleifend dui lectus non turpis.
+Die Motivation für diese Arbeit ergibt sich aus drei zentralen Beobachtungen. 
+Erstens ist OpenTelemetry der De-facto-Standard für verteiltes Tracing in Cloud-nativen Anwendungen \cite{AWSLambdaBestPractices} und wird von 
+vielen führenden Cloud-Anbietern nativ oder über dedizierte Distributionen unterstützt. Dazu zählen unter anderem 
+\ac{AWS} \cite{AWSDistributedTracing}, Microsoft Azure \cite{AzureOpenTelemetry} und Google Cloud \cite{GoogleCloudOpenTelemetry}. Zweitens ist die Performance von 
+verschiedenen Programmiersprachen im Kontext von \ac{FaaS}, wie \ac{AWS} Lambda, 
+sehr variabel \cite{Rodriguez2024Evaluation}. Drittens verursacht die Instrumentierung von FaaS-Anwendungen mit OpenTelemetry einen nicht 
+vernachlässigbaren Overhead in Bezug auf Laufzeit (CPU-Zeit), Speicherverbrauch und Kaltstartzeiten \cite{10254754}.
+\\
+Bisher existiert jedoch keine fundierte empirische Untersuchung, die den sprachspezifischen Overhead der 
+OpenTelemetry-Instrumentierung in \ac{FaaS}-Umgebungen systematisch analysiert und quantifiziert. Daraus ergibt sich auch 
+die zentrale Problemstellung dieser Arbeit - wie hoch ist der Overhead, der durch die Instrumentierung mit OpenTelemetry
+verursacht wird in \ac{FaaS}-Umgebungen für Java, Python und Node.js, und wie variiert dieser Overhead zwischen den Sprachen?
 
-%
+
+\section{Forschungsfragen}
+\label{sec:intro:fragen}
+
+Aus der beschriebenen Problemstellung lassen sich folgende Forschungsfragen ableiten:
+
+\paragraph{Leitfrage}
+Wie unterscheidet sich der Performance-Overhead von OpenTelemetry-Instrumentierung in Serverless-Anwendungen zwischen den Programmiersprachen Java, Python und Node.js, und welche Implikationen ergeben sich daraus für die Praxis?
+
+\paragraph{Teilfragen}
+\begin{enumerate}
+    \item Wie hoch ist der prozentuale Performance-Overhead (Laufzeit, Speicherverbrauch, Kaltstartzeit) in Java, Python und Node.js?
+    \item Bei welchen der fünf häufigsten Anwendungsfälle von \ac{FaaS} treten die größten sprachspezifischen Unterschiede auf?
+    \item Welche praxisrelevanten Empfehlungen zur Sprach- und Konfigurationswahl lassen sich ableiten?
+\end{enumerate}
+
 % Section: Ziele
 %
-\section{Ziel der Arbeit}
-\label{sec:intro:goal}
-Ei choro aeterno antiopam mea, ut eos erant homero concludaturque. Albucius appellantur deterruisset id eam, vivendum partiendo dissentiet ei ius. Vis melius facilisis ea, sea id convenire referrentur, takimata adolescens ex duo. Ei harum argumentum per. Eam vidit exerci appetere ad, ut vel zzril intellegam interpretaris.
+\section{Ziele der Arbeit}
+\label{sec:intro:ziele}
 
-Errem omnium ea per, pro \ac{UML} congue populo ornatus cu, ex qui dicant nemore melius. No pri diam iriure euismod. Graecis eleifend appellantur quo id. Id corpora inimicus nam, facer nonummy ne pro, kasd repudiandae ei mei. Mea menandri mediocrem dissentiet cu, ex nominati imperdiet nec, sea odio duis vocent ei. Tempor everti appareat cu ius, ridens audiam an qui, aliquid admodum conceptam ne qui. Vis ea melius nostrum, mel alienum ac elit id nibh pretium pulvina euripidis eu.
+Die Arbeit verfolgt drei operative Ziele:
 
-Ei choro aeterno antiopam mea, labitur bonorum pri no. His no decore nemore graecis. In eos meis nominavi, liber soluta vim cu. Integer consectetur, mi congue feugiat rhoncus, ante libero consectetur eros, et interdum nulla velit non velit. Mauris pharetra venenatis porttitor. Suspendisse et risus at dui gravida hendrerit. Aenean auctor interdum sodales. Etiam tortor orci, scelerisque in gravida eu, varius a massa. Ut sem odio, commodo id pharetra eu, dictum vitae. 
+\begin{itemize}
+    \item \textbf{Z1 – Messung des Overheads:} Quantitative Bestimmung des Laufzeit-, Speicherverbrauch- und Kaltstartzeit-Overheads durch OpenTelemetry-Instrumentierung für Java, Python und Node.js auf AWS Lambda anhand der fünf häufigsten Anwendungsfälle von FaaS.
+    
+    \item \textbf{Z2 – Identifikation sprachspezifischer Unterschiede:} Systematischer Vergleich der fünf Anwendungsfälle (Microbenchmarks), 
+    um diejenigen Szenarien zu identifizieren, in denen die größten sprachspezifischen Unterschiede auftreten.
+    
+    \item \textbf{Z3 – Praxisempfehlungen:} Ableitung konkreter Empfehlungen zur Sprachauswahl mit Hinblick auf den Performance-Overhead der Instrumentierung mit OpenTelemetry.
+\end{itemize}
+
+\section{Methodischer Ansatz}
+\label{sec:intro:methode}
+
+Die Arbeit folgt einem empirisch-quantitativen Ansatz mit experimentellem Design und gliedert sich in vier aufeinander aufbauende Phasen:
+
+\begin{enumerate}
+    \item \textbf{Vorbereitung und Grundlagen:} 
+    Tiefgreifende Literaturrecherche zu Serverless Computing, \ac{FaaS}, Observability, verteiltes Tracing, OpenTelemetry und AWS X-Ray 
+    sowie Analyse bestehender wissenschaftlicher Arbeiten zum Performance-Overhead von Tracing-Frameworks in Cloud-Umgebungen und Performance-Varianz von Programmiersprachen in \ac{FaaS}-Umgebungen.
+
+    \item \textbf{Implementierung:} 
+    Entwicklung von jeweils fünf Funktionen in Java, Python und Node.js, die die fünf häufigsten Anwendungsfälle von \ac{FaaS} repräsentieren.
+    Für jede Funktion wird jeweils eine Version mit und ohne Instrumentierung mit OpenTelemetry erstellt, um den Overhead isoliert und direkt messen zu können.
+
+    
+    \item \textbf{Durchführung der Messungen:} 
+    Ausführung aller Funktionen auf AWS Lambda unter kontrollierten Bedingungen (identische Speicherkonfiguration, Region, Wiederholungen usw.). 
+    Erfassung der Performance-Metriken Laufzeit (CPU-Zeit), Speicherverbrauch und Kaltstartzeiten über AWS CloudWatch bzw. über AWS X-Ray.
+    
+    \item \textbf{Auswertung und Empfehlungen:} 
+    Berechnung des relativen prozentualen Overheads pro Sprache und Anwendungsfall. Sprach- und Anwendungsfallübergreifender Vergleich, 
+    statistische Auswertung der Messungen und Ableitung konkreter praxisrelevanter Empfehlungen zur Sprachauswahl.
+\end{enumerate}
+
+Die Ergebnisse werden sowohl schriftlich als auch grafisch aufbereitet.
 
 %
 % Section: Struktur der Arbeit
 %
 \section{Gliederung}
 \label{sec:intro:structure}
-Nulla fastidii ea ius, exerci suscipit instructior te nam, in ullum postulant quo. Congue quaestio philosophia his at, sea odio autem vulputate ex. Cu usu mucius iisque voluptua. Sit maiorum propriae at, ea cum \ac{API} primis intellegat. Hinc cotidieque reprehendunt eu nec. Autem timeam deleniti usu id, in nec nibh altera.
+
+Die Arbeit gliedert sich in acht Kapitel.
+\paragraph{Kapitel 1} führt in die Thematik ein, erläutert die Motivation, formuliert die Forschungsfragen, definiert die Ziele und beschreibt den methodischen Ansatz sowie die Struktur der Arbeit.
+
+\paragraph{Kapitel 2} führt in die notwendigen Grundlagen ein: Cloud Computing und Microservices-Architektur, Serverless Computing und FaaS, AWS Lambda, Observability, Distributed Tracing sowie OpenTelemetry mit seinen Sampling-Strategien und der AWS-Integration.
+
+\paragraph{Kapitel 3} gibt einen Überblick über den Stand der Forschung zu Overhead von verteiltem Tracing und zu Performance-Varianz von Programmiersprachen in Serverless-Umgebungen. Dabei wird auch die Forschungslücke präzisiert, die später in der Arbeit behandelt wird.
+
+\paragraph{Kapitel 4} beschreibt detailliert die Methodik und den Versuchsaufbau. Es umfasst das Experimentdesign, die fünf gängigsten Anwendungsfälle von \ac{FaaS}, die Implementierung der Testfunktionen in den drei Sprachen, die Durchführung der Messungen sowie die statistische Auswertung der Ergebnisse.
+
+\paragraph{Kapitel 5} präsentiert die Ergebnisse der Messungen, gegliedert nach Laufzeit-, maximaler Speicherverbrauch- und Kaltstartzeit-Overhead sowie nach Sprachen und Anwendungsfällen.
+
+\paragraph{Kapitel 6} diskutiert die Ergebnisse mit Hinblick auf die Forschungsfragen, vergleicht sie gegebenenfalls mit verwandten Arbeiten und reflektiert Limitationen der Arbeit.
+
+\paragraph{Kapitel 7} leitet aus den Ergebnissen praxisrelevante Empfehlungen zur Sprachwahl ab.
+
+\paragraph{Kapitel 8} fasst die Arbeit zusammen, hebt den wissenschaftlichen Beitrag hervor und gibt einen Ausblick auf mögliche Fragestellungen für spätere Arbeiten.
+
+%
+% Section: Abgrenzung
+%
+\section{Abgrenzung der Arbeit}
+\label{sec:intro:abgrenzung}
+
+Die Arbeit konzentriert sich ausschließlich auf:
+
+\begin{itemize}
+    \item Framework: OpenTelemetry als Instrumentierungs-Framework
+    \item Plattform: AWS Lambda als \ac{FaaS}-Plattform
+    \item Metriken: Laufzeit (CPU-Zeit) in ms, maximaler Speicherverbrauch und Kaltstartzeit
+    \item Sprachen: Java, Python und Node.js
+\end{itemize}
+
+Nicht im Fokus dieser Arbeit sind:
+
+\begin{itemize}
+    \item Vergleich verschiedener Tracing-Frameworks (Zipkin, Jaeger, usw.)
+    \item Trace-Qualität (Vollständigkeit aller Traces wird jedoch sichergestellt)
+    \item Andere Serverless-Plattformen (Azure Functions, Google Cloud Functions)
+\end{itemize}
+

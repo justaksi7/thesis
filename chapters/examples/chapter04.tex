@@ -1,0 +1,23 @@
+\chapter{Ziele und Hypothesen}
+\label{ch:zieleundhypothesen}
+
+In diesem Kapitel werden die Zielsetzung und die überprüfbaren Hypothesen der Arbeit formuliert. Die Ziele sind so gewählt, dass sie innerhalb von 90 Tagen mit einem klaren Experiment- und Auswertungsplan erreichbar sind.
+
+\section{Ziele}
+Die Arbeit verfolgt drei operative Ziele, die ihren Fokus auf die Beantwortung der Forschungsfragen 
+aus Kapitel~\ref{ch:chapter03} legen:
+\begin{itemize}
+	\item \textbf{Z1 -- Messung des Overheads:} Quantitative Bestimmung des Overheads (Runtime, Memory, Cold-Start) durch die Instrumentierung mit OpenTelemetry für Java, Python und NodeJS auf AWS Lambda anhand der fünf Microbenchmarks aus \cite{10254754}.
+	\item \textbf{Z2 -- Vergleich über Benchmarks:} Identifikation der Benchmarks, in denen die größten sprachspezifischen Unterschiede auftreten.
+	\item \textbf{Z3 -- Praxisempfehlungen:} Ableitung knapper, umsetzbarer Empfehlungen zur Sprach- und Konfigurationswahl für typische Serverless-Szenarien bei gegebenem Overhead-Budget.
+\end{itemize}
+
+\section{Hypothesen}
+Die Hypothesen sind so formuliert, dass sie mit den geplanten Messungen (Kapitel~\ref{ch:chapter07}) innerhalb des Projektzeitraums testbar sind:
+\begin{itemize}
+	\item \textbf{H1 (Runtime):} Bei den betrachteten I/O-lastigen Benchmarks (Lambda→Lambda, HTTP GET/POST extern, DynamoDB Read/Write) liegt der relative Runtime-Overhead durch OpenTelemetry für Java höher als für Python und für Python höher als für NodeJS.
+	\item \textbf{H2 (Memory):} Der zusätzliche Memory-Overhead ist in Java höher als in Python und NodeJS für dieselben Benchmarks, bedingt durch JVM-Overheads.
+	\item \textbf{H3 (Cold Start):} OpenTelemetry erhöht die Cold-Start-Latenz in Java stärker als in Python und NodeJS; der Effekt bleibt jedoch unter 25\% bei den betrachteten Benchmarks, auch wenn Traces mitsamt Log-Export aufgezeichnet werden.
+\end{itemize}
+
+Die Hypothesen werden als widerlegbar betrachtet und anhand von Mittelwerten und Streuungsmaßen aus mindestens drei wiederholten Testläufen pro Benchmark und Sprache überprüft.

@@ -1,0 +1,109 @@
+\chapter{Material}
+\label{ch:chapter08}
+
+Dieses Kapitel beschreibt das zur Durchführung der Arbeit erforderliche Material, die eingesetzten Technologien und verfügbaren Datenquellen.
+\section{Hardware und Cloud-Infrastruktur}
+
+\subsection{Verfügbare Ressourcen}
+
+\begin{itemize}
+    \item \textbf{Entwicklungs-PC:} Lokale Umgebung für Entwicklung, Testing und Scripting (Windows/Linux/Mac möglich)
+    \item \textbf{AWS Account:} AWS Free Tier mit verfügbarem Budget von 200€ für Cloud-Ressourcen und Datenübertragung
+    \item \textbf{AWS Lambda:} Serverless Compute für die Ausführung der Benchmarks in allen drei Runtimes (Java, Python, Node.js)
+    \item \textbf{Amazon CloudWatch:} Monitoring und Log-Erfassung für Performance-Metriken (Duration, Memory Usage, Init Duration)
+    \item \textbf{Amazon DynamoDB (Free Tier):} Für die DB-Read/Write-Benchmarks im Speicher-Szenario
+\end{itemize}
+
+\subsection{Anforderungen und Dimensionierung}
+
+\begin{itemize}
+    \item Lambda-Speicher: 1024 MB konstant pro Funktion (ausreichend für alle Benchmarks)
+    \item Geschätzter Kostenbedarf: 200€ deckt ca. 50–100 Millionen Lambda-Ausführungen (mehr als ausreichend für 15 Funktionen × 100 Invokationen × 3 Wiederholungen × 2 Szenarien = 90.000 Invokationen)
+    \item Speicher für Ergebnisse: Lokal oder über AWS S3 (ebenfalls im Free Tier)
+\end{itemize}
+
+\section{Software und Frameworks}
+
+\subsection{Verfügbare Softwarekomponenten}
+
+\begin{itemize}
+    \item \textbf{AWS Distro for OpenTelemetry (ADOT)~\cite{AWSLambdaBestPractices}:} Offizielle OpenTelemetry-Integration für AWS Lambda, vorkonfiguriert für CloudWatch-Export
+    \item \textbf{OpenTelemetry SDKs~\cite{OpenTelemetryDocs}:}
+    \begin{itemize}
+        \item OpenTelemetry Java SDK (maven/gradle)
+        \item OpenTelemetry Python SDK (pip)
+        \item OpenTelemetry JavaScript/Node.js SDK (npm)
+    \end{itemize}
+    \item \textbf{AWS Lambda Runtimes:} Java 17, Python 3.11, Node.js 20 (aktuelle, unterstützte Versionen)
+    \item \textbf{AWS SAM (Serverless Application Model):} Infrastruktur-as-Code für Lambda-Deployment
+\end{itemize}
+
+\subsection{Entwicklungs- und Auswertungswerkzeuge}
+
+\begin{itemize}
+    \item \textbf{Programmiersprachen:} Java (JDK 17), Python (3.11), Node.js (v20)
+    \item \textbf{Paketmanager:} Maven/Gradle (Java), pip (Python), npm (Node.js)
+    \item \textbf{Datenauswertung:} Python (pandas, scipy, matplotlib) für statistische Analyse und Visualisierung
+    \item \textbf{Versionskontrolle:} Git für Benchmark-Code und Dokumentation
+\end{itemize}
+
+\section{Daten und Quellen}
+
+\subsection{Verfügbare Primärquellen}
+
+\begin{itemize}
+    \item \textbf{CloudWatch Metriken:} Rohmetriken aus AWS Lambda-Invokationen (Duration, Memory, Init Duration) direkt verfügbar nach Experiment-Durchführung
+    \item \textbf{ADOT Dokumentation~\cite{AWSLambdaBestPractices}:} Konfigurations- und Best-Practice-Beispiele für Lambda-Instrumentation
+\end{itemize}
+
+\subsection{Verfügbare Sekundärquellen}
+
+\begin{itemize}
+    \item \textbf{OpenTelemetry Dokumentation~\cite{OpenTelemetryDocs}:} Umfassende Referenzen für Sampling-Konfiguration und SDK-Nutzung
+    \item \textbf{Jaeger/Jaeger-Backend~\cite{JaegerDocs}:} Dokumentation für Trace-Speicherung und optionale erweiterte Analysen
+    \item \textbf{AWS Lambda Best Practices~\cite{AWSLambdaBestPractices}:} Cold-Start-Optimierung, Memory-Sizing, Tracing-Setup
+    \item \textbf{Bisherige Arbeiten:} Karkan (2024)~\cite{Karkan2024PerformanceOverhead}, Eder et al. (2023)~\cite{10254754} — verfügbar über Universiätsbibliothek oder Preprints
+\end{itemize}
+
+\section{Noch zu beschaffendes Material}
+
+\subsection{Kritische Anforderungen (Must-Have)}
+
+\begin{itemize}
+    \item \textbf{AWS Account mit Free Tier:} Bereits vorhanden  Zugriff auf Lambda, CloudWatch, DynamoDB
+    \item \textbf{Lokale Entwicklungsumgebung:} Java 17 SDK, Python 3.11, Node.js v20 — bereits vorhanden
+    \item \textbf{AWS CLI und AWS SAM CLI:} Zur Automation von Lambda-Deployment; Installation und Konfiguration erforderlich
+    \item \textbf{Benchmark-Code:} Implementierung oder Anpassung der fünf Szenarien in Java, Python, Node.js — muss noch implementiert werden.
+\end{itemize}
+
+\subsection{Wünschenswerte Ergänzungen (Nice-to-Have)}
+
+\begin{itemize}
+    \item \textbf{k6 Testskripte:} Für reproduzierbare Lastprofile (alternative: manuelle Invokation via AWS CLI oder boto3)
+    \item \textbf{Jaeger UI:} Lokale Jaeger-Instanz zur erweiterten Trace-Analyse (optional, CloudWatch-Daten sind ausreichend)
+    \item \textbf{Monitoring-Dashboard:} AWS CloudWatch Dashboard mit vordefinierten Graphen für Visualisierung während Experiment-Durchführung
+\end{itemize}
+
+
+
+\section{Verfügbarkeit und Kosten}
+
+\subsection{Kostenfreie oder im Free Tier enthaltene Ressourcen}
+
+\begin{itemize}
+    \item OpenTelemetry SDKs, AWS ADOT: Open-Source, kostenfrei
+    \item AWS Lambda (Free Tier): 1 Mio. kostenlose Anfragen/Monat
+    \item CloudWatch (Free Tier): 10 GB Logs kostenlos pro Monat
+    \item Python, Java, Node.js Runtimes: Kostenfrei
+    \item Git, VS Code, Python-Libraries (pandas, scipy): Open-Source/kostenfrei
+\end{itemize}
+
+\subsection{Kostenpflichtige Ressourcen}
+
+\begin{itemize}
+    \item AWS Lambda (über Free Tier hinaus): ~0,0000002 USD pro Anfrage
+    \item CloudWatch Logs (über Free Tier hinaus): ~0,50 USD pro GB
+    \item Datenübertragung aus AWS: ~0,09 USD pro GB
+    \item \textbf{Gesamtbudget 200€}: Ausreichend für alle Messungen und Export von Ergebnissen
+\end{itemize}
+

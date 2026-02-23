@@ -6,17 +6,13 @@
 
 \begin{otherlanguage}{american}
 	\chapter*{Abstract}
-	A short summary of the contents in English of about one page. The following points should be addressed in particular:
-	\begin{itemize}
-		\item Motivation: Why did this work come about? Why is the topic of the work interesting (for the general public)? The motivation should be abstracted as far as possible from the specific tasks that may be given by a company.
-		\item Content: What is the content of this thesis? What exactly is covered in the thesis? The methodology and working method should be briefly discussed here.
-		\item Results: What are the results of this work? A brief overview of the most important results as a teaser to read the complete thesis.
-	\end{itemize}
-	\medskip
-	
-	\noindent
-	BTW: A great guide by Kent Beck how to write good abstracts can be found here:
-	\begin{center}
-		\url{https://plg.uwaterloo.ca/~migod/research/beckOOPSLA.html}
-	\end{center}
+The motivation for this work is the increasing use of distributed tracing with OpenTelemetry in serverless architectures. While OpenTelemetry is very useful for monitoring distributed systems, it also causes a significant performance overhead in terms of runtime, memory, and cold start times. However, there has been no systematic investigation so far of how this overhead affects different programming languages.
+
+This work investigates and empirically evaluates the language-specific overhead of OpenTelemetry in AWS Lambda for Java, Python, and Node.js.
+Instrumented and non-instrumented functions are compared based on five microbenchmarks which represent the five most 
+common use cases of a FaaS (Function as a Service).
+The performance metrics runtime, memory consumption, and cold start times are measured in a controlled environment and statistically evaluated 
+with regards to the five microbenchmarks.
+
+The results of this work will be included here after completion of the experiments.
 \end{otherlanguage}

@@ -1,0 +1,116 @@
+\chapter{Methode}
+\label{ch:chapter07}
+
+Dieses Kapitel beschreibt die wissenschaftliche Vorgehensweise zur Beantwortung der Forschungsfragen (Kapitel~\ref{ch:chapter03}) und zur Überprüfung der Hypothesen (Kapitel~\ref{ch:zieleundhypothesen}). Die Methodik ist so gewählt, dass sie innerhalb von 90 Tagen durchführbar ist und reproduzierbare, statistisch auswertbare Ergebnisse liefert.
+
+\section{Methodischer Ansatz}
+
+Die Arbeit verwendet eine \textbf{empirisch-quantitative Methode} mit experimentellem Design:
+
+\begin{itemize}
+    \item \textbf{Empirisch:} Primärdatenerhebung durch kontrollierte Messungen in einer realen Cloud-Umgebung (AWS Lambda)
+    \item \textbf{Quantitativ:} Erhebung numerischer Performance-Metriken (Runtime, Memory, Cold-Start-Zeit) zur statistischen Auswertung
+    \item \textbf{Experimentell:} Systematische Variation der unabhängigen Variablen (Programmiersprache, Benchmark-Typ, Instrumentierungsstatus) unter kontrollierten Bedingungen
+    \item \textbf{Vergleichend:} Cross-Language-Analyse über drei Programmiersprachen (Java, Python, NodeJS) und fünf Benchmark-Szenarien
+\end{itemize}
+
+Die Leitfrage nach sprachspezifischen Performance-Unterschieden erfordert
+ \textbf{messbare, vergleichbare Daten}. Theoretische Analysen könnten keine präzisen Aussagen über
+  prozentuale Overhead-Werte liefern. Die empirische Messung ermöglicht:
+
+\begin{itemize}
+    \item Direkte Quantifizierung des Overheads in Prozent (für H1, H2, H3)
+    \item Objektiven Vergleich zwischen Sprachen ohne Bias
+    \item Reproduzierbarkeit und Nachprüfbarkeit durch andere Forschende
+    \item Statistische Analyse zur Validierung der Hypothesen
+\end{itemize}
+Daher eignet sich ein empirisch-quantitativer Ansatz gut für die Arbeit.
+
+Desweiteren erlaubt ein experimentelles Design die \textbf{Isolierung des Effekts von Opentelemetry} durch Kontrollgruppen (nicht-instrumentierte Lambdas). 
+Dies ist notwendig, um kausale Aussagen über den durch Tracing verursachten Overhead zu treffen 
+reine Beobachtungsstudien in Produktionsumgebungen könnten nicht zwischen Tracing-Overhead und anderen Faktoren unterscheiden.
+
+Die Microbenchmarks aus Eder et al.~\cite{10254754} wurden gewählt, weil sie:
+\begin{itemize}
+    \item \textbf{Repräsentativ} für typische Serverless-Interaktionen sind (Verkettung von Lambdas, HTTP-API-Calls, DB-Zugriffe)
+    \item \textbf{I/O-lastig} sind und damit realistische Serverless-Szenarien abbilden (Lambda ist selten CPU-bound)
+    \item \textbf{Bereits validiert} sind in einer wissenschaftlichen Studie und sich als sensitiv für Overhead-Messungen erwiesen haben
+    \item \textbf{Reproduzierbar} implementiert werden können in allen drei Zielsprachen
+\end{itemize}
+
+\section{Versuchsaufbau und Durchführung}
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\hline
+\textbf{Faktor} & \textbf{Ausprägungen} & \textbf{Art} \\
+\hline
+Programmiersprache & Java, Python, NodeJS & variabel \\
+Benchmark-Typ & 5 Microbenchmarks & variabel \\
+Instrumentierung & Mit/Ohne OpenTelemetry & variabel \\
+Lambda-Memory & 1024 MB & konstant \\
+AWS-Region & eu-central-1 & konstant \\
+Wiederholungen & 3 Testläufe & konstant \\
+\hline
+\end{tabular}
+\caption{Experimentelle Faktoren und Kontrolle}
+\label{tab:experimentelle_faktoren}
+\end{table}
+In der obigen Tabelle sind die experimentellen Faktoren und deren Ausprägungen dargestellt. 
+Lambda-Memory AWS-Region und Anzahl der Wiederholungen werden konstant gehalten. Die unabhängigen
+Variablen Programmiersprache, Benchmark-Typ und Instrumentierungsstatus werden systematisch variiert. D. h. es werden
+ für jede Kombination der drei unabhängigen Variablen Messungen durchgeführt. Nämlich 3 Testläufe pro Sprache für alle 5 
+ Benchmarks jeweils mit und ohne OpenTelemetry-Instrumentierung.\\
+
+
+Die Performance-Metriken werden über AWS CloudWatch erfasst~\cite{CloudWatchLambdaMonitoring}:
+
+\begin{itemize}
+    \item \textbf{Runtime (Duration):} Gesamtausführungszeit einer Lambda-Invokation in ms
+    \item \textbf{Memory (Max Memory Used):} Höchster Speicherverbrauch während der Ausführung in MB
+    \item \textbf{Cold-Start-Latenz (Init Duration):} Zeit für die Initialisierung bei kaltem Start in ms
+\end{itemize}
+
+Der \textbf{relative Overhead} wird berechnet als:
+\[
+\text{Overhead}_{\text{Metrik}} = \frac{\text{Metrik}_{\text{mit OTel}} - \text{Metrik}_{\text{ohne OTel}}}{\text{Metrik}_{\text{ohne OTel}}} \times 100\%
+\]
+Die Formel berechnet den prozentualen Anstieg für eine Metrik. Die gleiche Formel wird auch in \cite{10254754} verwendet.\\
+
+Daten werden wie folgt erhoben:
+\begin{enumerate}
+    \item \textbf{Implementierung:} Entwicklung der fünf Benchmarks in Java, Python und NodeJS (insgesamt 30 Lambda-Funktionen mit und ohne Instrumentierung)
+    \item \textbf{Baseline-Messung:} Ausführung ohne OpenTelemetry-Instrumentierung (3 Wiederholungen pro Benchmark/Sprache = 45 Messungen)
+    \item \textbf{Instrumentierung:} Integration von AWS Distro for OpenTelemetry mit Head-Sampling (100\% Sample-Rate für maximalen Overhead)
+    \item \textbf{Instrumented-Messung:} Ausführung mit OpenTelemetry (3 Wiederholungen = 45 Messungen)
+    \item \textbf{Cold-Start-Messung:} Separate Betrachtung der Initialisierung auf AWS CloudWatch
+\end{enumerate}
+
+Jede Messung umfasst mindestens 100 Lambda-Invokations, um statistische Stabilität zu gewährleisten.
+
+Die erhobenen Daten werden wie folgt analysiert:
+
+\begin{itemize}
+    \item \textbf{Deskriptive Statistik:} Mittelwert, Median, Standardabweichung pro Sprache/Benchmark/Metrik
+    \item \textbf{Vergleichende Analyse:} Overhead-Differenzen zwischen den Sprachen visualisiert durch Box-Plots und Bar-Charts
+\end{itemize}
+
+\textbf{Kontrolle von Störvariablen:}
+\begin{itemize}
+    \item Lambda-Memory konstant für alle Setups - verhindert Memory-bedingte Laufzeitunterschiede
+    \item Gleiche AWS-Region - minimiert Netzwerklatenzvarianz
+    \item Wiederholte Messungen → reduziert zufällige Schwankungen
+\end{itemize}
+
+\textbf{Limitation:} Cold-Start-Frequenz in AWS Lambda ist nicht vollständig kontrollierbar; 
+Cold Starts werden daher gezielt durch ausreichend lange Pausen zwischen Invokations erzwungen.
+
+\textbf{Generalisierbarkeit:}
+\begin{itemize}
+    \item Ergebnisse gelten für AWS Lambda mit ADOT; Übertragbarkeit auf andere Serverless-Plattformen (Azure Functions, Google Cloud Functions) ist eingeschränkt
+    \item Die fünf Benchmarks decken typische I/O-Szenarien ab, aber nicht alle möglichen Serverless-Workloads (z.B. ML-Inferenz, Video-Verarbeitung)
+    \item Head-Sampling mit 100\% stellt den maximalen Overhead dar; niedrigere Sample-Raten würden geringeren Overhead zeigen
+\end{itemize}
+
+Durch die Dokumentation der exakten OpenTelemetry-Versionen, Lambda-Runtimes und Benchmark-Implementierungen sowie die Verwendung von Infrastructure-as-Code (AWS SAM/CloudFormation) ist das Experiment reproduzierbar
+und zuverlässig.
