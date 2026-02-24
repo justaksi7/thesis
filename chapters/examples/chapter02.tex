@@ -302,6 +302,12 @@ Zudem erlauben sie das Fixieren von SDK-Versionen. Pro Funktion können bis zu f
 Beim Einsatz extrahiert Lambda den Layer-Inhalt in das Verzeichnis `/opt` der Ausführungsumgebung, wo die Funktion darauf zugreifen 
 kann \cite{AWSLambdaLayers}. Für die vorliegende Arbeit ist insbesondere der von AWS bereitgestellte Layer für die \ac{ADOT} relevant, 
 der die Tracing-Abhängigkeiten kapselt und in Abschnitt \ref{sec:adot} näher beschrieben wird.
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=0.75\textwidth]{gfx/examples/lambda-layers-diagram.png}
+ \caption{AWS Lambda Layers \cite{AWSLambdaLayers}}
+ \label{fig:chapter02:aws_lambda_layers}
+\end{figure}
 
 \subsection{Häufigste Anwendungsfälle von AWS Lambda}
 \begin{figure}[H]
