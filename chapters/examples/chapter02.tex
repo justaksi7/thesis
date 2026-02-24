@@ -10,6 +10,7 @@ Abschließend werden Cloud-Ressourcen und -Dienste von \ac{AWS} wie z. B. \ac{AW
 beschrieben, die für die Implementierung und Evaluierung der in dieser Arbeit vorgeschlagenen Lösung relevant sind.
 
 \section{Cloud Computing}
+\label{sec:cloud}
 In traditionellen IT-Infrastrukturen mussten Unternehmen und Endnutzer ihre physischen Server in ihren eigenen
 Räumlichkeiten betreiben - inklusive aller damit verbundenen Aufgaben wie z. B. Wartung, Stromversorgung,
 Internetverbindung, Skalierung etc. Cloud Computing ermöglicht Unternehmen und Endnutzern, 
@@ -45,10 +46,11 @@ Durch \textbf{Ressourcenbündelung (Resource Pooling)} werden die physischen und
 Schließlich werden alle Dienste durch \textbf{messbare Nutzung (Measurable Services)} kontrolliert: Die Inanspruchnahme von Ressourcen wird genau erfasst, überwacht und abgerechnet – sei es nach Zeit, Speichervolumen oder Anfragenzahl. Dies schafft Transparenz und ist die Grundlage für nutzungsbasierte Abrechnungsmodelle (Pay-per-Use)~\cite{Huawei2023CloudComputing}.
 
 \subsection{Servicemodelle des Cloud Computing}
+\label{subsec:service_models}
 
 Cloud-Dienste werden typischerweise in drei Servicemodelle unterteilt, die sich im Grad der Abstraktion und der Verantwortungsteilung zwischen Anbieter und Nutzer unterscheiden\cite{Huawei2023CloudComputing}.
 
-\textbf{Infrastructure as a Service (IaaS):} Der Anbieter stellt virtualisierte Rechenressourcen wie Server, Speicher und Netzwerke bereit. Der Nutzer kann eigene Betriebssysteme und Anwendungen installieren und verwalten. Bekannte Beispiele sind Amazon EC2 oder Google Compute Engine. Die zugrunde liegende Struktur des IaaS-Modells ist in Abbildung~\ref{fig:chapter02:IaaS} dargestellt.
+\textbf{\ac{IaaS}:} Der Anbieter stellt virtualisierte Rechenressourcen wie Server, Speicher und Netzwerke bereit. Der Nutzer kann eigene Betriebssysteme und Anwendungen installieren und verwalten. Bekannte Beispiele sind Amazon EC2 oder Google Compute Engine. Die zugrunde liegende Struktur des IaaS-Modells ist in Abbildung~\ref{fig:chapter02:IaaS} dargestellt.
 
 \begin{figure}[H]
  \centering
@@ -57,7 +59,7 @@ Cloud-Dienste werden typischerweise in drei Servicemodelle unterteilt, die sich 
  \label{fig:chapter02:IaaS}
 \end{figure}
 
-\textbf{Platform as a Service (PaaS):} Hier wird eine Entwicklungsumgebung bereitgestellt, die die zugrunde liegende Infrastruktur vollständig abstrahiert. Der Nutzer entwickelt und betreibt seine Anwendungen, ohne sich um Betriebssysteme, Skalierung oder Wartung kümmern zu müssen. Beispiele hierfür sind Google App Engine oder AWS Elastic Beanstalk. Abbildung~\ref{fig:chapter02:PaaS} veranschaulicht die Architektur von PaaS.
+\textbf{\ac{PaaS}:} Hier wird eine Entwicklungsumgebung bereitgestellt, die die zugrunde liegende Infrastruktur vollständig abstrahiert. Der Nutzer entwickelt und betreibt seine Anwendungen, ohne sich um Betriebssysteme, Skalierung oder Wartung kümmern zu müssen. Beispiele hierfür sind Google App Engine oder AWS Elastic Beanstalk. Abbildung~\ref{fig:chapter02:PaaS} veranschaulicht die Architektur von PaaS.
 
 \begin{figure}[H]
  \centering
@@ -66,7 +68,7 @@ Cloud-Dienste werden typischerweise in drei Servicemodelle unterteilt, die sich 
  \label{fig:chapter02:PaaS}
 \end{figure}
 
-\textbf{Software as a Service (SaaS):} Der Anbieter stellt fertige Anwendungen über das Internet bereit. Der Nutzer greift darauf zu, hat aber keinerlei Kontrolle über die zugrunde liegende Infrastruktur oder Plattform. Typische Vertreter sind Google Workspace oder Microsoft Office 365. Die prinzipielle Funktionsweise von SaaS ist in Abbildung~\ref{fig:chapter02:SaaS} skizziert.
+\textbf{\ac{SaaS}:} Der Anbieter stellt fertige Anwendungen über das Internet bereit. Der Nutzer greift darauf zu, hat aber keinerlei Kontrolle über die zugrunde liegende Infrastruktur oder Plattform. Typische Vertreter sind Google Workspace oder Microsoft Office 365. Die prinzipielle Funktionsweise von SaaS ist in Abbildung~\ref{fig:chapter02:SaaS} skizziert.
 
 \begin{figure}[H]
  \centering
@@ -75,7 +77,7 @@ Cloud-Dienste werden typischerweise in drei Servicemodelle unterteilt, die sich 
  \label{fig:chapter02:SaaS}
 \end{figure}
 
-Eine spezielle Ausprägung von PaaS ist das \acf{FaaS}-Modell, bei dem Entwickler einzelne Funktionen als Reaktion auf Ereignisse ausführen können, ohne sich um Server oder Laufzeitumgebungen kümmern zu müssen. Dieses Modell wird in Abschnitt \ref{sec:faas} detailliert behandelt.
+Eine spezielle Ausprägung von PaaS ist das \acf{FaaS}-Modell, bei dem Entwickler einzelne Funktionen als Reaktion auf Ereignisse ausführen können, ohne sich um Server oder Laufzeitumgebungen kümmern zu müssen. Dieses Modell wird in Abschnitt \ref{sec:serverless} detailliert behandelt.
 
 \subsection{Betriebsmodelle des Cloud Computing}
 Cloud Computing kann auch nach der Art der Betriebsmodelle klassifiziert werden. Die gängigsten Betriebsmodelle sind Public Cloud, Private Cloud, Community Cloud, Hybrid Cloud und Industry Cloud\cite{Huawei2023CloudComputing}.
@@ -110,7 +112,7 @@ Zusammen bilden \ac{EDA} und Microservices das Fundament für moderne, skalierba
 reaktive Systeme.
 
 \subsection{Microservices}
-Die Microservices-Architektur ist ein Ansatz zur Entwicklung einer einzelnen Anwendung als einer Sammlung kleiner, unabhängiger Dienste. Jeder Dienst läuft in einem eigenen Prozess und kommuniziert über leichtgewichtige Mechanismen, häufig eine HTTP-Ressourcen-API \cite{Fowler2024Microservices}. Diese Dienste sind um die Geschäftslogik der Anwendung herum organisiert und können vollständig automatisiert und unabhängig voneinander bereitgestellt werden.
+Die Microservices-Architektur ist ein Ansatz zur Entwicklung einer einzelnen Anwendung als einer Sammlung kleiner, unabhängiger Dienste. Jeder Dienst läuft in einem eigenen Prozess und kommuniziert über leichtgewichtige Mechanismen, häufig eine \ac{HTTP}-Ressourcen-API \cite{Fowler2024Microservices}. Diese Dienste sind um die Geschäftslogik der Anwendung herum organisiert und können vollständig automatisiert und unabhängig voneinander bereitgestellt werden.
 
 Zu den zentralen Merkmalen von Microservices gehört die unabhängige Bereitstellung, die es erlaubt, 
 jeden Dienst separat zu entwickeln, zu testen und zu deployen, ohne andere Teile der Anwendung zu 
@@ -139,7 +141,7 @@ Genau hier setzt die  \ac{EDA} an, die eine asynchrone und lose gekoppelte Kommu
 Die Event-Driven Architecture ist ein Architekturmuster für Microservices, bei dem der Datenfluss im System durch 
 Ereignisse (Events) gesteuert wird. Ein Event ist eine Zustandsänderung innerhalb eines
 Systems, wie zum Beispiel „Bestelleingang“, „Zahlungseingang“ oder „Artikelversand“.
-Anstatt dass Dienste direkt miteinander synchron kommunizieren, etwa mittels HTTP-Request und Response,
+Anstatt dass Dienste direkt miteinander synchron kommunizieren, etwa mittels \ac{HTTP}-Request und Response,
 kommunizieren sie asynchron über asynchrone Events\cite{AWSEventDrivenArchitecture}.\\
 Die Kernkomponenten einer \ac{EDA} umfassen den Event Producer, der ein Event erzeugt und publiziert, 
 ohne in der Regel zu wissen, welche anderen Dienste dieses Event konsumieren werden\cite{AzureEventDrivenArchitecture}. 
@@ -165,4 +167,138 @@ werden durch Events ausgelöst\cite{AWSLambdaDocs} und sie können auch selber E
 also eine der beliebtesten Optionen für Event-Consumer und -Producer\cite{AWSLambdaDocs} und im Kontext 
 von Serverless-Computing bildet \ac{FaaS} das Herzsück der Anwendungslogik\cite{Katzer2024Serverless}.
 
+\section{Serverless-Computing und Function as a Service}
+\label{sec:serverless}
+Nachdem die grundlegenden Konzepte von Cloud Computing, Microservices und Event-Driven Architecture erläutert wurden,
+wird in diesem Abschnitt das Konzept von Serverless-Computing und insbesondere \ac{FaaS} vorgestellt.
+Insbesondere das \ac{FaaS}-Modell bildet das Herzstück moderner serverloser Anwendungen\cite{Katzer2024Serverless}.
 
+\subsection{Serverless Computing als Paradigma}
+Serverless Computing ist ein Cloud-Ausführungsmodell, bei dem die Cloud-Anbieter die gesamte Verwaltung der Serverinfrastruktur 
+vollständig übernehmen\cite{IBMFaaS}. Entwickler können sich ausschließlich auf die Entwicklung von Anwendungslogik 
+konzentrieren, ohne sich um Provisioning, Skalierung oder Wartung von Servern kümmern zu müssen\cite{IBMFaaS}.
+Die Bezeichnung „serverless“ ist dabei irreführend, da selbstverständlich weiterhin Server im Hintergrund laufen, jedoch 
+sind diese für den Entwickler vollständig abstrahiert und werden vom Cloud-Anbieter verwaltet\cite{IBMFaaS}.\\
+Das Paradigma des Serverless Computing umfasst verschiedene Arten von Diensten. 
+Neben der Ausführung von Code in Form von Funktionen gehören dazu auch vollständig verwaltete Datenbanken, 
+Nachrichtenwarteschlangen oder \ac{API}-Gateways\cite{IBMFaaS}. 
+Die Gemeinsamkeit aller serverlosen Dienste ist, dass sie automatisch skalieren, nutzungsbasiert abgerechnet werden und 
+keine manuelle Infrastrukturverwaltung erfordern\cite{IBMFaaS}.
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/serverless.png}
+ \caption{Serverless Computing \href{https://www.xenonstack.com/blog/aws-serverless-computing/}{[source]}}
+ \label{fig:chapter02:serverless}
+\end{figure}
+
+\subsection{Function as a Service als zentrale Ausprägung}
+Im Zentrum des Serverless Computing steht das \ac{FaaS}-Modell\cite{AWSServerlessComputing}. 
+Dabei wird die Geschäftslogik einer Anwendung in Form von kleinen, unabhängigen und zustandslosen Funktionen implementiert\cite{IBMFaaS}. 
+Diese Funktionen werden durch definierte Ereignisse ausgelöst, wie etwa \ac{HTTP}-Anfragen, Datei-Uploads in einen Storage, 
+Datenbankänderungen oder Nachrichten in einer Queue\cite{IBMFaaS}.\\
+Die wesentlichen Merkmale von FaaS lassen sich in einigen Punkten zusammenfassen. Die Ausführung erfolgt ereignisgesteuert, 
+das heißt, Funktionen werden nur dann aktiviert, wenn ein spezifisches Ereignis eintritt, sonst verbleiben sie in einem Ruhezustand 
+und verbrauchen keine Ressourcen\cite{IBMFaaS}. Die Skalierung passiert automatisch und dynamisch - die Plattform skaliert die Anzahl 
+der Funktionen nahezu augenblicklich entsprechend der eingehenden Last, von einer einzelnen Instanz bis hin zu tausenden parallelen 
+Instanzen, ohne dass manueller Eingriff notwendig ist\cite{IBMFaaS}. Abgerechnet wird ausschließlich die tatsächliche Ausführungszeit 
+der Funktionen, typischerweise in Millisekunden-Schritten, sodass für Zeiten der Inaktivität keine Kosten entstehen\cite{IBMFaaS}. 
+Ein weiteres  Merkmal ist die Zustandslosigkeit - jede Funktion wird in einer isolierten, kurzlebigen Umgebung ausgeführt und 
+teilt keinen internen Zustand mit vorherigen Ausführungen\cite{IBMFaaS}.\\
+Die Architektur hinter FaaS-Plattformen nutzt Container-Technologie. Die Cloud-Anbieter halten vorkonfigurierte Container 
+mit gängigen Laufzeitumgebungen bereit. Wenn ein Ereignis eintritt, wird die entsprechende Funktion aus dem Speicher geladen, 
+in einen solchen Container eingefügt und ausgeführt. Nach Abschluss der Ausführung wird der Container wieder freigegeben\cite{ServerlessAWSLambda}.
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/FaaS.jpg}
+ \caption{Function as a Service \href{https://www.wallarm.com/what/what-is-faas-function-as-a-service}{[source]}}
+ \label{fig:chapter02:faas}
+\end{figure}
+
+\subsection{Abgrenzung zu anderen Servicemodellen}
+
+Um das \ac{FaaS}-Modell präzise einordnen zu können, ist eine Abgrenzung zu den bereits in 
+dem Unterabschnitt \ref{subsec:service_models} vorgestellten Servicemodellen hilfreich. 
+\ac{FaaS} unterscheidet sich grundlegend von \ac{IaaS}, \ac{PaaS} und \ac{SaaS}. 
+Bei \ac{IaaS} mieten Nutzer virtuelle Maschinen und sind für die Verwaltung des Betriebssystems, 
+der Laufzeitumgebungen und der Anwendungen selbst verantwortlich, während \ac{FaaS} die 
+Infrastruktur vollständig abstrahiert und der Nutzer nur den Code bereitstellt. \ac{PaaS} 
+bietet zwar eine verwaltete Plattform für vollständige Anwendungen, doch müssen Entwickler dort 
+Skalierung und Instanzenverwaltung berücksichtigen. \ac{FaaS} begrenzt den Fokus auf einzelne 
+Funktionen und skaliert automatisch hoch und herunter. \ac{SaaS} stellt fertige Anwendungen bereit, 
+die Nutzer konsumieren und \ac{FaaS} bietet eine abstrahierte Umgebung zur Ausführung von Funktionen.
+
+\subsection{Vorteile und Herausforderungen}
+
+Serverless Computing und insbesondere \ac{FaaS} haben mehrere Vorteile. 
+Die Reduzierung des operativen Aufwands steht dabei an erster Stelle - Entwickler können sich 
+ausschließlich auf die Implementierung von Geschäftslogik konzentrieren, während der Cloud-Anbieter 
+alle infrastrukturellen Aufgaben übernimmt. Die Kosteneffizienz durch das Pay-per-Use-Modell 
+ermöglicht insbesondere für Anwendungen mit variabler oder unvorhersehbarer Last signifikante 
+Einsparungen im Vergleich zu traditionellen Modellen, bei denen für ungenutzte Kapazitäten gezahlt 
+werden muss. Die automatische Skalierbarkeit stellt sicher, dass Anwendungen auch bei unerwarteten 
+Lastspitzen performant bleiben, ohne dass Kapazitäten manuell angepasst werden müssen\\
+Es gibt jedoch auch Nachteile, die bei der Entwicklung von serverlosen Anwendungen berücksichtigt 
+werden müssen. Die sogenannten Cold Starts beschreiben die initiale Verzögerung beim ersten Aufruf 
+einer Funktion nach einer Phase der Inaktivität\cite{Rodriguez2024Evaluation}. Da die Plattform die 
+Ausführungsumgebung erst initialisieren muss, kann dies zu Latenzen von mehreren hundert Millisekunden oder sogar Sekunden 
+führen, was für latenzsempfindliche Anwendungen problematisch sein kann. 
+Darüber hinaus haben \ac{FaaS}-Lösungen technischen Beschränkungen\cite{ServerlessAWSLambda} - die maximale Ausführungsdauer einer Funktion 
+ist begrenzt – bei AWS Lambda beispielsweise auf 15 Minuten\cite{ServerlessAWSLambda} –, was das Modell für lange Prozesse wie 
+komplexe Batch-Jobs ungeeignet macht. Und nicht zuletzt birgt die enge Bindung an einen bestimmten Cloud-Anbieter die Gefahr des 
+Vendor Lock-in, da die Implementierungen und \ac{API}s der verschiedenen Anbieter nicht unbedingt portabel sind.
+
+\section{AWS Lambda als konkrete FaaS-Plattform}
+\label{sec:aws-lambda}
+
+Nach der allgemeinen Einführung wird nun die konkrete Plattform dieser Arbeit vorgestellt - AWS Lambda. 
+Der von Amazon Web Services bereitgestellte Dienst gilt als einer der beliebtesten im Bereich \ac{FaaS} und zeichnet sich durch breite 
+Integration in das AWS-Ökosystem aus \cite{ServerlessAWSLambda}.
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/lambda.png}
+ \caption{AWS Lambda \href{https://aws.amazon.com/lambda/}{[source]}}
+ \label{fig:chapter02:aws_lambda}
+\end{figure}
+
+\subsection{Grundlegende Funktionsweise}
+AWS Lambda folgt einem ereignisgesteuerten Modell. Eine Lambda-Funktion ist ein Code-Block, der als Reaktion auf bestimmte Ereignisse 
+gestartet wird – z. B. wenn ein Benutzer auf eine Website klickt oder eine Datei in einen S3-Bucket hochgeladen wird. 
+Jede Funktion hat genau einen Function Handler, der als Einstiegspunkt dient. Dieser Handler empfängt die eingehenden Ereignisdaten 
+(meist ein JSON-Objekt) und verarbeitet sie. Während eine Funktion mehrere Methoden enthalten kann, gibt es immer nur einen einzigen 
+Handler. Zur Bereitstellung wird der Code zusammen mit den Abhängigkeiten in einem Deployment-Paket gebündelt, entweder als ZIP-Datei 
+oder als Container-Image \cite{AWSLambdaBasics}.\\
+Bei einem ersten Aufruf oder nach Inaktivität erstellt Lambda eine sichere, isolierte Ausführungsumgebung (Execution Environment). 
+Diese Umgebung verwaltet die notwendigen Prozesse und Ressourcen. Nach Abschluss der Funktion wird sie kurz beibehalten, sodass 
+folgende Aufrufe sie wiederverwenden können - was die Latenz bei warmen Starts deutlich reduziert. Innerhalb der Umgebung sorgt 
+eine sprachspezifische Runtime (z. B. Java, Python oder Node.js) für die Kommunikation zwischen dem Dienst und dem Funktionscode. 
+Für verwaltete Runtimes übernimmt AWS automatisch Sicherheitsupdates und Patches \cite{AWSLambdaBasics}.\\
+Der Aufruf einer Funktion kann entweder direkt über die Konsole, CLI oder SDKs erfolgen oder – im produktiven Einsatz typischer – 
+durch andere AWS-Dienste. Hierfür werden Trigger konfiguriert, die die Funktion mit einer Ereignisquelle verbinden. 
+Eine Funktion kann mehrere Trigger besitzen. Bei Streaming-Diensten wie Kinesis oder SQS kommen statt Triggern Event Source Mappings 
+zum Einsatz, die die Quelle dauerhaft abfragen, Daten bündeln und zu der Funktion in Batches übergeben \cite{AWSLambdaBasics}.
+
+\subsection{Grenzen und Besonderheiten für die Messung}
+Für die experimentelle Evaluation sind einige technische Grenzen von AWS Lambda besonders relevant. 
+Die sogenannten Kaltstarts (Cold Start) beschreiben die initiale Verzögerung beim ersten Aufruf einer Funktion nach einer Phase 
+von Inaktivität\cite{Rodriguez2024Evaluation}. Diese kann mehrere Sekunden betragen\cite{Rodriguez2024Evaluation} und ist eine der 
+zentralen Metriken dieser Arbeit. Die maximale Ausführungsdauer einer Funktion beträgt 15 Minuten\cite{ServerlessAWSLambda}, 
+der konfigurierbare Arbeitsspeicher kann von 128 MB bis zu 10.240 MB in 1-MB-Schritten gewählt werden und Lambda
+alloziert proportional dazu auch die CPU-Leistung\cite{AWSLambdaMemory}. 
+Standardmäßig liegt die maximale Anzahl gleichzeitiger Ausführungen (Concurrency) pro AWS-Konto bei 1000, dies kann jedoch
+nach Bedarf beliebig erweitert werden \cite{AWSLambdaConcurrency}.
+Die nutzungsbasierte Abrechnung (pro Million Anfragen und pro GB-Sekunde) unterstreicht die wirtschaftliche Relevanz des durch Tracing 
+verursachten Overheads. Jede zusätzliche Millisekunde Laufzeit wirkt sich direkt auf die Kosten aus.
+
+\subsection{Häufigste Anwendungsfälle von AWS Lambda}
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=0.75\textwidth]{gfx/examples/Microbenchmarks.png}
+ \caption{Häufigste Anwendungsfälle von AWS Lambda \cite{10254754}}
+ \label{fig:chapter02:aws_lambda_use_cases}
+\end{figure}
+
+In der Abbildung~\ref{fig:chapter02:aws_lambda_use_cases} dargestellten 5 Microbenchmarks, sind die häufigsten Anwendungsfälle von 
+AWS Lambda\cite{Winzinger2021DataFlow}. Der Aufruf von einer weiteren AWS Lambda (Lambdaverkettung) - Microbenchmark 1, eine HTTP-GET-Anfrage an eine externe 
+API - Microbenchmark 2, eine HTTP-POST-Anfrage an eine externe API - Microbenchmark 3, eine Leseoperation aus einer 
+DynamoDB-Tabelle - Microbenchmark 4 und eine Schreiboperation in eine DynamoDB-Tabelle - Microbenchmark 5. Diese 5 Microbenchmarks bilden 
+die Grundlage für die experitemtelle Evaluation in Kapitel 4.
