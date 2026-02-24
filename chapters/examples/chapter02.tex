@@ -274,7 +274,10 @@ eine sprachspezifische Runtime (z. B. Java, Python oder Node.js) für die Kommun
 Für verwaltete Runtimes übernimmt AWS automatisch Sicherheitsupdates und Patches \cite{AWSLambdaBasics}.\\
 Der Aufruf einer Funktion kann entweder direkt über die Konsole, CLI oder SDKs erfolgen oder – im produktiven Einsatz typischer – 
 durch andere AWS-Dienste. Hierfür werden Trigger konfiguriert, die die Funktion mit einer Ereignisquelle verbinden. 
-Eine Funktion kann mehrere Trigger besitzen. Bei Streaming-Diensten wie Kinesis oder SQS kommen statt Triggern Event Source Mappings 
+Eine Funktion kann mehrere Trigger besitzen. Eine Lambda-Funktion kann von einer Vielzahl von 
+AWS-Diensten ausgelöst werden, darunter S3, DynamoDB, API Gateway, CloudWatch Events, CloudWatch Logs, 
+Kinesis, SQS und viele mehr \cite{AWSLambdaServices}.
+Bei Streaming-Diensten wie Kinesis oder SQS kommen statt Triggern Event Source Mappings 
 zum Einsatz, die die Quelle dauerhaft abfragen, Daten bündeln und zu der Funktion in Batches übergeben \cite{AWSLambdaBasics}.
 
 \subsection{Grenzen und Besonderheiten für die Messung}
@@ -283,11 +286,22 @@ Die sogenannten Kaltstarts (Cold Start) beschreiben die initiale Verzögerung be
 von Inaktivität\cite{Rodriguez2024Evaluation}. Diese kann mehrere Sekunden betragen\cite{Rodriguez2024Evaluation} und ist eine der 
 zentralen Metriken dieser Arbeit. Die maximale Ausführungsdauer einer Funktion beträgt 15 Minuten\cite{ServerlessAWSLambda}, 
 der konfigurierbare Arbeitsspeicher kann von 128 MB bis zu 10.240 MB in 1-MB-Schritten gewählt werden und Lambda
-alloziert proportional dazu auch die CPU-Leistung\cite{AWSLambdaMemory}. 
-Standardmäßig liegt die maximale Anzahl gleichzeitiger Ausführungen (Concurrency) pro AWS-Konto bei 1000, dies kann jedoch
-nach Bedarf beliebig erweitert werden \cite{AWSLambdaConcurrency}.
+alloziert proportional dazu auch die CPU-Leistung\cite{AWSLambdaMemory}.
+Lambda stellt einen flüchtigen lokalen Speicher (Ephemeral Storage) in dem /tmp-Verzeichnis bereit. Der flüchtige Speicher kann 
+von 512 MB bis zu 10.240 MB in 1-MB-Schritten konfiguriert werden\cite{AWSLambdaEphemeralStorage}. 
+Standardmäßig liegt die maximale Anzahl gleichzeitiger Ausführungen (Concurrency) von Lambda-Funktionen 
+pro AWS-Konto bei 1000, dies kann jedoch je nach Bedarf beliebig erweitert werden \cite{AWSLambdaConcurrency}.
 Die nutzungsbasierte Abrechnung (pro Million Anfragen und pro GB-Sekunde) unterstreicht die wirtschaftliche Relevanz des durch Tracing 
 verursachten Overheads. Jede zusätzliche Millisekunde Laufzeit wirkt sich direkt auf die Kosten aus.
+
+\subsection{Lambda Layers}
+Ein Lambda Layer ist ein ZIP-Archiv, das ergänzenden Code wie Bibliotheksabhängigkeiten, benutzerdefinierte Runtimes oder 
+Konfigurationsdateien enthält \cite{AWSLambdaLayers}. Layer bieten mehrere Vorteile. Sie reduzieren die Größe von Deployment-Paketen, 
+trennen die Kernlogik von Abhängigkeiten und ermöglichen die gemeinsame Nutzung von Komponenten über mehrere Funktionen hinweg. 
+Zudem erlauben sie das Fixieren von SDK-Versionen. Pro Funktion können bis zu fünf Layer hinzugefügt werden. 
+Beim Einsatz extrahiert Lambda den Layer-Inhalt in das Verzeichnis `/opt` der Ausführungsumgebung, wo die Funktion darauf zugreifen 
+kann \cite{AWSLambdaLayers}. Für die vorliegende Arbeit ist insbesondere der von AWS bereitgestellte Layer für die \ac{ADOT} relevant, 
+der die Tracing-Abhängigkeiten kapselt und in Abschnitt \ref{sec:adot} näher beschrieben wird.
 
 \subsection{Häufigste Anwendungsfälle von AWS Lambda}
 \begin{figure}[H]
@@ -302,3 +316,4 @@ AWS Lambda\cite{Winzinger2021DataFlow}. Der Aufruf von einer weiteren AWS Lambda
 API - Microbenchmark 2, eine HTTP-POST-Anfrage an eine externe API - Microbenchmark 3, eine Leseoperation aus einer 
 DynamoDB-Tabelle - Microbenchmark 4 und eine Schreiboperation in eine DynamoDB-Tabelle - Microbenchmark 5. Diese 5 Microbenchmarks bilden 
 die Grundlage für die experitemtelle Evaluation in Kapitel 4.
+
