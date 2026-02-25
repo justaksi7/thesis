@@ -455,3 +455,65 @@ ausführlich behandelt wird.
 
 \section{OpenTelemetry}
 \label{sec:otel}
+
+Nachdem im vorherigen Abschnitt die Grundlagen der Observability erläutert wurden, wird in diesem Abschnitt die praktische Umsetzung 
+mit Opentelemetry näher beschrieben. 
+OpenTelemetry hat sich als ein herstellerneutraler Standard etabliert, der die Erfassung und den Export von Telemetriedaten 
+vereinheitlicht\cite{OpenTelemetryInstrumentation,OpenTelemetryWhatIs,OpenTelemetryDocs}.
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/otel_structure.png}
+ \caption{OpenTelemetry \cite{OpenTelemetryDocs}}
+ \label{fig:chapter02:otel}
+\end{figure}
+
+\subsection{Entstehung und Zielsetzung}
+
+OpenTelemetry entstand aus der Zusammenführung der beiden Vorgängerprojekte OpenTracing und OpenCensus und wird heute als 
+Projekt von der \ac{CNCF} betreut\cite{OpenTelemetryWhatIs}. Das Ziel des Frameworks ist es, eine einzige, einheitliche Bibliothek zur 
+Verfügung zu stellen, mit der Entwickler Logs, Metriken und Traces erfassen und an verschiedene Observability-Backends senden können – 
+ohne für jedes Ziel neu instrumentieren zu müssen\cite{OpenTelemetryInstrumentation}. OpenTelemetry fungiert damit als eine Art 
+"gemeinsame Sprache" für Observability-Daten und vermeidet Vendor-Lock-in\cite{OpenTelemetryWhatIs}.
+
+\subsection{Kernkomponenten und Architektur}
+
+Die Architektur von OpenTelemetry folgt einem durchdachten, modularen Aufbau, der sich grob in drei Schichten gliedern lässt: die Datenerfassung im Code, die optionale Verarbeitung durch einen Collector und den Export an ein Backend [citation:6].
+
+\begin{description}
+    \item[API und SDK:] Auf der untersten Ebene stellt OpenTelemetry für jede unterstützte Programmiersprache eine spezifische 
+    \emph{\ac{API}} bereit. Diese definiert, wie Telemetriedaten erzeugt werden. Das dazugehörige \emph{\ac{SDK}} ist die konkrete 
+    Implementierung dieser \ac{API} und bietet Konfigurationsmöglichkeiten wie die Steuerung des Samplings, 
+    das Hinzufügen von Attributen oder das Festlegen von Exporteuren\cite{OpenTelemetryComponents}. 
+    Entwickler können zwischen zwei Hauptarten der Instrumentierung wählen - der \emph{code-basierten Instrumentierung}, 
+    bei der die \ac{API} manuell im Code eingefügt wird, und der \emph{Zero-Code-Instrumentierung}, die automatisch über Agents 
+    oder spezielle Bibliotheken erfolgt, ohne den Quellcode zu verändern\cite{OpenTelemetryInstrumentation}.
+    
+    \item[Instrumentierungsbibliotheken:] Viele bekannte Frameworks und Bibliotheken (z.B. für HTTP, Datenbankzugriffe) 
+    sind nicht von sich aus mit OpenTelemetry instrumentiert. Daher bietet OpenTelemetry für gängige Sprachen vorgefertigte 
+    \emph{Instrumentierungsbibliotheken}. Diese erzeugen automatisch Telemetriedaten für die Operationen dieser Bibliotheken, 
+    wie z. B. eingehende und ausgehende HTTP-Requests\cite{OpenTelemetryComponents}. Ein langfristiges Ziel des Projekts ist es, 
+    dass alle wichtigen Bibliotheken standardmäßig beobachtbar (observable per defailt) sind\cite{OpenTelemetryComponents}.
+    
+    \item[OpenTelemetry Collector:] Der \emph{Collector} ist eine zentrale, vendor-neutrale Komponente, die als eigenständiger Dienst läuft. 
+    Er kann Telemetriedaten in verschiedenen Formaten (z.B. OTLP, Jaeger, Prometheus) empfangen, kann diese Daten verarbeiten 
+    (z.B. filtern, anreichern, bündeln) und an ein oder mehrere Backends exportieren\cite{OpenTelemetryComponents,OpenTelemetryCollector}. 
+    Der Einsatz eines Collectors ist Best Practice, da er die Instrumentierung vom Backend entkoppelt, Daten puffern kann 
+    und zentrale Kontrollmöglichkeiten über die Datenverarbeitung bietet\cite{OpenTelemetryComponents,OpenTelemetryCollector}.
+    
+    \item[Exporters und Propagators:] \textbf{Exporter} sind für den Transport der gesammelten Daten an ein bestimmtes Ziel verantwortlich. OpenTelemetry unterstützt eine Vielzahl von Exporteuren, darunter Jaeger, Zipkin, Prometheus und verschiedene kommerzielle Anbieter. Der standardisierte Export erfolgt oft über das \textbf{OpenTelemetry Protocol (OTLP)} [citation:2][citation:10]. Für die Nachverfolgung über Servicegrenzen hinweg sorgen \textbf{Propagators}. Sie serialisieren und deserialisieren Kontextinformationen wie Trace-IDs und übergeben sie bei der Kommunikation von einem Dienst an den nächsten, z.B. über HTTP-Header [citation:2][citation:10].
+\end{description}
+
+\subsection{Sampling-Strategien}
+
+Ein zentrales Konzept zur Steuerung des Datenvolumens und der Kosten ist das Sampling [citation:7]. Anstatt jeden einzelnen Trace zu erfassen, werden Strategien angewendet, um eine repräsentative Auswahl zu treffen [citation:3]. OpenTelemetry unterscheidet dabei zwei Hauptansätze [citation:2][citation:7]:
+
+\begin{itemize}
+    \item \textbf{Head Sampling:} Bei dieser Entscheidung wird bereits zu Beginn eines Traces, also an der Wurzel, festgelegt, ob der gesamte Trace aufgezeichnet wird oder nicht. Die Entscheidung basiert meist auf einfachen Regeln, wie einer konfigurierbaren Wahrscheinlichkeit (probabilistisches Sampling). Head Sampling ist einfach zu implementieren und effizient, da nur die zu erfassenden Daten verarbeitet werden müssen [citation:3][citation:7].
+    \item \textbf{Tail Sampling:} Diese komplexere Strategie trifft die Entscheidung erst, nachdem ein Trace vollständig abgeschlossen ist. Dies wird typischerweise im Collector konfiguriert und erlaubt wesentlich intelligentere Regeln. So können beispielsweise alle Traces, die einen Fehler enthalten, oder besonders langsame Traces (z.B. mit einer Latenz über einem bestimmten Schwellwert) vollständig gespeichert werden, während der Rest verworfen wird [citation:3][citation:7]. Tail Sampling ermöglicht eine zielgerichtetere und wertvollere Datensammlung, erfordert aber mehr Ressourcen im Collector.
+\end{itemize}
+
+Durch den Einsatz von adaptiven Sampling-Strategien lässt sich das Datenvolumen erheblich reduzieren – Studien zeigen Einsparungen von über 80 Prozent, während die für die Fehlersuche relevanten Daten erhalten bleiben [citation:3].
+
+\subsection{AWS Distro for OpenTelemetry (ADOT)}
+
+Für die Nutzung innerhalb der AWS-Cloud bietet Amazon eine eigene, optimierte Distribution von OpenTelemetry an: die \ac{ADOT} [citation:8]. ADOT ist eine vollständig von AWS unterstützte Version des OpenTelemetry-Projekts, die speziell für die Integration mit AWS-Services wie CloudWatch, X-Ray, OpenSearch und anderen AWS-Computing-Plattformen (EC2, ECS, EKS, Lambda) ausgelegt ist [citation:4][citation:8]. Für AWS Lambda stellt die Community vorgefertigte ADOT-Layer bereit, die eine einfache und performante Instrumentierung der Funktionen ermöglichen [citation:2][citation:10]. ADOT ist daher die Grundlage für die in dieser Arbeit durchgeführten Experimente.
