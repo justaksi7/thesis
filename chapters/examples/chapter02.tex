@@ -323,3 +323,135 @@ API - Microbenchmark 2, eine HTTP-POST-Anfrage an eine externe API - Microbenchm
 DynamoDB-Tabelle - Microbenchmark 4 und eine Schreiboperation in eine DynamoDB-Tabelle - Microbenchmark 5. Diese 5 Microbenchmarks bilden 
 die Grundlage für die experitemtelle Evaluation in Kapitel 4.
 
+\section{Observability in verteilten Systemen}
+\label{sec:observability}
+
+Dieser Abschnitt widmet sich dem Thema der Observability in verteilten Systemen, insbesondere im Kontext von Cloud-nativen 
+verteilten Anwendungen.  
+In verteilten Umgebungen mit Microservices und serverlosen Funktionen 
+braucht man die Fähigkeit, den internen Zustand des Systems anhand seiner externen Ausgaben zu verstehen und darauf basierend handeln 
+zu können .
+
+\subsection{Definition und Abgrenzung}
+
+Der Begriff Observability (Beobachtbarkeit) beschreibt die Fähigkeit, den internen Zustand eines Systems allein durch die Messung 
+seiner externen Ausgaben zu verstehen\cite{Hausenblas2024Cloud}. Auf Cloud-native Umgebungen übertragen, bedeutet dies, aus verschiedenen Telemetriesignalen 
+– wie Logs, Metriken und Traces – wertvolle Erkenntnisse (sogenannte \textit{actionable insights}) 
+zu gewinnen, um das System zu verstehen und bei Bedarf steuernd einzugreifen\cite{Hausenblas2024Cloud}.
+
+Observability wird oft mit Monitoring gleichgesetzt, ist aber konzeptionell breiter. 
+Während Monitoring traditionell den Systemzustand anhand vordefinierter Metriken und Schwellwerte überwacht 
+(und damit die Frage "Was ist wann passiert?" beantwortet), hat Observability das Ziel, auch unbekannte Problemursachen 
+zu entdecken und zu verstehen – also die Frage "Warum ist etwas passiert?" zu beantworten\cite{Hausenblas2024Cloud}. 
+In der Praxis wird Monitoring häufig als Kurzbezeichnung für systemzustands- und leistungsbezogene Observability verwendet\cite{Hausenblas2024Cloud}.
+
+\subsection{Zentrale Konzepte und Komponenten}
+
+Für ein gutes Verständnis von Observability ist es nötig mehrere Kernkomponenten zu verstehen \cite{Hausenblas2024Cloud}. 
+Das \textbf{\ac{SUO}} ist das zu beobachtende System, zusammen mit den darauf ausgeführten Anwendungen\cite{Hausenblas2024Cloud}. 
+\textbf{Signale} sind die von außen beobachtbaren Informationen, die von verschiedenen \textbf{Quellen} 
+erzeugt werden – wie z. B. Microservices, Datenbanken, Betriebssystemen oder Cloud-Diensten\cite{Hausenblas2024Cloud}. 
+Diese Quellen müssen typischerweise instrumentiert werden, um Signale zu emittieren. 
+\textbf{Agenten} übernehmen die Sammlung, Verarbeitung und Weiterleitung der Signale\cite{Hausenblas2024Cloud}. 
+Die \textbf{Ziele (Destinations)} sind die Orte, an denen die Signale konsumiert werden – wie z. B. Visualisierungen 
+in Dashboards, Alerting-Systeme, Langzeitspeicher oder Analysewerkzeuge\cite{Hausenblas2024Cloud}. 
+Der gesamte Prozess der Signalsammlung, -verarbeitung und -aufnahme wird als \textbf{Telemetrie} bezeichnet\cite{Hausenblas2024Cloud}.
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/observability_struktur.png}
+ \caption{Zentrale Konzepte der Observability \cite{Hausenblas2024Cloud}}
+ \label{fig:chapter02:observability}
+\end{figure}
+
+\subsection{Die drei Säulen der Observability}
+
+Observability stützt sich auf drei zentrale Signaltypen, die als die drei Säulen der Observability bezeichnet werden - 
+Logs, Metriken und Traces\cite{Hausenblas2024Cloud}.
+
+\textbf{Logs} sind detaillierte, mit einem Zeitstempel versehene Aufzeichnungen von Ereignissen, die während der Ausführung 
+einer Anwendung auftreten. Sie können strukturiert (z.B. im JSON-Format) oder unstrukturiert vorliegen und liefern wertvollen 
+Kontext für die Fehlerdiagnose – z. B. einen Fehler beim Datenbankzugriff oder die erfolgreiche Verarbeitung einer Bestellung\cite{Hausenblas2024Cloud}.
+
+\textbf{Metriken} sind numerische Messwerte, die in regelmäßigen Abständen erfasst werden und den Zustand eines Systems quantifizieren. 
+Dazu gehören beispielsweise CPU-Auslastung, Speicherverbrauch, Anfragen pro Sekunde oder Fehlerraten. 
+Metriken eignen sich besonders gut für die frühzeitige Erkennung von Trends und Anomalien\cite{Hausenblas2024Cloud}.
+
+\textbf{Traces} nehmen den vollständigen Lebenszyklus einer Anfrage nach, während sie durch verschiedene Dienste und Komponenten 
+eines verteilten Systems geht. Ein Trace besteht aus mehreren Spans, wobei jeder Span eine einzelne Operation repräsentiert – 
+wie z. B. einen Datenbankaufruf oder die Validierung einer Eingabe. Durch eine eindeutige Trace-ID, die über alle Dienste hinweg 
+propagiert wird, lässt sich der gesamte Pfad einer Benutzeranfrage rekonstruieren\cite{Hausenblas2024Cloud}.
+
+Erst die Zusammenarbeit dieser drei Säulen ermöglicht ein vollständiges Bild des Systemverhaltens - Metriken geben einen ersten Hinweis 
+auf ein Problem ("Die Fehlerrate steigt"), Traces zeigen, wo das Problem auftritt ("Service X betroffen"), und Logs erklären schließlich 
+die genaue Ursache ("Die Verbindung zur Datenbank wurde abgelehnt")\cite{Hausenblas2024Cloud}.
+
+\subsection{Rollen und Anwendungsfälle}
+
+Observability adressiert unterschiedliche Rollen innerhalb einer Organisation mit jeweils spezifischen Fragestellungen\cite{Hausenblas2024Cloud}. 
+Entwickler nutzen Traces, um langsame Code-Pfade zu identifizieren, und Logs, um Fehler zu diagnostizieren. 
+DevOps-Verantwortliche und \ac{SRE} verwenden Metriken für Dashboards und Alerts, um die Systemgesundheit 
+zu überwachen und bei Störungen schnell reagieren zu können. Plattformbetreiber interessieren sich für niedrigschwellige Signale wie 
+Ressourcenauslastung und Kosten. Selbst nicht-technische Rollen wie Produktmanager können von Observability profitieren, 
+etwa durch Dashboards zur Bereitstellungsgeschwindigkeit oder zur Einhaltung von \ac{SLA}\cite{Hausenblas2024Cloud}.
+
+\begin{table}[H]
+\centering
+\caption{Beispielhafte Observability-Abläufe nach Rollen \cite{Hausenblas2024Cloud}}
+\label{tab:observability-flows}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Rolle} & \textbf{Beispielhafter Ablauf} \\
+\hline
+Entwickler & Nutzt Traces, um herauszufinden, welcher Microservice entlang des Anforderungspfads langsam ist. \\
+\hline
+Entwickler & Nutzt kontinuierliches Profiling, um den Hot Path eines Microservice zu beschleunigen. \\
+\hline
+DevOps & Erhält einen Alarm über eine ausgefallene Komponente und nutzt dann in einem Dashboard dargestellte Metriken, um den Alarm im Kontext zu verstehen. \\
+\hline
+DevOps & Nutzt Metriken, um die Komponenten einzugrenzen, die hohe Latenz verursachen; wechselt dann zu Traces, um in einen spezifischen Anforderungspfad einzutauchen; und betrachtet anschließend Logs eines Microservice, der auf diesem Pfad arbeitet, um Details zu erhalten (Korrelation). \\
+\hline
+\ac{SRE} & Verfolgt Ziele und deren Erfüllung und berät Entwickler über Dashboards. \\
+\hline
+Plattformbetreiber & Nutzt ein Dashboard auf Clusterebene, um die automatische Skalierung über die Zeit zu verfolgen. \\
+\hline
+Release-Ingenieur & Nutzt ein Dashboard, um den Build-Fortschritt eines Microservice-Artefakts (z.B. ein Container-Image) zu überwachen, um beispielsweise Leistungsrückschritte zu verhindern. \\
+\hline
+Produktmanager & Nutzt ein CD-Dashboard, um den Bereitstellungsfortschritt von Microservices zu überwachen. \\
+\hline
+Business-Stakeholder & Nutzt ein Dashboard, um wöchentliche Umsätze und \ac{SLA}-Verletzungen zu verfolgen. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\subsection{Herausforderungen in Cloud-nativen Umgebungen}
+
+Cloud-native Systeme haben besondere Anforderungen an die Observability\cite{Hausenblas2024Cloud}. 
+Sie sind von Natur aus verteilt – die Kommunikation passiert nicht innerhalb eines Prozesses, sondern über das Netzwerk. 
+Zusätzlich sind beteiligte Komponenten sind volatil - Container-Instanzen kommen und gehen, IP-Adressen ändern sich, 
+neue Versionen von Lambda-Funktionen werden sehr oft ausgerollt. Das macht traditionelle Überwachungsansätze, 
+die auf langlaufenden Prozessen und festen Instanzen basieren, oft unzureichend\cite{Hausenblas2024Cloud}.
+
+Observability adressiert diese Herausforderungen, indem sie eine automatisierte Sammlung aller relevanten Signale ermöglicht und 
+diese als Grundlage für Entscheidungen nutzbar macht\cite{Hausenblas2024Cloud}. Die Korrelation von verschiedenen Signaltypen ist 
+dabei entscheidend. Ein \ac{SRE} könnte z. B. über einen Metrik-Alarm über eine erhöhte Fehlerrate informiert werden, 
+über eine Trace-ID, die in der Metrik eingebettet ist, zum detaillierten Trace navigieren und schließlich in den Logs des betroffenen 
+Dienstes die Ursache finden\cite{Hausenblas2024Cloud}.
+
+\subsection{Kosten und Nutzen}
+
+Die Investitionen (z. B. Zeit und Geld) in Observability sind mit verschiedenen Faktoren verbunden - Entwicklungszeit für die Instrumentierung, Speicherkosten 
+für die Signalaufbewahrung, Rechenzeit für Agenten und Netzwerkverkehr\cite{Hausenblas2024Cloud}. 
+Der Nutzen ist schwerer zu quantifizieren, kann aber beispielsweise an der \ac{MTTR} gemessen werden. 
+Auch weiche Faktoren wie reduzierte Belastung im Bereitschaftsdienst tragen zum Gesamtnutzen bei\cite{Hausenblas2024Cloud}.
+
+\subsection{Portabilität durch offene Standards}
+
+Ein wichtiges Prinzip moderner Observability ist die Vermeidung von Vendor-Lock-in durch den Einsatz offener Standards und 
+Open-Source-Werkzeuge\cite{Hausenblas2024Cloud}. Instrumentiert man Anwendungen beispielsweise mit OpenTelemetry, 
+kann man später zwischen verschiedenen Zielsystemen wechseln, ohne die Anwendung selbst ändern zu müssen. 
+Dieser Aspekt ist für die vorliegende Arbeit von zentraler Bedeutung, 
+da OpenTelemetry als herstellerneutraler Standard für die Instrumentierung verwendet wird und im Abschnitt \ref{sec:otel}
+ausführlich behandelt wird.
+
+\section{OpenTelemetry}
+\label{sec:otel}
