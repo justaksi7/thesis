@@ -578,7 +578,9 @@ Das schützt die Telemetrie-Pipeline vor Überlastung\cite{OpenTelemetrySampling
 Für die Nutzung innerhalb der AWS-Cloud bietet Amazon eine eigene, optimierte Distribution von OpenTelemetry an - 
 die \ac{ADOT}\cite{ADOT}. ADOT ist eine vollständig von AWS unterstützte Version des OpenTelemetry-Projekts, 
 die speziell für die Integration mit AWS-Services wie CloudWatch, X-Ray, OpenSearch und anderen AWS-Services 
-(EC2, ECS, EKS, Lambda) ausgelegt ist\cite{ADOT}.
+(EC2, ECS, EKS, Lambda) ausgelegt ist\cite{ADOT}. \ac{ADOT} kann genauso wie das reguläre OpenTelemetry SDK
+mit verschiedenen Export-Backends verwendet werden. Die performanteste Option und gleichzeitig
+eine der Best-Practices ist jedoch der Export direkt an AWS CloudWatch (konkret AWS X-Ray)\cite{ADOT_Lambda}. 
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/adot.png}
@@ -587,3 +589,36 @@ die speziell für die Integration mit AWS-Services wie CloudWatch, X-Ray, OpenSe
 \end{figure}
 Für AWS Lambda stellt die Community vorgefertigte ADOT-Layer bereit, die eine einfache und performante Instrumentierung der 
 Funktionen ermöglichen\cite{ADOT_Lambda}. ADOT ist daher die Grundlage für die in dieser Arbeit durchgeführten Experimente.
+
+\section{AWS CloudWatch}
+\label{sec:cloudwatch}
+
+Amazon CloudWatch ist der zentrale Überwachungsdienst (Observability Service) von AWS, der Metriken und Logs aus AWS-Ressourcen sowie sammelt 
+und zugänglich macht\cite{AWSCloudWatchDocs}. Für die vorliegende Arbeit ist CloudWatch die primäre Quelle der Performance-Metriken der 
+instrumentierten Lambda-Funktionen.
+
+\subsection{Kernfunktionen für diese Arbeit}
+
+CloudWatch verfolgt einen Metriken-zentrierten Ansatz. Eine Metrik ist eine zeitlich geordnete Menge von Datenpunkten, 
+die von AWS-Diensten oder benutzerdefinierten Quellen an CloudWatch gesendet wird\cite{AWSLambdaMetrics}. 
+Für Lambda-Funktionen stellt CloudWatch automatisch Metriken im Namespace \texttt{AWS/Lambda} bereit. 
+Die für diese Arbeit relevanten Metriken umfassen:
+
+\begin{itemize}
+    \item \emph{Duration:} Die Ausführungsdauer einer Funktion in Millisekunden, gemessen vom Start des Handlers bis zum Ende der 
+    Ausführung \cite{AWSLambdaMetrics}. Diese Metrik ist die Grundlage für die Berechnung des Runtime-Overheads.
+    \item \emph{Max Memory Used:} Diese Metrik repräsentiert den maximalen Speicherverbrauch während der Ausführung in Megabyte, der für die Ermittlung des 
+    Memory-Overheads essentiel ist wird\cite{GraylogLambdaMetrics}.
+    \item \emph{Init Duration:} Diese Metrik erfasst die Dauer der Initialisierungsphase bei Kaltstarts, separat von der \texttt{Duration}-Metrik 
+    und sie ist für die Analyse des Cold-Start-Overheads essentiell \cite{GraylogLambdaMetrics}.
+    \item \emph{Invocations:} Das ist die Metrik, die die Anzahl der Funktionsaufrufe repräsentiert und zur Normalisierung der Messwerte verwendet wird\cite{AWSLambdaMetrics}.
+    \item \emph{Errors:} Das ist die Metrik, die die Anzahl der fehlgeschlagenen Aufrufe repräsentiert und zur Validierung der Messdurchführung dient\cite{AWSLambdaMetrics}.
+\end{itemize}
+
+\subsection{Datenerfassung und -analyse}
+
+CloudWatch empfängt Metriken automatisch von Lambda nach jeder Ausführung \cite{GraylogLambdaMetrics}. Darüber hinaus schreibt Lambda standardmäßig Lognachrichten in CloudWatch Logs, aus denen die \texttt{Init Duration} extrahiert werden kann \cite{GraylogLambdaMetrics}. Für diese Arbeit wurden die relevanten Metriken über die CloudWatch-Konsole und die \texttt{aws logs}-CLI abgerufen, mit einem selbstentwickelten Parser aufbereitet und statistisch ausgewertet.
+
+\subsection{Integration mit anderen AWS-Diensten}
+
+CloudWatch ist eng mit anderen AWS-Services integriert. Insbesondere die Kombination mit AWS X-Ray ermöglicht eine umfassende Observability: Während CloudWatch Metriken und Logs bereitstellt, liefert X-Ray detaillierte Trace-Informationen \cite{AWSCloudWatchDocs}. Dienste wie CloudWatch ServiceLens konsolidieren diese Datenquellen, um eine ganzheitliche Sicht auf Anwendungen zu bieten \cite{AWSCloudWatchPrescriptive}.
