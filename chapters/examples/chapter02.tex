@@ -617,8 +617,61 @@ Die für diese Arbeit relevanten Metriken umfassen:
 
 \subsection{Datenerfassung und -analyse}
 
-CloudWatch empfängt Metriken automatisch von Lambda nach jeder Ausführung \cite{GraylogLambdaMetrics}. Darüber hinaus schreibt Lambda standardmäßig Lognachrichten in CloudWatch Logs, aus denen die \texttt{Init Duration} extrahiert werden kann \cite{GraylogLambdaMetrics}. Für diese Arbeit wurden die relevanten Metriken über die CloudWatch-Konsole und die \texttt{aws logs}-CLI abgerufen, mit einem selbstentwickelten Parser aufbereitet und statistisch ausgewertet.
+CloudWatch empfängt Metriken automatisch von Lambda nach jeder Ausführung\cite{GraylogLambdaMetrics}. 
+Darüber hinaus schreibt Lambda standardmäßig Lognachrichten in CloudWatch Logs, aus denen die Metriken \texttt{Init Duration, Duration und Max Memory Used} 
+extrahiert werden können\cite{GraylogLambdaMetrics}. 
+Für diese Arbeit werden die relevanten Metriken aus den CloudWatch Logs extrahiert und entsprechend in Kapitel 5 analysiert.
 
-\subsection{Integration mit anderen AWS-Diensten}
+\subsection{AWS X-Ray}
+\label{subsec:aws-xray}
 
-CloudWatch ist eng mit anderen AWS-Services integriert. Insbesondere die Kombination mit AWS X-Ray ermöglicht eine umfassende Observability: Während CloudWatch Metriken und Logs bereitstellt, liefert X-Ray detaillierte Trace-Informationen \cite{AWSCloudWatchDocs}. Dienste wie CloudWatch ServiceLens konsolidieren diese Datenquellen, um eine ganzheitliche Sicht auf Anwendungen zu bieten \cite{AWSCloudWatchPrescriptive}.
+AWS X-Ray ist ein Service, der Informationen über Anfragen (requests) sammelt, die von einer Anwendung bearbeitet werden. 
+Er stellt Tools bereit, um diese Daten zu visualisieren, zu filtern und auszuwerten, mit dem Ziel, Probleme zu identifizieren 
+und Optimierungsmöglichkeiten zu erkennen\cite{AWSXRayDocs}. X-Ray empfängt Traces sowohl von der instrumentierten Anwendung selbst als auch 
+von integrierten AWS-Diensten wie AWS Lambda. AWS X-Ray fundiert als Tracing-Backend für die in dieser Arbeit durchgeführten Experimente, 
+da es eine native Integration mit AWS Lambda bietet und die gesammelten Tracedaten direkt in CloudWatch verfügbar macht\cite{ADOT_Lambda}.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/aws-x-ray.png}
+ \caption{AWS X-Ray\cite{AWSXRayDocs}}
+ \label{fig:chapter02:xray}
+\end{figure}
+
+Die Instrumentierung einer Anwendung für X-Ray erfordert oft nur Konfigurationsänderungen und kann über verschiedene SDKs, 
+Agenten und Tools erfolgen. Anstatt Tracedaten direkt an X-Ray zu senden, leiten die SDKs sogenannte Segmentdokumente im 
+JSON-Format an einen Daemon-Prozess weiter. Dieser Daemon puffert die Daten und lädt sie in Batches zu X-Ray hoch. 
+Für AWS Lambda ist der X-Ray-Daemon bereits in der Laufzeitumgebung enthalten, was die Nutzung des X-Ray-SDKs vereinfacht\cite{AWSXRayDocs}. 
+Die gesammelten Daten nutzt X-Ray, um eine detaillierte Trace Map zu erstellen. 
+Diese Karte visualisiert den Pfad einer Anfrage durch die verschiedenen Dienste (z.B. Frontend, Backend, Datenbanken) und 
+hilft dabei, Engpässe, Latenzspitzen und andere Performance-Probleme zu identifizieren. Neben den Trace-Maps bietet X-Ray auch die 
+Möglickeit, mithilfe von Queries Traces abzufragen, zu filtern und zu analysieren\cite{AWSXRayDocs}. Dies wird jedoch in der vorliegenden 
+Arbeit nicht genutzt, weil das Budget für die Experimente begrenzt ist und die Kosten für die Nutzung von X-Ray-Queries relativ hoch sein können\cite{AWSXRayPricing}. 
+Stattdessen wird die Anzahl der gesammelten Traces mit der Anzahl der Lambda-Aufrufe verglichen, um sicherzustellen, dass die Traces 
+korrekt gesammelt werden und dass sie vollständig sind (d.h. dass sie die gesamte Ausführung der Funktion abdecken). Dies wird 
+durch dedizierte Abfragen in dem CloudShell \ac{CLI} erreicht.
+
+\section{Amazon DynamoDB}
+\label{sec:dynamodb}
+
+Amazon DynamoDB ist ein vollständig verwalteter, serverloser \ac{NoSQL}-Datenbankservice, der für konsistente Leistung im einstelligen 
+Millisekundenbereich bei jeder Skalierung ausgelegt ist\cite{AWSDynamoDBDocs}. 
+Für diese Arbeit ist DynamoDB als Datenspeicher in zwei der fünf Microbenchmarks relevant. 
+Nämlich Lese- und Schreiboperationen, die von den Lambda-Funktionen ausgeführt werden.
+
+\subsection{Charakteristika}
+
+Als \ac{NoSQL}-Datenbank unterstützt DynamoDB sowohl Schlüssel-Wert- als auch Dokumentendatenmodelle. 
+Im Gegensatz zu relationalen Datenbanken werden JOIN-Operationen nicht unterstützt, was zu einer effizienteren Abfrageperformance 
+bei skalierbaren Workloads beiträgt\cite{AWSDynamoDBDocs}. Die serverlose Architektur bedeutet, dass keine Server 
+provisioniert oder verwaltet werden müssen – der Dienst skaliert automatisch und es fallen keine Kosten an, wenn eine Tabelle nicht 
+genutzt wird (keine Cold Starts). DynamoDB bietet standardmäßig Verschlüsselung der Daten und integriert sich mit AWS \ac{IAM} 
+für die Zugriffskontrolle\cite{AWSDynamoDBDocs}. Für die Messungen in dieser Arbeit werden Lese- und Schreiboperationen 
+über die AWS \ac{SDK}s aus Lambda-Funktionen heraus ausgeführt.
+
+\subsection{Relevanz für die Arbeit}
+Zwei der fünf Microbenchmarks verwenden DynamoDB. 
+Lesen eines Elements aus einer Tabelle und Schreiben eines Elements in eine Tabelle. 
+Diese Szenarien repräsentieren typische Datenzugriffsmuster in serverlosen Anwendungen und ermöglichen die Messung des durch 
+OpenTelemetry verursachten Overheads bei Datenbankoperationen.
+
