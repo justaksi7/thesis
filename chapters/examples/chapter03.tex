@@ -1,205 +1,280 @@
-\chapter{Ein weiteres Kapitel}
-\label{ch:chapter03}
-liquam facilisis convallis nibh. Ut accumsan malesuada nisi, eget luctus ante dignissim at. Integer dignissim rutrum feugiat. Mauris sit amet leo id ligula fringilla pharetra. In id neque metus, eu congue libero. Suspendisse egestas imperdiet nulla, in blandit dolor venenatis vel. Quisque quis justo quis quam lobortis blandit. Quisque urna mauris, placerat a pretium eu, placerat vel risus. Donec sollicitudin malesuada cursus. Sed auctor aliquet urna sit amet porta. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. 
+\chapter{Stand der Forschung}
+\label{ch:related-work}
 
-%
-% Section: Listen
-%
-\section{Listen}
-\label{sec:chapter03:listen}
-Fusce ac velit arcu, in iaculis urna. Vivamus id nunc nulla, et ornare eros. Mauris convallis tortor eget quam interdum nec adipiscing dui pulvinar. Cras a dolor nunc. Sed tincidunt pharetra consectetur. Sed tortor tortor, pellentesque vitae mattis eu, condimentum vel justo.
+\section{Einleitung}
+\label{sec:related-intro}
 
-\begin{itemize}
- \item Enumeration with bullets
- \item Cras cursus ligula et tellus viverra sit amet accumsan orci consequat. Mauris eget elit enim, in mollis justo. Mauris ornare condimentum varius. Praesent suscipit sagittis eros, at accumsan justo adipiscing vel.
- \item Etiam a orci tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam iaculis congue ligula eget lacinia. Proin dapibus elit eu odio egestas dapibus. Etiam nunc dolor, sagittis et volutpat quis, rhoncus a tortor.
-\end{itemize}
+Die zunehmende Verbreitung serverloser Architekturen in den vergangenen Jahren hat die Notwendigkeit für die Durchführung 
+von Forschungsarbeiten, die sich mit der Performance und Observability solcher Systeme beschäftigen geschaffen. 
+Insbesondere die Wahl der Programmiersprache und der Einsatz von Distributed-Tracing-Tools stehen im Fokus, 
+da beide Faktoren signifikanten Einfluss auf die Effizienz und Betriebskosten serverloser Anwendungen haben können. 
+Während verschiedene Studien isolierte Aspekte wie Sprachperformance~\cite{Rodriguez2024Evaluation} oder Tracing-Overhead~\cite{10254754} 
+untersuchen, fehlt bislang eine vergleichende Analyse, die beide Dimensionen gemeinsam betrachtet.
 
-Nunc non tortor nisl, sed fringilla est. Sed feugiat, est sed imperdiet aliquam, nisl elit lobortis nisl, sit amet ultrices metus eros vitae metus. Integer tincidunt, nisi id consectetur pharetra, nibh tortor tempus ipsum, id sollicitudin erat lacus at diam. Etiam aliquet venenatis aliquet.
+Dieses Kapitel stellt zwei zentrale Arbeiten vor, die für die vorliegende Untersuchung 
+von besonderer Relevanz sind. Die erste Arbeit \emph{"A Comparison of Distributed Tracing Tools in Serverless Applications"}\cite{10254754} 
+vergleicht den Overhead verschiedener Distributed-Tracing-Tools in AWS-Lambda-Funktionen. 
+Die zweite Arbeit \emph{"Evaluation of Programming Languages for Memory Usage, Scalability, and Cold Start, 
+on AWS Lambda Serverless Platform as a Case Study"}\cite{Rodriguez2024Evaluation} evaluiert die Performance 
+unterschiedlicher Programmiersprachen auf derselben Plattform. 
+Beide Studien werden hinsichtlich ihrer Motivation, Methodik, Ergebnisse und Limitationen analysiert, 
+um darauf aufbauend die Forschungslücke für die eigene Arbeit zu addressieren. Das Zentrale Erkentnisinteresse 
+stammt jedoch primär aus der ersten Studie, da die Untersuchung des Sprachfaktors im Bezug auf Tracing-Overhead  
+im Abschnitt "Future Work" der Arbeit explizit als Empfehlung für weitere Forschungen erwähnt wird.
+
+\section{Vergleichsstudie 1 – A Comparison of Distributed Tracing Tools in Serverless Applications}
+\label{sec:a-comparison}
+
+\subsection{Motivation}
+\label{subsec:eder-motivation}
+
+Die Autoren adressieren die wachsende Bedeutung von Observability in serverlosen Anwendungen. 
+Da diese aufgrund ihrer feingranularen, verteilten Natur komplex und fehleranfällig sein können, 
+ist Distributed Tracing ein zentrales Werkzeug zur Nachverfolgung von Anfragen. 
+Gleichzeitig folgt Serverless Computing einem nutzungsbasierten Abrechnungsmodell, 
+sodass der durch Tracing verursachte Overhead direkte Auswirkungen auf die Kosten haben kann. 
+Die Autoren motivieren ihre Arbeit mit dem Fehlen eines detaillierten Vergleichs verschiedener Tracing-Tools 
+speziell in serverlosen Umgebungen\cite{10254754}.
+
+\subsection{Untersuchungsgegenstand und Methodik}
+\label{subsec:eder-methodology}
+
+Die Studie untersucht drei Open-Source-Distributed-Tracing-Tools - Zipkin, OpenTelemetry (mittels AWS Distro for OpenTelemetry, ADOT) 
+und Apache SkyWalking. Alle Tools wurden in AWS-Lambda-Funktionen integriert, wobei Node.js 16.x als konkrete Laufzeitumgebung 
+gewählt wurde. Die Evaluation erfolgte anhand von fünf Microbenchmarks, die typische Interaktionsmuster serverloser Anwendungen abbilden 
+(siehe Abbildung~\ref{fig:chapter02:aws_lambda_use_cases}):
 
 \begin{enumerate}
- \item Enumeration with small numbers
- \item Nulla dapibus, ante ac sagittis molestie, neque nulla venenatis turpis, non scelerisque lorem sapien non turpis. Sed dolor magna, vestibulum imperdiet condimentum vel, imperdiet ac mi. Cras in orci egestas purus rhoncus congue. Cras cursus leo nec turpis laoreet non malesuada est pretium.
- \item Nunc ut tortor massa. Fusce ullamcorper mauris eget tellus egestas faucibus. Ut nec nunc quis lectus iaculis ultrices. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    \item \textbf{Function Invocation}: Eine Lambda-Funktion ruft eine weitere Lambda-Funktion auf.
+    \item \textbf{HTTP GET}: Die Funktion sendet eine GET-Anfrage an einen externen HTTP-Endpunkt.
+    \item \textbf{HTTP POST}: Die Funktion sendet eine POST-Anfrage an einen externen HTTP-Endpunkt.
+    \item \textbf{DynamoDB Read}: Die Funktion liest einen Datensatz aus einer DynamoDB-Tabelle.
+    \item \textbf{DynamoDB Write}: Die Funktion schreibt einen Datensatz in eine DynamoDB-Tabelle.
 \end{enumerate}
 
-Suspendisse dignissim tellus vitae ante ullamcorper luctus. Maecenas consectetur massa a massa vestibulum non egestas ipsum bibendum. Vestibulum porttitor, tortor at porttitor tristique, magna justo vestibulum sapien, a semper augue magna in orci. Mauris pretium laoreet nisi, sit amet ultricies sapien rutrum ut. Suspendisse placerat risus et magna accumsan. Ased fringilla est. Sed feugiat, est sed imperdiet aliquam, nisl elit lobortis nisl, sit amet ultrices metus eros vitae metus. Integer tincidunt, nisi id consectetur pharetra, nibh tortor tempus ipsum, id sollicitudin erat lacus at diam. Etiam aliquet venenatis aliquet. Mauris sit amet leo id ligula fringilla pharetra. In id neque metus, eu congue libero. Suspendisse egestas imperdiet nulla, in blandit dolor venenatis vel.
+Für jede Kombination aus Benchmark und Tracing-Tool wurden 100 warme Funktionsaufrufe 
+(hot starts) durchgeführt und die Metriken Laufzeit (runtime), Speicherverbrauch (memory usage) 
+und Initialisierungsdauer (initialization duration) erfasst. 
+Die Tracing-Backends wurden auf einer AWS-EC2-Instanz gehostet. 
+Zusätzlich wurde eine nicht-instrumentierte Baseline gemessen.
 
-\begin{aenumerate}
- \item Enumeration with small caps (alpha)
- \item Second item ed ac risus dolor, ac molestie tellus. Fusce nulla lacus, viverra vel tempus et, viverra eget augue. Nunc id dui sed velit feugiat tristique. Integer at velit justo, eget ornare nulla.
- \item Suspendisse cursus, nisl non pharetra dapibus, nunc ligula sollicitudin sem, in vehicula leo nunc et neque. Sed lacinia dapibus erat, eu dictum ligula auctor a. Phasellus ut mi sapien, in sodales turpis. Nunc pharetra varius metus eget convallis.
-\end{aenumerate}
+\subsection{Ergebnisse}
+\label{subsec:overhead-results}
 
-Sia ma sine svedese americas. Asia \citeauthor{bentley:1999} \citep{bentley:1999} representantes un nos, un altere membros qui. De web nostre historia angloromanic. Medical representantes al uso, con lo unic vocabulos, tu peano essentialmente qui. Lo malo laborava anteriormente uso.
-
-\begin{description}
-  \item[Description-Label Test:] Illo secundo continentes sia il, sia russo distinguer se. Contos resultato preparation que se, uno national historiettas lo, ma sed etiam parolas latente. Ma unic quales sia. Pan in patre altere summario, le pro latino resultato.
-  \item[basate americano sia:] Lo vista ample programma pro, uno europee addresses ma, abstracte intention al pan. Nos duce infra publicava le. Es que historia encyclopedia, sed terra celos avantiate in. Su pro effortio appellate, o.
-  \item[Cras venenatis:] Purus et posuere lacinia, nisl sapien dapibus metus, a ornare enim odio in ipsum. Quisque imperdiet nibh metus, in fringilla tellus. Duis varius dui eget orci commodo ac sollicitudin est placerat. Cras varius tincidunt arcu, quis imperdiet nibh rhoncus vel. Sed non justo orci, non accumsan felis. Maecenas condimentum convallis.
-\end{description}
-
-%
-% Section: Grafiken
-%
-\section{Grafiken}
-\label{sec:chapter03:grafiken}
-Morbi magna augue, scelerisque in eleifend a, tristique vitae lorem. Vivamus non elementum nisi. Aliquam erat volutpat. Nunc pharetra, tortor ut adipiscing bibendum, orci ipsum mollis felis, ut euismod eros purus at tellus. Sed blandit eros at ante mattis in elementum tortor pharetra. Vivamus molestie mattis orci. Quisque ullamcorper, purus sit amet luctus viverra, turpis arcu imperdiet eros, sit amet viverra nisi ligula ut felis.
-
-\subsection{Einfache Grafiken}
-\label{sec:chapter03:grafiken:simple}
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec sed ante odio. Integer semper, nibh id sollicitudin adipiscing, odio elit blandit mi, sit amet luctus mauris velit nec velit. Aenean commodo cursus magna, id mollis sapien gravida eu. Aenean eleifend, leo dignissim sodales mattis, tellus ante tempor nunc, vulputate tristique nisl metus sit amet tellus. Nullam sollicitudin, metus sit amet sagittis interdum, metus purus dapibus lacus, pharetra lobortis erat enim a leo. Suspendisse a augue in purus tempor blandit. Aliquam malesuada porttitor nibh vel adipiscing. In mi est, vulputate nec dapibus quis, pharetra vel lacus. Sed pellentesque egestas pretium. Praesent orci risus, ornare non accumsan id, gravida sed lectus. Mauris fermentum viverra neque at dignissim. Sed consectetur auctor lorem, eget volutpat urna sodales id. Etiam pellentesque velit quis sapien tempus convallis. 
-
-\begin{figure}[htbp]
- \centering
- \includegraphics[width=0.5\textwidth]{gfx/examples/setup}
- \caption{Dies ist eine einfache Grafik}
- \label{fig:chapter03:setup}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/examples/efficiency_overhead.png}
+    \caption{Durchschnittlicher Overhead der Tracing-Tools im Vergleich zur Baseline~\cite{10254754}}
+    \label{fig:eder-overhead}
 \end{figure}
 
-Aenean blandit neque eget nunc euismod ac dignissim enim euismod. Nullam semper, orci vitae elementum pretium, est lorem sodales justo, id lobortis nunc felis et justo. Cras tortor orci, rhoncus a commodo quis, aliquam eu dui. Donec pulvinar, arcu ornare consequat ultricies, purus dui accumsan massa, id auctor magna justo nec risus. Nulla bibendum, est nec ornare venenatis, lacus diam pretium augue, sed convallis orci sapien vitae lectus. In blandit massa aliquam felis feugiat fringilla.
-
-\subsection{Grafiken mit Subfloat}
-\label{sec:chapter03:grafiken:subfloat}
-Quisque non massa neque. In at placerat lacus. Integer urna augue, laoreet ac mattis sed, posuere ut turpis. Nunc a metus quis elit placerat ultricies vel a eros. Quisque condimentum aliquet fermentum. Integer arcu est, suscipit quis lacinia at, volutpat nec tortor. Proin feugiat tristique est eget luctus. Suspendisse porta mauris sed sapien egestas sit amet volutpat tellus ultricies. Nulla vulputate semper turpis sed blandit. Phasellus at tortor pulvinar nisi luctus gravida.
-
-\begin{figure}[bth]
-  \myfloatalign
-  \subfloat[Asia personas duo.]{
-     \label{fig:chapter03:subfloat:grafik1}
-     \includegraphics[width=.45\linewidth]{gfx/examples/qq-plot_gaus_vs_160}
-   } \quad
-   \subfloat[Pan ma signo.] {
-     \label{fig:chapter03:subfloat:grafik2}
-     \includegraphics[width=.45\linewidth]{gfx/examples/pdf_gaus_vs_uni_vs_10_40_160}
-   } \\
-   \subfloat[Methodicamente o uno.]{
-     \label{fig:chapter03:subfloat:grafik3}
-     \includegraphics[width=.45\linewidth]{gfx/examples/pdf_gaus_vs_uni_vs_10_40_160}
-   } \quad
-   \subfloat[Titulo debitas.]{
-     \label{fig:chapter03:subfloat:grafik4}
-     \includegraphics[width=.45\linewidth]{gfx/examples/qq-plot_gaus_vs_160}
-   }
-   \caption[Subfloat - Figure]{Mit Subfloat lassen sich mehrere Grafiken neben- und untereinander darstellen. Jeder Figure kann dabei mit einem eigenen Text versehen werden.}
-   \label{fig:chapter03:subfloat}
+Bezogen auf den \textbf{Runtime-Overhead} zeigt sich, dass Zipkin mit durchschnittlich 10,73\,\% 
+die geringste Zusatzlaufzeit verursacht, gefolgt von OpenTelemetry mit 24,19\,\% 
+und SkyWalking mit 50,67\,\%. 
+Allerdings sind nicht alle Unterschiede statistisch signifikant; 
+insbesondere bei CPU-intensiven Benchmarks (z. B. Funktionsaufruf) 
+ist der Overhead von Zipkin und OpenTelemetry teilweise nicht signifikant, 
+während SkyWalking in allen Szenarien signifikant höhere Laufzeiten aufweist.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/examples/runtime_overhead.png}
+    \caption{Durchschnittlicher Laufzeit-Overhead der Tracing-Tools im Vergleich zur Baseline~\cite{10254754}}
+    \label{fig:eder-runtime}
 \end{figure}
 
+Beim \textbf{Speicherverbrauch} ergibt sich ein klares Bild. 
+Zipkin verursacht in Durchschnitt 7,51\,\% zusätzlichen Speicherbedarf, 
+SkyWalking 18,90\,\% und OpenTelemetry 91,06\,\%. 
+Alle Abweichungen sind statistisch signifikant und weisen auf die unterschiedlichen 
+Implementierungsansätze hin – insbesondere der in ADOT enthaltene Collector könnte laut den 
+Autoren für den hohen Speicherbedarf verantwortlich sein.
 
-\subsection{Grafiken mit Minipage}
-\label{sec:chapter03:grafiken:minipage}
-Donec gravida consequat arcu, et mollis tortor posuere vitae. Sed pharetra turpis a ante commodo accumsan. Suspendisse leo nulla, accumsan sit amet dapibus in, posuere eget turpis. Vivamus enim sapien, porta id placerat eget, laoreet sed massa. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-
-\begin{figure}[htbp]
-  \centering
-  \begin{minipage}[b]{5 cm}
-    \includegraphics[width=\linewidth]{gfx/examples/qq-plot_gaus_vs_160} 
-    \caption{Minipage-Grafik Nummero uno}
-    \label{fig:chapter03:minipage:grafik1}
-  \end{minipage}
-  \begin{minipage}[b]{5 cm}
-    \includegraphics[width=\linewidth]{gfx/examples/pdf_gaus_vs_uni_vs_10_40_160}  
-    \caption{Minipage-Grafik Nummer zwei}
-    \label{fig:chapter03:minipage:grafik2}
-  \end{minipage}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/examples/memory_overhead.png}
+    \caption{Durchschnittlicher Speicher-Overhead der Tracing-Tools im Vergleich zur Baseline~\cite{10254754}}
+    \label{fig:eder-memory}
 \end{figure}
 
-In vitae est eget velit mattis lobortis. In hac habitasse platea dictumst. Quisque aliquam quam et justo pellentesque ullamcorper. Curabitur elementum mattis leo facilisis tincidunt. Fusce posuere viverra ultricies. Cras eget velit et ipsum gravida imperdiet et hendrerit orci.
+Die \textbf{Initialisierungsdauer (Cold Start)} wird durch Tracing erheblich verlängert. 
+Zipkin erhöht die Initialisierungszeit um durchschnittlich 70,22\,\%, SkyWalking um 208,04\,\% 
+und OpenTelemetry um 575,35\,\%. Auch hier sind alle Differenzen signifikant.
 
-Maecenas fringilla viverra urna ut egestas. Nulla sagittis molestie libero eget luctus. Nulla non odio sit amet magna vehicula tincidunt. Nulla accumsan ornare placerat. In posuere scelerisque quam, sed posuere urna eleifend quis. Pellentesque sed quam quis dui vulputate convallis ut ac diam. In hac habitasse platea dictumst. Donec molestie auctor dapibus. Vivamus in erat risus, ut aliquet diam. Duis vel velit ante, id ullamcorper turpis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan ornare tellus a porttitor. Etiam facilisis dui et sem eleifend id luctus nisl scelerisque. Aenean quis commodo libero. Nulla quis semper dolor. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/examples/initialization_overhead.png}
+    \caption{Durchschnittlicher Initialisierungs-Overhead der Tracing-Tools im Vergleich zur Baseline~\cite{10254754}}
+    \label{fig:eder-initialization}
+\end{figure}
 
-%
-% Section: Tabellen 
-%
-\section{Tabellen}
-\label{sec:chapter03:tabellen}
-Sed lobortis vestibulum euismod. Vivamus vestibulum gravida nisi vitae condimentum. Nullam nec lacus nibh. Phasellus arcu magna, varius eget viverra a, elementum eu dolor. Aliquam erat volutpat. Sed nibh leo, vestibulum quis lacinia in, vestibulum sollicitudin nulla. In iaculis, purus in imperdiet sagittis, tortor diam pellentesque lectus, eget faucibus ante elit at tortor.
+\subsection{Einordnung}
+\label{subsec:eder-discussion}
 
-%
-% Section: Listings 
-%
-\section{Listings}
-\label{sec:chapter03:listings}
-Aliquam ut pretium lectus. Curabitur in eros et sapien aliquet luctus ut sit amet eros. Proin et libero non mi venenatis aliquet at sed lorem. Ut sed enim mi, id viverra eros. Cras metus ante, placerat id commodo at, molestie non libero. Aenean eu risus erat, vel consequat metus. Sed malesuada metus sit amet nisl viverra hendrerit.
+Die Studie von liefert erstmals einen systematischen Vergleich von Tracing-Tools in einer serverlosen 
+Umgebung. Die Ergebnisse zeigen, dass der Overhead erheblich variieren kann – Zipkin als 
+framework-basiertes Tool erweist sich als leichtgewichtig, während die agent-basierten 
+Ansätze von OpenTelemetry (ADOT) und SkyWalking teilweise einen signifikanten Overhead 
+verursachen. Besonders auffällig ist der hohe Speicher- und Kaltstart-Overhead von ADOT, 
+der von den Autoren auf den zusätzlichen Collector zurückgeführt wird.
 
+Allerdings beschränkt sich die Untersuchung auf Node.js als Laufzeitumgebung. 
+Zudem wurden nur synchrone Aufrufe betrachtet. Die Autoren selbst regen an, 
+weitere Sprachen und Plattformen in zukünftige Vergleiche einzubeziehen – eine 
+zentrale Motivation für die vorliegende Arbeit.
 
-%
-% Section: Equations
-%
-\section{Equations}
-\label{sec:chapter03:equations}
-Pellentesque sed quam quis dui vulputate convallis ut ac diam. In hac habitasse platea dictumst. Donec molestie auctor dapibus. Vivamus in erat risus, ut aliquet diam. Duis vel velit ante, id ullamcorper turpis.
-%
-\begin{equation}
- U = R * I
-\end{equation}
+\section{Vergleichsstudie 2 – Evaluation von Programmiersprachen auf AWS Lambda (Rodriguez et al. 2023)}
+\label{sec:rodriguez-2023}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In accumsan ornare tellus a porttitor. Etiam facilisis dui et sem eleifend id luctus nisl scelerisque. Aenean quis commodo libero. Nulla quis semper dolor.
-%
-\begin{equation}
- I = \frac{U}{R} 
-\end{equation}
+\subsection{Motivation}
+\label{subsec:rodriguez-motivation}
 
-In the following we use probability theory to derive closed-form expressions for the fairness that is achieved among $M$ contending stations. We tag station $M$ and denote $K_i$ the inter-transmissions of station $i = 1 \dots M-1$ and let $K = \sum_{i=1}^{M-1} K_i$. The conditional probability $P[K\!=\!k|l]$ can be defined for $M \ge 2$ as
-%
-\begin{equation}
-\mathsf{P}[K\!=\!k|l] = \mathsf{P} \Biggl[\sum_{i=1}^{M-1} K_i = k \Big| l \Biggr]
-\label{eq:chapter03:exactpmf}
-\end{equation}
-%
-where the random variables $K_i$ are the integers that satisfy
-%
-\begin{equation*}
-\sum_{j=1}^{K_i} b_i(j) \le \sum_{j=1}^{l} b_M(j) \;\;\; \textmd{and} \;\;\; \sum_{j=1}^{K_i+1} b_i(j) > \sum_{j=1}^{l} b_M(j) .
-\end{equation*}
+Rodriguez et al.~\cite{Rodriguez2024Evaluation} adressieren die Frage, wie
+ sich verschiedene Programmiersprachen in serverlosen Umgebunge
+ n hinsichtlich Initialisierung, Kaltstarts, Speichernutzung und Skalierbarkeit verhalten. Die Autoren 
+ stellen fest, dass viele wissenschaftliche Arbeiten die Sprachwahyse dieser Faktoren vernachlässigen. Ziel ist es, eine fundierte Entscheidungsgrundlage für Entwickler zu schaffen, die serverlose Anwendungen auf AWS Lambda implementieren.
 
+\subsection{Untersuchungsgegenstand und Methodik}
+\label{subsec:rodriguez-methodology}
 
-%
-% Section: Theorem and Proof
-%
-\section{Theorem and Proof}
-\label{sec:chapter03:theorem}
-We use the central limit theorem to derive the long-term fairness. In the sequel, we denote normal random variables $N(\mu,\sigma^2)$ where $\mu$ is the mean and $\sigma^2$ the variance.
-%
-\begin{Theorem}[Gaussian approximation]
-\label{th:chapter03:twostationsgaussian}
-%
-Let the $b_i(j)$ be i.i.d. random variables with mean $\mu$ and variance $\sigma^2$ and let $M=2$. For $k,l \gg 1$ (\ref{eq:chapter03:exactpmf}) is approximately Gaussian where
-%
-\begin{equation*}
-\mathsf{P}[K \!\le\! k|l] \approx \mathsf{P}\biggl[ N(0,1) \le \frac{\mu\,(k-l)}{\sigma\,\sqrt{k+l}} \biggr] .
-\end{equation*}
-%
-\end{Theorem}
-%
-\begin{proof}
-%
-For $M=2$ we have from (\ref{eq:chapter03:exactpmf}) that
-%
-\begin{equation*}
-\mathsf{P}[K \!<\! k|l] = \mathsf{P} \Biggl[\, \sum_{j=1}^k b_1(j) > \sum_{j=1}^l b_2(j) \Biggr]
-\end{equation*}
-%
-and after expansion and some normalization this equals
-%
-\begin{equation*}
-= \mathsf{P}\Biggl[ \frac{\sum_{j=1}^{l}b_2(j) - l\mu}{\sigma\sqrt{l}} - \frac{\sum_{j=1}^{k}b_1(j) - k\mu}{\sigma\sqrt{l}} < \frac{\mu(k-l)}{\sigma\sqrt{l}} \Biggr].
-\end{equation*}
-%
-Using the central limit theorem it follows that
-%
-\begin{equation*}
-\mathsf{P}[K \!<\! k|l] \approx \mathsf{P} \biggl[ N(0,1) - N \biggl(0,\frac{k}{l}\biggr) < \frac{\mu(k-l)}{\sigma\sqrt{l}} \biggr] .
-\end{equation*}
-%
-Since the normal distribution with zero mean is symmetric we can replace the subtraction of $N(0,k/l)$ by addition. Furthermore, the sum of two normal random variables $N(\mu_1, \sigma_1^2)$ and $N(\mu_2, \sigma_2^2)$ is normal with $N(\mu_1+\mu_2, \sigma_1^2+ \sigma_2^2)$ such that
-%
-\begin{equation*}
-\mathsf{P}[K \!<\! k|l] \approx \mathsf{P} \biggl[ N\biggl(0,\frac{k+l}{l}\biggr) < \frac{\mu(k-l)}{\sigma\sqrt{l}} \biggr] .
-\end{equation*}
-%
-Finally, we use that if $X$ is $N(a\mu,a^2\sigma^2)$ then $Y = X/a$ is $N(\mu,\sigma^2)$ with $a^2 = (k+l)/l$ to standardize the result.
-%
-\end{proof}
+Die Studie vergleicht drei Programmiersprachen: JavaScript (Node.js), Python und Java. Als Anwendungsfall dient eine REST-API für CRUD-Operationen auf DynamoDB, die einen Fragebogen (angelehnt an den argentinischen Zensus 2022) abbildet. Die API wurde in allen drei Sprachen implementiert und mit dem Open-Source-Tool Artillery getestet. Die Experimente umfassen:
 
-Th. \ref{th:chapter03:twostationsgaussian} assumes i.i.d. random countdown values. It does, however, not make any assumption about their distribution.
+\begin{itemize}
+    \item \textbf{Initialisierungstests}: Fünf Kaltstarts pro Sprache und CRUD-Operation bei 10 GB Speicherzuweisung. Zusätzlich wurden nach jedem Kaltstart sofort warme Ausführungen gemessen, um den Unterschied zwischen Kalt- und Warmstart zu quantifizieren.
+    \item \textbf{Skalierbarkeitstests}: Anfragen mit steigender Parallelität (1, 10, 25, 50, 100, 200 gleichzeitige Aufrufe) zur Beobachtung des Skalierungsverhaltens der Leseoperation (Read).
+    \item \textbf{Speichertests}: Variation des zugewiesenen Speichers (512 MB, 1, 2, 4, 6, 8, 10 GB) zur Analyse des Einflusses auf Laufzeit und Initialisierung (beispielhaft für die Create-Operation).
+\end{itemize}
+
+Alle Funktionen wurden mit einer reservierten Konkurrenz von 200 Instanzen betrieben, um eine hohe Parallelität zu ermöglichen und gleichzeitig kontrollierte Bedingungen zu schaffen.
+
+\subsection{Ergebnisse}
+\label{subsec:rodriguez-results}
+
+\paragraph{Initialisierungszeiten}
+Tabelle~\ref{tab:rodriguez-init} zeigt die durchschnittlichen Initialisierungszeiten pro CRUD-Operation. Java weist mit Abstand die längsten Zeiten auf (bis zu 1630 ms), während Node.js und Python ähnliche Werte im Bereich von 360–440 ms liefern.
+
+\begin{table}[H]
+\centering
+\caption{Durchschnittliche Initialisierungszeiten pro CRUD-Operation und Programmiersprache (in ms)~\cite{Rodriguez2024Evaluation}}
+\label{tab:rodriguez-init}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Sprache} & \textbf{Create} & \textbf{Read} & \textbf{Update} & \textbf{Delete} \\
+\hline
+Node.js & 418,23 & 431,04 & 413,58 & 442,15 \\
+Python  & 384,90 & 400,43 & 361,62 & 411,20 \\
+Java    & 1630,52 & 1526,12 & 1577,30 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Laufzeiten (Kalt vs. Warm)}
+Die Tabellen~\ref{tab:rodriguez-nodejs} bis~\ref{tab:rodriguez-java} zeigen die durchschnittlichen Ausführungszeiten für Kalt- und Warmstarts pro Sprache und Operation. Java profitiert am stärksten von warmen Ausführungen – die Laufzeit sinkt um durchschnittlich 84\,\%, während Node.js und Python Verbesserungen um etwa 45–48\,\% erzielen. Besonders auffällig ist die Delete-Operation in Java, deren Laufzeit von 581 ms (kalt) auf 85 ms (warm) fällt.
+
+\begin{table}[H]
+\centering
+\caption{Ausführungszeiten in Node.js für Kalt- und Warmstarts (in ms)~\cite{Rodriguez2024Evaluation}}
+\label{tab:rodriguez-nodejs}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Status} & \textbf{Create} & \textbf{Read} & \textbf{Update} & \textbf{Delete} \\
+\hline
+Kalt  & 76,69 & 74,59 & 84,04 & 77,76 \\
+Warm  & 51,23 & 39,24 & 45,53 & 41,06 \\
+Verbesserung & 33,2\,\% & 47,4\,\% & 45,8\,\% & 47,2\,\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Ausführungszeiten in Python für Kalt- und Warmstarts (in ms)~\cite{Rodriguez2024Evaluation}}
+\label{tab:rodriguez-python}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Status} & \textbf{Create} & \textbf{Read} & \textbf{Update} & \textbf{Delete} \\
+\hline
+Kalt  & 60,73 & 49,75 & 65,73 & 43,97 \\
+Warm  & 32,58 & 27,38 & 38,47 & 22,56 \\
+Verbesserung & 46,3\,\% & 45,0\,\% & 41,5\,\% & 48,7\,\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Ausführungszeiten in Java für Kalt- und Warmstarts (in ms)~\cite{Rodriguez2024Evaluation}}
+\label{tab:rodriguez-java}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Status} & \textbf{Create} & \textbf{Read} & \textbf{Update} & \textbf{Delete} \\
+\hline
+Kalt  & 701,19 & 664,63 & 644,33 & 581,49 \\
+Warm  & 116,64 & 98,10 & 116,89 & 84,65 \\
+Verbesserung & 83,4\,\% & 85,2\,\% & 81,9\,\% & 85,4\,\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Skalierbarkeit}
+Tabelle~\ref{tab:rodriguez-scalability} zeigt die Laufzeiten der Leseoperation (Read) bei steigender Parallelität. Java startet mit einer hohen Latenz (52 ms) aufgrund von Kaltstarts, verbessert sich aber bei 10 parallelen Aufrufen auf 20 ms und unterbietet damit Node.js (30 ms) und Python (31 ms). Bei 25 Aufrufen treten in Java erneut Kaltstarts auf (158 ms), während Node.js und Python stabil bleiben. Ab 50 Aufrufen stabilisieren sich alle Sprachen; bei 200 Aufrufen erreicht Java mit 14 ms den besten Wert, gefolgt von Python (15 ms) und Node.js (27 ms). Die Autoren führen dies auf die effizientere Nutzung der Infrastruktur bei warmen Containern zurück.
+
+\begin{table}[H]
+\centering
+\caption{Laufzeiten der Leseoperation (Read) bei steigender Parallelität (in ms)~\cite{Rodriguez2024Evaluation}}
+\label{tab:rodriguez-scalability}
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Sprache} & \textbf{1} & \textbf{10} & \textbf{25} & \textbf{50} & \textbf{100} & \textbf{200} \\
+\hline
+Node.js & 70,3 & 30,3 & 39,9 & 29,7 & 26,2 & 26,6 \\
+Python  & 58,1 & 31,6 & 16,0 & 16,5 & 15,0 & 15,4 \\
+Java    & 52,7 & 20,0 & 158,3 & 24,3 & 19,7 & 13,9 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Einfluss des Speichers}
+Abbildung~\ref{fig:rodriguez-memory} (hier nicht reproduziert) zeigt die Ausführungszeiten der Create-Operation in Abhängigkeit vom konfigurierten Speicher (512 MB bis 10 GB). Reduzierter Speicher führt bei allen Sprachen zu längeren Laufzeiten, jedoch ist der Effekt bei Java besonders ausgeprägt: Unter 1024 MB steigen die Laufzeiten drastisch an, während Node.js und Python auch bei geringerem Speicher akzeptable Werte liefern. Bei 4096 MB gleichen sich die Laufzeiten aller Sprachen an (Node.js 42 ms, Python 50 ms, Java 48 ms). Java zeigt zudem stark schwankende Initialisierungszeiten bei Speicher unter 6 GB; bei 512 MB erreicht die Initialisierung fast 4000 ms.
+
+\subsection{Einordnung}
+\label{subsec:rodriguez-discussion}
+
+Die Arbeit von Rodriguez et al. bestätigt, dass Python und Node.js für typische serverlose CRUD-Anwendungen besser geeignet sind als Java, wenn Kaltstartzeiten kritisch sind. Java zeigt jedoch bei hoher Auslastung und warmen Umgebungen eine konkurrenzfähige Performance und kann bei großen Speicherkonfigurationen sogar die besten Laufzeiten erzielen. Die Studie unterstreicht die Notwendigkeit, die Sprachwahl anhand des erwarteten Lastprofils und der verfügbaren Speicherressourcen zu treffen.
+
+Als Limitation ist anzumerken, dass nur CRUD-Operationen und nur eine AWS-Plattform betrachtet wurden. Zudem fehlt eine Analyse des Zusammenspiels mit Observability-Tools – genau diese Lücke adressiert die vorliegende Arbeit.
+
+\section{Limitationen bestehender Ansätze}
+\label{sec:limitations}
+
+Beide vorgestellten Studien liefern wertvolle Erkenntnisse für die serverlose Entwicklung, weisen jedoch spezifische Einschränkungen auf, die die Notwendigkeit weiterer Forschung begründen.
+
+\paragraph{Eingeschränkte Sprachvielfalt:}
+Die Untersuchung von Eder et al.~\cite{10254754} beschränkt sich auf Node.js, während Rodriguez et al.~\cite{Rodriguez2024Evaluation} immerhin drei Sprachen ver
+gleichen, aber ohne Berücksichtigung von Tracing-Overhead.
+
+\paragraph{Fehlende Kombination von Sprach- und Tracing-Aspekten:}
+Keine der Arbeiten untersucht den \textbf{sprachspezifischen Overhead von Tracing-Tools}. Gerade dies ist entscheidend für die Praxis, da Entwickler sowohl die Programmiersprache als auch die Observability-Strategie wählen müssen.
+
+\paragraph{Fokus auf einzelne Metriken:}
+Während Eder et al. Runtime, Speicher und Initialisierung betrachten, konzentrieren sich Rodriguez et al. primär auf Laufzeit und Skalierung. Ein umfassendes Bild, das alle relevanten Performance-Aspekte vereint, fehlt.
+
+\paragraph{Plattformabhängigkeit:}
+Beide Studien wurden ausschließlich auf AWS durchgeführt. Ergebnisse lassen sich nicht ohne weiteres auf andere Cloud-Anbieter übertragen.
+
+\paragraph{Statistische Aussagekraft:}
+Die Stichprobengrößen sind teils gering (100 Invocations pro Benchmark bei Eder et al., fünf Kaltstarts bei Rodriguez et al.), was die Verallgemeinerbarkeit einschränkt.
+
+\section{Fazit}
+\label{sec:conclusion-related}
+
+Die betrachteten Vergleichsstudien belegen, dass sowohl die Wahl der Programmiersprache als auch der Einsatz von Distributed-Tracing-Tools erheblichen Einfluss auf die Performance serverloser Anwendungen haben. Während Python und Node.js geringere Kaltstartzeiten aufweisen, kann Java bei hoher Last und warmen Umgebungen punkten. Beim Tracing-Overhead erweist sich Zipkin als leichtgewichtig, während OpenTelemetry (ADOT) und SkyWalking teils deutliche Mehrbelastungen verursachen.
+
+Allerdings klafft eine zentrale Forschungslücke: \textbf{Bislang existiert keine vergleichende Untersuchung, die den sprachspezifischen Overhead von Tracing-Tools in serverlosen Umgebungen systematisch analysiert}. Genau hier setzt die vorliegende Arbeit an. Sie übernimmt die validierten Microbenchmarks von Eder et al. und erweitert sie um einen Sprachvergleich (Java, Python, Node.js) sowie um eine detaillierte Messung von Runtime-, Memory- und Cold-Start-Overhead. Dadurch wird erstmals eine fundierte Entscheidungsgrundlage für die kombinierte Wahl von Programmiersprache und Observability-Strategie geschaffen.
+
+Daraus ergeben sich drei Leitlinien für die eigene Untersuchung:
+
+\begin{enumerate}
+    \item \textbf{Sprachvergleich}: Es müssen die drei am weitesten verbreiteten Sprachen (Java, Python, Node.js) in identischen Benchmarks gegenübergestellt werden.
+    \item \textbf{Reproduzierbarkeit}: Die Experimente sind so zu dokumentieren, dass sie auf anderen Plattformen wiederholt werden können.
+    \item \textbf{Ganzheitliche Metriken}: Neben der reinen Laufzeit sind Speicherverbrauch und Kaltstartzeiten zu erfassen, um ein vollständiges Bild des Overheads zu erhalten.
+\end{enumerate}
