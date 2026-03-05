@@ -122,26 +122,36 @@ Zudem wurden nur synchrone Aufrufe betrachtet. Die Autoren selbst regen an,
 weitere Sprachen und Plattformen in zukünftige Vergleiche einzubeziehen – eine 
 zentrale Motivation für die vorliegende Arbeit.
 
-\section{Vergleichsstudie 2 – Evaluation von Programmiersprachen auf AWS Lambda (Rodriguez et al. 2023)}
+\section{Vergleichsstudie 2 – Evaluation of Programming Languages for Memory Usage, Scalability, and Cold Start, on AWS Lambda Serverless Platform as a Case Study}
 \label{sec:rodriguez-2023}
 
 \subsection{Motivation}
 \label{subsec:rodriguez-motivation}
 
-Rodriguez et al.~\cite{Rodriguez2024Evaluation} adressieren die Frage, wie
- sich verschiedene Programmiersprachen in serverlosen Umgebunge
- n hinsichtlich Initialisierung, Kaltstarts, Speichernutzung und Skalierbarkeit verhalten. Die Autoren 
- stellen fest, dass viele wissenschaftliche Arbeiten die Sprachwahyse dieser Faktoren vernachlässigen. Ziel ist es, eine fundierte Entscheidungsgrundlage für Entwickler zu schaffen, die serverlose Anwendungen auf AWS Lambda implementieren.
+Die Studie\cite{Rodriguez2024Evaluation} adressiert die Frage, wie
+ sich verschiedene Programmiersprachen in serverlosen Umgebungen 
+ hinsichtlich Initialisierung, Kaltstarts, Speichernutzung und Skalierbarkeit verhalten. 
+ Die Autoren stellen fest, dass viele wissenschaftliche Arbeiten die Sprachanalysen dieser Faktoren vernachlässigen. 
+ Ziel der Arbeitist es, eine Entscheidungsgrundlage für Entwickler zu schaffen, 
+ die serverlose Anwendungen auf AWS Lambda implementieren.
 
 \subsection{Untersuchungsgegenstand und Methodik}
 \label{subsec:rodriguez-methodology}
 
-Die Studie vergleicht drei Programmiersprachen: JavaScript (Node.js), Python und Java. Als Anwendungsfall dient eine REST-API für CRUD-Operationen auf DynamoDB, die einen Fragebogen (angelehnt an den argentinischen Zensus 2022) abbildet. Die API wurde in allen drei Sprachen implementiert und mit dem Open-Source-Tool Artillery getestet. Die Experimente umfassen:
+Die Studie vergleicht drei Programmiersprachen: JavaScript (Node.js), Python und Java. 
+Als Anwendungsfall dient eine REST-API für CRUD-Operationen auf DynamoDB, die einen Fragebogen 
+(angelehnt an den argentinischen Zensus 2022) abbildet. 
+Die API wurde in allen drei Sprachen implementiert und mit dem Open-Source-Tool Artillery getestet. 
+Die Experimente umfassen:
 
 \begin{itemize}
-    \item \textbf{Initialisierungstests}: Fünf Kaltstarts pro Sprache und CRUD-Operation bei 10 GB Speicherzuweisung. Zusätzlich wurden nach jedem Kaltstart sofort warme Ausführungen gemessen, um den Unterschied zwischen Kalt- und Warmstart zu quantifizieren.
-    \item \textbf{Skalierbarkeitstests}: Anfragen mit steigender Parallelität (1, 10, 25, 50, 100, 200 gleichzeitige Aufrufe) zur Beobachtung des Skalierungsverhaltens der Leseoperation (Read).
-    \item \textbf{Speichertests}: Variation des zugewiesenen Speichers (512 MB, 1, 2, 4, 6, 8, 10 GB) zur Analyse des Einflusses auf Laufzeit und Initialisierung (beispielhaft für die Create-Operation).
+    \item \emph{Initialisierungstests}: Es wurden fünf Kaltstarts pro Sprache und CRUD-Operation bei 10 GB Speicherzuweisung gemessen. 
+    Zusätzlich wurde im Anschluss zu jedem Kaltstart jeweils eine warme Ausführung gemessen, um den Unterschied zwischen 
+    Kalt- und Warmstart zu quantifizieren.
+    \item \emph{Skalierbarkeitstests}: Es wurden Anfragen mit steigender Parallelität (1, 10, 25, 50, 100, 200 gleichzeitige Aufrufe) 
+    zur Beobachtung des Skalierungsverhaltens der Leseoperation (Read) getätigt.
+    \item \emph{Speichertests}: Variation des zugewiesenen Speichers (512 MB, 1, 2, 4, 6, 8, 10 GB) 
+    zur Analyse des Einflusses auf Laufzeit und Initialisierung (beispielhaft für die Create-Operation).
 \end{itemize}
 
 Alle Funktionen wurden mit einer reservierten Konkurrenz von 200 Instanzen betrieben, um eine hohe Parallelität zu ermöglichen und gleichzeitig kontrollierte Bedingungen zu schaffen.
