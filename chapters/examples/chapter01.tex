@@ -1,12 +1,12 @@
 \chapter{Einleitung}
 \label{ch:intro}
-Serverlose Anwendungen sind in den letzten Jahren immer beliebter geworden \cite{MarketsandMarkets2025ServerlessComputing} da sie es Entwicklern ermöglichen,
+Serverlose Anwendungen sind in den letzten Jahren immer beliebter geworden \cite{MarketsandMarkets2025ServerlessComputing}, da sie es Entwicklern ermöglichen,
 sich auf die tatsächliche Geschäftslogik und die Implementierung der Anwendungen zu konzentrieren, während der 
-Cloud-Anbieter die zugrunde liegende Infrastruktur zur Verfügung stellt und verwaltet. Mit der zunhemenden Verbreitung
-und der wachsenden Komplextiät von serverlosen Architekturen, steigen auch die Anforderungen an die Observability dieser
-Systeme. Distributed Tracing Frameworks haben sich hierzu als zentrale Lösung für das Observability-Problem 
-solcher Systeme etabliert \cite{majors2026observability}. OpenTelemetry ist hierbei der De-facto-Standard für die Erfassung und Export von 
-Telemetrie-Daten \cite{AWSLambdaBestPractices}.
+Cloud-Anbieter die zugrunde liegende Infrastruktur zur Verfügung stellt und verwaltet. Mit der zunehmenden Verbreitung
+und der wachsenden Komplexität von serverlosen Architekturen steigen auch die Anforderungen an die Observability dieser
+Systeme. Distributed-Tracing-Frameworks haben sich hierzu als zentrale Lösung für das Observability-Problem 
+solcher Systeme etabliert \cite{majors2026observability}. OpenTelemetry ist hierbei der De-facto-Standard für die Erfassung und den Export von 
+Telemetriedaten \cite{AWSLambdaBestPractices}.
 
 %
 % Section: Motivation
@@ -17,14 +17,14 @@ Die Motivation für diese Arbeit ergibt sich aus drei zentralen Beobachtungen.
 Erstens ist OpenTelemetry der De-facto-Standard für verteiltes Tracing in Cloud-nativen Anwendungen \cite{AWSLambdaBestPractices} und wird von 
 vielen führenden Cloud-Anbietern nativ oder über dedizierte Distributionen unterstützt. Dazu zählen unter anderem 
 \ac{AWS} \cite{AWSDistributedTracing}, Microsoft Azure \cite{AzureOpenTelemetry} und Google Cloud \cite{GoogleCloudOpenTelemetry}. Zweitens ist die Performance von 
-verschiedenen Programmiersprachen im Kontext von \ac{FaaS}, wie \ac{AWS} Lambda, 
+verschiedenen Programmiersprachen im Kontext von \ac{FaaS} wie \ac{AWS} Lambda 
 sehr variabel \cite{Rodriguez2024Evaluation}. Drittens verursacht die Instrumentierung von FaaS-Anwendungen mit OpenTelemetry einen nicht 
 vernachlässigbaren Overhead in Bezug auf Laufzeit (CPU-Zeit), Speicherverbrauch und Kaltstartzeiten \cite{10254754}.
 \\
 Bisher existiert jedoch keine fundierte empirische Untersuchung, die den sprachspezifischen Overhead der 
 OpenTelemetry-Instrumentierung in \ac{FaaS}-Umgebungen systematisch analysiert und quantifiziert. Daraus ergibt sich auch 
-die zentrale Problemstellung dieser Arbeit - wie hoch ist der Overhead, der durch die Instrumentierung mit OpenTelemetry
-verursacht wird in \ac{FaaS}-Umgebungen für Java, Python und Node.js, und wie variiert dieser Overhead zwischen den Sprachen?
+die zentrale Problemstellung dieser Arbeit – wie hoch ist der Overhead, der durch die Instrumentierung mit OpenTelemetry
+in \ac{FaaS}-Umgebungen für Java, Python und Node.js verursacht wird, und wie variiert dieser Overhead zwischen den Sprachen?
 
 
 \section{Forschungsfragen}
@@ -33,7 +33,7 @@ verursacht wird in \ac{FaaS}-Umgebungen für Java, Python und Node.js, und wie v
 Aus der beschriebenen Problemstellung lassen sich folgende Forschungsfragen ableiten:
 
 \paragraph{Leitfrage}
-Wie unterscheidet sich der Performance-Overhead von OpenTelemetry-Instrumentierung in Serverless-Anwendungen zwischen den Programmiersprachen Java, Python und Node.js, und welche Implikationen ergeben sich daraus für die Praxis?
+Wie unterscheidet sich der Performance-Overhead von der Instrumentierung mit OpenTelemetry in Serverless-Anwendungen zwischen den Programmiersprachen Java, Python und Node.js, und welche Implikationen ergeben sich daraus für die Praxis?
 
 \paragraph{Teilfragen}
 \begin{enumerate}
@@ -65,8 +65,8 @@ Die Arbeit folgt einem empirisch-quantitativen Ansatz mit experimentellem Design
 
 \begin{enumerate}
     \item \textbf{Vorbereitung und Grundlagen:} 
-    Tiefgreifende Literaturrecherche zu Serverless Computing, \ac{FaaS}, Observability, verteiltes Tracing, OpenTelemetry und AWS X-Ray 
-    sowie Analyse bestehender wissenschaftlicher Arbeiten zum Performance-Overhead von Tracing-Frameworks in Cloud-Umgebungen und Performance-Varianz von Programmiersprachen in \ac{FaaS}-Umgebungen.
+    Tiefgreifende Literaturrecherche zu Serverless Computing, \ac{FaaS}, Observability, verteiltem Tracing, OpenTelemetry und AWS X-Ray 
+    sowie Analyse bestehender wissenschaftlicher Arbeiten zum Performance-Overhead von Tracing-Frameworks in Cloud-Umgebungen und zur Performance-Varianz von Programmiersprachen in \ac{FaaS}-Umgebungen.
 
     \item \textbf{Implementierung:} 
     Entwicklung von jeweils fünf Funktionen in Java, Python und Node.js, die die fünf häufigsten Anwendungsfälle von \ac{FaaS} repräsentieren.
@@ -78,7 +78,7 @@ Die Arbeit folgt einem empirisch-quantitativen Ansatz mit experimentellem Design
     Erfassung der Performance-Metriken Laufzeit (CPU-Zeit), Speicherverbrauch und Kaltstartzeiten über AWS CloudWatch bzw. über AWS X-Ray.
     
     \item \textbf{Auswertung und Empfehlungen:} 
-    Berechnung des relativen prozentualen Overheads pro Sprache und Anwendungsfall. Sprach- und Anwendungsfallübergreifender Vergleich, 
+    Berechnung des relativen prozentualen Overheads pro Sprache und Anwendungsfall. Sprach- und anwendungsfallübergreifender Vergleich, 
     statistische Auswertung der Messungen und Ableitung konkreter praxisrelevanter Empfehlungen zur Sprachauswahl.
 \end{enumerate}
 
@@ -93,15 +93,15 @@ Die Ergebnisse werden sowohl schriftlich als auch grafisch aufbereitet.
 Die Arbeit gliedert sich in acht Kapitel.
 \paragraph{Kapitel 1} führt in die Thematik ein, erläutert die Motivation, formuliert die Forschungsfragen, definiert die Ziele und beschreibt den methodischen Ansatz sowie die Struktur der Arbeit.
 
-\paragraph{Kapitel 2} führt in die notwendigen Grundlagen ein: Cloud Computing und Microservices-Architektur, Serverless Computing und FaaS, AWS Lambda, Observability, Distributed Tracing sowie OpenTelemetry mit seinen Sampling-Strategien und der AWS-Integration.
+\paragraph{Kapitel 2} führt in die notwendigen Grundlagen ein: Cloud Computing und Microservices-Architektur, Serverless Computing und FaaS, AWS Lambda, Observability, Distributed Tracing sowie OpenTelemetry mit seinen Sampling und der AWS-Integration.
 
-\paragraph{Kapitel 3} gibt einen Überblick über den Stand der Forschung zu Overhead von verteiltem Tracing und zu Performance-Varianz von Programmiersprachen in Serverless-Umgebungen. Dabei wird auch die Forschungslücke präzisiert, die später in der Arbeit behandelt wird.
+\paragraph{Kapitel 3} gibt einen Überblick über den Stand der Forschung zum Overhead von verteiltem Tracing und zur Performance-Varianz von Programmiersprachen in Serverless-Umgebungen. Dabei wird auch die Forschungslücke präzisiert, die später in der Arbeit behandelt wird.
 
 \paragraph{Kapitel 4} beschreibt detailliert die Methodik und den Versuchsaufbau. Es umfasst das Experimentdesign, die fünf gängigsten Anwendungsfälle von \ac{FaaS}, die Implementierung der Testfunktionen in den drei Sprachen, die Durchführung der Messungen sowie die statistische Auswertung der Ergebnisse.
 
-\paragraph{Kapitel 5} präsentiert die Ergebnisse der Messungen, gegliedert nach Laufzeit-, maximaler Speicherverbrauch- und Kaltstartzeit-Overhead sowie nach Sprachen und Anwendungsfällen.
+\paragraph{Kapitel 5} präsentiert die Ergebnisse der Messungen, gegliedert nach Laufzeit-, maximalem Speicherverbrauch- und Kaltstartzeit-Overhead sowie nach Sprachen und Anwendungsfällen.
 
-\paragraph{Kapitel 6} diskutiert die Ergebnisse mit Hinblick auf die Forschungsfragen, vergleicht sie gegebenenfalls mit verwandten Arbeiten und reflektiert Limitationen der Arbeit.
+\paragraph{Kapitel 6} diskutiert die Ergebnisse im Hinblick auf die Forschungsfragen, vergleicht sie gegebenenfalls mit verwandten Arbeiten und reflektiert Limitationen der Arbeit.
 
 \paragraph{Kapitel 7} leitet aus den Ergebnissen praxisrelevante Empfehlungen zur Sprachwahl ab.
 
@@ -125,8 +125,7 @@ Die Arbeit konzentriert sich ausschließlich auf:
 Nicht im Fokus dieser Arbeit sind:
 
 \begin{itemize}
-    \item Vergleich verschiedener Tracing-Frameworks (Zipkin, Jaeger, usw.)
+    \item Vergleich verschiedener Tracing-Frameworks (Zipkin, Jaeger usw.)
     \item Trace-Qualität (Vollständigkeit aller Traces wird jedoch sichergestellt)
     \item Andere Serverless-Plattformen (Azure Functions, Google Cloud Functions)
 \end{itemize}
-
