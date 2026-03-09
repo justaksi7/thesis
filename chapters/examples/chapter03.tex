@@ -128,7 +128,7 @@ zentrale Motivation für die vorliegende Arbeit.
 \subsection{Motivation}
 \label{subsec:rodriguez-motivation}
 
-Die Studie\cite{Rodriguez2024Evaluation} adressiert die Frage, wie
+Diese Studie von Rodriguez et al.\cite{Rodriguez2024Evaluation} adressiert die Frage, wie
  sich verschiedene Programmiersprachen in serverlosen Umgebungen 
  hinsichtlich Initialisierung, Kaltstarts, Speichernutzung und Skalierbarkeit verhalten. 
  Die Autoren stellen fest, dass viele wissenschaftliche Arbeiten die Sprachanalysen dieser Faktoren vernachlässigen. 
@@ -148,19 +148,18 @@ Die Experimente umfassen:
     \item \emph{Initialisierungstests}: Es wurden fünf Kaltstarts pro Sprache und CRUD-Operation bei 10 GB Speicherzuweisung gemessen. 
     Zusätzlich wurde im Anschluss zu jedem Kaltstart jeweils eine warme Ausführung gemessen, um den Unterschied zwischen 
     Kalt- und Warmstart zu quantifizieren.
-    \item \emph{Skalierbarkeitstests}: Es wurden Anfragen mit steigender Parallelität (1, 10, 25, 50, 100, 200 gleichzeitige Aufrufe) 
+    \item \emph{Skalierbarkeitstests}: Es wurden Anfragen mit Steigender Anzahl pro Sekunde (1, 10, 25, 50, 100, 200 gleichzeitige Aufrufe) 
     zur Beobachtung des Skalierungsverhaltens der Leseoperation (Read) getätigt.
     \item \emph{Speichertests}: Variation des zugewiesenen Speichers (512 MB, 1, 2, 4, 6, 8, 10 GB) 
     zur Analyse des Einflusses auf Laufzeit und Initialisierung (beispielhaft für die Create-Operation).
 \end{itemize}
 
-Alle Funktionen wurden mit einer reservierten Konkurrenz von 200 Instanzen betrieben, um eine hohe Parallelität zu ermöglichen und gleichzeitig kontrollierte Bedingungen zu schaffen.
-
 \subsection{Ergebnisse}
 \label{subsec:rodriguez-results}
 
 \paragraph{Initialisierungszeiten}
-Tabelle~\ref{tab:rodriguez-init} zeigt die durchschnittlichen Initialisierungszeiten pro CRUD-Operation. Java weist mit Abstand die längsten Zeiten auf (bis zu 1630 ms), während Node.js und Python ähnliche Werte im Bereich von 360–440 ms liefern.
+Tabelle~\ref{tab:rodriguez-init} zeigt die durchschnittlichen Initialisierungszeiten pro CRUD-Operation. Java weist mit Abstand 
+die längsten Zeiten auf (bis zu 1630 ms), während Node.js und Python ähnliche Werte im Bereich von 360-440 ms liefern.
 
 \begin{table}[H]
 \centering
@@ -178,7 +177,10 @@ Java    & 1630,52 & 1526,12 & 1577,30 \\
 \end{table}
 
 \paragraph{Laufzeiten (Kalt vs. Warm)}
-Die Tabellen~\ref{tab:rodriguez-nodejs} bis~\ref{tab:rodriguez-java} zeigen die durchschnittlichen Ausführungszeiten für Kalt- und Warmstarts pro Sprache und Operation. Java profitiert am stärksten von warmen Ausführungen – die Laufzeit sinkt um durchschnittlich 84\,\%, während Node.js und Python Verbesserungen um etwa 45–48\,\% erzielen. Besonders auffällig ist die Delete-Operation in Java, deren Laufzeit von 581 ms (kalt) auf 85 ms (warm) fällt.
+Die Tabellen~\ref{tab:rodriguez-nodejs} bis~\ref{tab:rodriguez-java} zeigen die durchschnittlichen Ausführungszeiten für 
+Kalt- und Warmstarts pro Sprache und Operation. Java verbessert sich am stärksten bei warmen Ausführungen – 
+die Laufzeit sinkt um durchschnittlich 84\,\%, während Node.js und Python Verbesserungen um etwa 45–48\,\% erzielen. 
+Besonders interessant ist die Delete-Operation in Java, deren Laufzeit von 581 ms (kalt) auf 85 ms (warm) fällt.
 
 \begin{table}[H]
 \centering
@@ -226,11 +228,16 @@ Verbesserung & 83,4\,\% & 85,2\,\% & 81,9\,\% & 85,4\,\% \\
 \end{table}
 
 \paragraph{Skalierbarkeit}
-Tabelle~\ref{tab:rodriguez-scalability} zeigt die Laufzeiten der Leseoperation (Read) bei steigender Parallelität. Java startet mit einer hohen Latenz (52 ms) aufgrund von Kaltstarts, verbessert sich aber bei 10 parallelen Aufrufen auf 20 ms und unterbietet damit Node.js (30 ms) und Python (31 ms). Bei 25 Aufrufen treten in Java erneut Kaltstarts auf (158 ms), während Node.js und Python stabil bleiben. Ab 50 Aufrufen stabilisieren sich alle Sprachen; bei 200 Aufrufen erreicht Java mit 14 ms den besten Wert, gefolgt von Python (15 ms) und Node.js (27 ms). Die Autoren führen dies auf die effizientere Nutzung der Infrastruktur bei warmen Containern zurück.
+Tabelle~\ref{tab:rodriguez-scalability} zeigt die Laufzeiten der Leseoperation (Read) bei steigender Anzahl der Anfragen pro Sekunde. 
+Java startet mit einer hohen Latenz (52 ms) aufgrund von Kaltstarts, verbessert sich aber bei 10 Aufrufen pro Sekunde auf 20 ms und 
+unterbietet damit Node.js (30 ms) und Python (31 ms). Bei 25 Aufrufen treten in Java erneut Kaltstarts auf (158 ms), 
+während Node.js und Python stabil bleiben. Ab 50 Aufrufen stabilisieren sich alle Sprachen; bei 200 Aufrufen erreicht Java mit 14 ms 
+den besten Wert, gefolgt von Python (15 ms) und Node.js (27 ms). Die Autoren führen dies auf die effizientere Nutzung der 
+Infrastruktur bei warmen Containern zurück.
 
 \begin{table}[H]
 \centering
-\caption{Laufzeiten der Leseoperation (Read) bei steigender Parallelität (in ms)~\cite{Rodriguez2024Evaluation}}
+\caption{Laufzeiten der Leseoperation (Read) bei steigender Anzahl der Anfragen pro Sekunde. (in ms)~\cite{Rodriguez2024Evaluation}}
 \label{tab:rodriguez-scalability}
 \begin{tabular}{lcccccc}
 \hline
@@ -243,48 +250,67 @@ Java    & 52,7 & 20,0 & 158,3 & 24,3 & 19,7 & 13,9 \\
 \end{tabular}
 \end{table}
 
-\paragraph{Einfluss des Speichers}
-Abbildung~\ref{fig:rodriguez-memory} (hier nicht reproduziert) zeigt die Ausführungszeiten der Create-Operation in Abhängigkeit vom konfigurierten Speicher (512 MB bis 10 GB). Reduzierter Speicher führt bei allen Sprachen zu längeren Laufzeiten, jedoch ist der Effekt bei Java besonders ausgeprägt: Unter 1024 MB steigen die Laufzeiten drastisch an, während Node.js und Python auch bei geringerem Speicher akzeptable Werte liefern. Bei 4096 MB gleichen sich die Laufzeiten aller Sprachen an (Node.js 42 ms, Python 50 ms, Java 48 ms). Java zeigt zudem stark schwankende Initialisierungszeiten bei Speicher unter 6 GB; bei 512 MB erreicht die Initialisierung fast 4000 ms.
+\paragraph{Einfluss auf den Speicherverbrauch}
+Abbildung~\ref{fig:rodriguez-memory} (hier nicht reproduziert) zeigt die Ausführungszeiten der Create-Operation in 
+Abhängigkeit von dem konfigurierten Speicher (512 MB bis 10 GB). Kleinerer Speicher führt bei allen Sprachen zu längeren Laufzeiten, 
+jedoch ist der Effekt bei Java besonders ausgeprägt. Unter 1024 MB steigen die Laufzeiten drastisch an, während Node.js und Python auch 
+bei geringerem Speicher akzeptable Werte liefern. Bei 4096 MB gleichen sich die Laufzeiten aller Sprachen an 
+(Node.js 42 ms, Python 50 ms, Java 48 ms). Java zeigt zudem stark schwankende Initialisierungszeiten bei Speicher unter 
+6 GB; bei 512 MB erreicht die Initialisierung fast 4000 ms.
 
 \subsection{Einordnung}
 \label{subsec:rodriguez-discussion}
+Die Arbeit bestätigt, dass Python und Node.js für typische serverlose CRUD-Anwendungen besser geeignet sind als Java, 
+wenn Kaltstartzeiten hochpriorisiert sind. Java zeigt jedoch bei hoher Auslastung und warmen Umgebungen eine konkurrenzfähige 
+Performance und kann bei großen Speicherkonfigurationen sogar die besten Laufzeiten erzielen. Die Studie unterstreicht 
+die Notwendigkeit, die Sprachwahl anhand des erwarteten Lastprofils und der verfügbaren Speicherressourcen zu treffen.
 
-Die Arbeit von Rodriguez et al. bestätigt, dass Python und Node.js für typische serverlose CRUD-Anwendungen besser geeignet sind als Java, wenn Kaltstartzeiten kritisch sind. Java zeigt jedoch bei hoher Auslastung und warmen Umgebungen eine konkurrenzfähige Performance und kann bei großen Speicherkonfigurationen sogar die besten Laufzeiten erzielen. Die Studie unterstreicht die Notwendigkeit, die Sprachwahl anhand des erwarteten Lastprofils und der verfügbaren Speicherressourcen zu treffen.
+Allerdings sind bei der Interpretation der Ergebnisse einige methodische Einschränkungen und Mängel zu beachten. 
+Erstens basieren die Messungen auf lediglich fünf Kalt- und fünf Warmstarts pro Konfiguration, was aus statistischer Sicht eine zu 
+geringe Stichprobengröße darstellt und die Aussagekraft der Mittelwerte erheblich reduziert. 
+Zweitens wird nicht spezifiziert, ob und welche reservierte Konkurrenz (reserved concurrency) für die Funktionen konfiguriert war 
+– ein Faktor, der das Skalierungsverhalten insbesondere bei parallelen Aufrufen erheblich beeinflussen kann. 
+Drittens berücksichtigt die gewählte Methodik nicht die Optimierungsmechanismen der Laufzeitumgebungen. 
+Sowohl die \ac{JIT}-Compiler von Java und Node.js als auch der CPython-Interpreter benötigen mehrere Durchläufe, 
+um ihren Code zu optimieren. Mit nur einem einzigen Warmstart pro Funktion werden diese Effekte nicht betrachtet, 
+was zu irreführenden Ergebnissen führt. Dies zeigt sich beispielsweise im Vergleich der initialen Warmstart-Messungen mit 
+den Skalierbarkeitstests. Während Java in den ersten warmen Aufrufen noch relativ hohe Laufzeiten aufweist, 
+erreicht es bei 200 Anfragen pro Sekunde die besten Werte – ein Hinweis darauf, dass die \ac{JIT}-Optimierung erst nach mehreren 
+Aufrufen ihre volle Wirkung entfaltet.
 
-Als Limitation ist anzumerken, dass nur CRUD-Operationen und nur eine AWS-Plattform betrachtet wurden. Zudem fehlt eine Analyse des Zusammenspiels mit Observability-Tools – genau diese Lücke adressiert die vorliegende Arbeit.
-
-\section{Limitationen bestehender Ansätze}
+Trotz dieser Einschränkungen liefert die Studie wertvolle Hinweise auf die relativen Stärken und Schwächen der untersuchten Sprachen. 
+Die Studie \emph{"Cold Start Influencing Factors in Function as a Service"} von Manner et al.\cite{FaaSColdStart2018} untersucht den 
+Kaltstart‑Overhead auf AWS Lambda und Azure Functions für Java und JavaScript. Ihre Ergebnisse bestätigen die hier beobachteten Tendenzen. 
+Java verursacht einen deutlich höheren Kaltstart‑Overhead als interpretierte Sprachen (Faktor 2–3) und mehr Speicher reduziert den 
+Overhead messbar. Damit bestätigt die ältere Studie die grundlegenden Zusammenhänge zwischen Sprachwahl, Ressourcenkonfiguration und 
+Kaltstartverhalten, die auch für die Arbeit von Rodriguez et al. prägend sind.
+Die genannten methodischen Mängel unterstreichen jedoch die Notwendigkeit weiterführender Untersuchungen mit größeren Stichproben 
+und realistischeren Ausführungsprofilen.
 \label{sec:limitations}
 
-Beide vorgestellten Studien liefern wertvolle Erkenntnisse für die serverlose Entwicklung, weisen jedoch spezifische Einschränkungen auf, die die Notwendigkeit weiterer Forschung begründen.
+Beide vorgestellten Studien liefern wertvolle Erkenntnisse für die serverlose Entwicklung, weisen jedoch spezifische Einschränkungen auf, 
+die die Notwendigkeit weiterer Forschung begründen.
 
-\paragraph{Eingeschränkte Sprachvielfalt:}
-Die Untersuchung von Eder et al.~\cite{10254754} beschränkt sich auf Node.js, während Rodriguez et al.~\cite{Rodriguez2024Evaluation} immerhin drei Sprachen ver
-gleichen, aber ohne Berücksichtigung von Tracing-Overhead.
+\paragraph{Eingeschränkte Sprachvielfalt}
+Die Untersuchung von Eder et al.~\cite{10254754} beschränkt sich auf Node.js, während Rodriguez et al.~\cite{Rodriguez2024Evaluation} 
+immerhin drei Sprachen vergleichen, aber ohne Berücksichtigung von Tracing-Overhead.
 
-\paragraph{Fehlende Kombination von Sprach- und Tracing-Aspekten:}
-Keine der Arbeiten untersucht den \textbf{sprachspezifischen Overhead von Tracing-Tools}. Gerade dies ist entscheidend für die Praxis, da Entwickler sowohl die Programmiersprache als auch die Observability-Strategie wählen müssen.
+\paragraph{Fokus auf einzelne Metriken}
+Während Eder et al. Runtime, Speicher und Initialisierung betrachten, konzentrieren sich Rodriguez et al. primär auf Laufzeit und Skalierung. 
+Ein umfassendes Bild, das alle relevanten Performance-Aspekte vereint, fehlt.
 
-\paragraph{Fokus auf einzelne Metriken:}
-Während Eder et al. Runtime, Speicher und Initialisierung betrachten, konzentrieren sich Rodriguez et al. primär auf Laufzeit und Skalierung. Ein umfassendes Bild, das alle relevanten Performance-Aspekte vereint, fehlt.
-
-\paragraph{Plattformabhängigkeit:}
+\paragraph{Plattformabhängigkeit}
 Beide Studien wurden ausschließlich auf AWS durchgeführt. Ergebnisse lassen sich nicht ohne weiteres auf andere Cloud-Anbieter übertragen.
 
-\paragraph{Statistische Aussagekraft:}
-Die Stichprobengrößen sind teils gering (100 Invocations pro Benchmark bei Eder et al., fünf Kaltstarts bei Rodriguez et al.), was die Verallgemeinerbarkeit einschränkt.
+\paragraph{Statistische Aussagekraft}
+Die Stichprobengrößen sind teils gering (100 Invocations pro Benchmark bei Eder et al., fünf Kaltstarts bei Rodriguez et al.), 
+was die Verallgemeinerbarkeit einschränkt.
 
 \section{Fazit}
 \label{sec:conclusion-related}
 
-Die betrachteten Vergleichsstudien belegen, dass sowohl die Wahl der Programmiersprache als auch der Einsatz von Distributed-Tracing-Tools erheblichen Einfluss auf die Performance serverloser Anwendungen haben. Während Python und Node.js geringere Kaltstartzeiten aufweisen, kann Java bei hoher Last und warmen Umgebungen punkten. Beim Tracing-Overhead erweist sich Zipkin als leichtgewichtig, während OpenTelemetry (ADOT) und SkyWalking teils deutliche Mehrbelastungen verursachen.
+Die betrachteten Vergleichsstudien belegen, dass sowohl die Wahl der Programmiersprache als auch der Einsatz von Distributed-Tracing-Tools 
+erheblichen Einfluss auf die Performance serverloser Anwendungen haben. Während Python und Node.js geringere Kaltstartzeiten aufweisen, 
+kann Java bei hoher Last und warmen Umgebungen punkten. Beim Tracing-Overhead erweist sich Zipkin als leichtgewichtig, während OpenTelemetry 
+und SkyWalking teils deutlichen Overhead verursachen.
 
-Allerdings klafft eine zentrale Forschungslücke: \textbf{Bislang existiert keine vergleichende Untersuchung, die den sprachspezifischen Overhead von Tracing-Tools in serverlosen Umgebungen systematisch analysiert}. Genau hier setzt die vorliegende Arbeit an. Sie übernimmt die validierten Microbenchmarks von Eder et al. und erweitert sie um einen Sprachvergleich (Java, Python, Node.js) sowie um eine detaillierte Messung von Runtime-, Memory- und Cold-Start-Overhead. Dadurch wird erstmals eine fundierte Entscheidungsgrundlage für die kombinierte Wahl von Programmiersprache und Observability-Strategie geschaffen.
-
-Daraus ergeben sich drei Leitlinien für die eigene Untersuchung:
-
-\begin{enumerate}
-    \item \textbf{Sprachvergleich}: Es müssen die drei am weitesten verbreiteten Sprachen (Java, Python, Node.js) in identischen Benchmarks gegenübergestellt werden.
-    \item \textbf{Reproduzierbarkeit}: Die Experimente sind so zu dokumentieren, dass sie auf anderen Plattformen wiederholt werden können.
-    \item \textbf{Ganzheitliche Metriken}: Neben der reinen Laufzeit sind Speicherverbrauch und Kaltstartzeiten zu erfassen, um ein vollständiges Bild des Overheads zu erhalten.
-\end{enumerate}
