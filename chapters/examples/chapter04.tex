@@ -1,23 +1,204 @@
-\chapter{Ziele und Hypothesen}
-\label{ch:zieleundhypothesen}
+\chapter{Methodik und Versuchsaufbau}
+\label{ch:methodik}
 
-In diesem Kapitel werden die Zielsetzung und die überprüfbaren Hypothesen der Arbeit formuliert. Die Ziele sind so gewählt, dass sie innerhalb von 90 Tagen mit einem klaren Experiment- und Auswertungsplan erreichbar sind.
+In diesem Kapitel wird die methodische Vorgehensweise der Arbeit detailliert beschrieben. 
+Ziel ist es, eine reproduzierbare und nachvollziehbare Grundlage für die experimentelle Evaluation des 
+sprachspezifischen Overheads von OpenTelemetry in serverlosen Umgebungen zu schaffen.
+\section{Auswahl der Microbenchmarks}
 
-\section{Ziele}
-Die Arbeit verfolgt drei operative Ziele, die ihren Fokus auf die Beantwortung der Forschungsfragen 
-aus Kapitel~\ref{ch:chapter03} legen:
+\label{sec:auswahl-microbenchmarks}
+
+Die Auswahl geeigneter Microbenchmarks ist entscheidend für die Aussagekraft der Ergebnisse. 
+Sie müssen typische Interaktionsmuster von \ac{FaaS}-Instanzen repräsentieren. 
+In Anlehnung an die Arbeit von Eder et al.~\cite{10254754} werden fünf Szenarien verwendet (siehe Abbildung~\ref{fig:chapter02:aws_lambda_use_cases}), 
+die auf einer umfassenden Analyse der häufigsten Anwendungsfälle von AWS Lambda durch Winzinger und Wirtz~\cite{Winzinger2021DataFlow} 
+basieren.
+
+
+Alle fünf Benchmarks werden in den drei zu untersuchenden Sprachen Java, Python und Node.js implementiert. 
+Die Funktionalität ist dabei jeweils identisch. Der Kern der Funktion besteht ausschließlich aus dem Aufruf der 
+entsprechenden AWS-SDK-Methode, um den Overhead der Geschäftslogik minimal zu halten und den Instrumentierungsoverhead 
+möglichst gut zu isolieren.
+
+\section{Entwicklung der Testfunktionen}
+\label{sec:entwicklung-testfunktionen}
+
+Für jede der drei Sprachen und jeden der fünf Microbenchmarks wurde eine eigene Lambda-Funktion erstellt. 
+Alle Funktionen nutzen die offiziellen AWS SDKs.
+
 \begin{itemize}
-	\item \textbf{Z1 -- Messung des Overheads:} Quantitative Bestimmung des Overheads (Runtime, Memory, Cold-Start) durch die Instrumentierung mit OpenTelemetry für Java, Python und NodeJS auf AWS Lambda anhand der fünf Microbenchmarks aus \cite{10254754}.
-	\item \textbf{Z2 -- Vergleich über Benchmarks:} Identifikation der Benchmarks, in denen die größten sprachspezifischen Unterschiede auftreten.
-	\item \textbf{Z3 -- Praxisempfehlungen:} Ableitung knapper, umsetzbarer Empfehlungen zur Sprach- und Konfigurationswahl für typische Serverless-Szenarien bei gegebenem Overhead-Budget.
+    \item \emph{Java:} Verwendung des AWS SDK for Java 2.x (anpassen). Die Funktionen sind als Handler-Klassen implementiert, 
+	die das \texttt{RequestHandler}-Interface implementieren. Die Abhängigkeiten werden mit Maven verwaltet und in die \emph{pom.xml} gepackt.
+    \item \emph{Python:} Einsatz von \texttt{boto3} (AWS SDK for Python). Die Funktionen sind als einfache Python-Module mit einer 
+	\texttt{lambda\_handler}-Funktion realisiert. Da Abhängigkeiten minimal sind und von AWS-Lambda-Runtimes bereitgestellt werden, 
+	werden diese in der Funktion durch einfache \emph{import-Befehle} initialisiert.
+    \item \emph{Node.js:} Nutzung des AWS SDK for JavaScript. Die Funktionen sind als Node.js-Module (.mjs-Dateien) mit einer 
+	\texttt{exports.handler}-Funktion umgesetzt. Die Abhängigkeiten sind hier ebenfalls minimal, weswegen sie in der Funktion durch 
+	einfache \emph{import-Befehle} initialisiert werden.
 \end{itemize}
 
-\section{Hypothesen}
-Die Hypothesen sind so formuliert, dass sie mit den geplanten Messungen (Kapitel~\ref{ch:chapter07}) innerhalb des Projektzeitraums testbar sind:
+Die deployten Funktionen basieren auf der Arbeit von Eder et al \cite{10254754} und wurden für Zwecke der Konsistenz weitgehend repliziert. 
+Alle Funktionen verwenden dieselbe, minimal notwendige Logik. Entgegennahme eines Events (sofern erforderlich, z.~B. bei HTTP-Anfragen), 
+Ausführen der Zieloperation (Aufruf der zweiten Funktion, HTTP-Request, DynamoDB-Zugriff) und Rückgabe einer einfachen Bestätigung. 
+Für die DynamoDB-Operationen wird eine bereits vorhandene Tabelle mit einem simplen Schema (Primärschlüssel \texttt{id} (String), 
+Attribut \texttt{value} (String)) genutzt. Die HTTP-Endpunkte werden durch eine einfache REST-API realisiert, die lediglich eine 
+200 OK-Antwort zurückgibt. \\
+Um den ökologischen Fußabdruck dieser Arbeit zu reduzieren und Ressourcen zu schonen, wurde ähnlich wie bei der Arbeit von Eder et al \cite{10254754} 
+auf den Abdruck von Quellcode, Konfigurationsdateien und weiterführenden technischen Materialien im Anhang verzichtet. 
+Alle relevanten Implementierungen sowie die vollständige Dokumentation sind öffentlich in einem GitHub-Repository verfügbar und 
+können unter folgender Adresse eingesehen werden: [www.github.com/justaksi7/kommt-noch]. Dies gewährleistet nicht nur Nachhaltigkeit, 
+sondern auch Transparenz und Reproduzierbarkeit der erzielten Ergebnisse.
+
+\section{Instrumentierung mit OpenTelemetry (ADOT)}
+\label{sec:instrumentierung}
+
+Um den Tracing-Overhead zu messen, werden die Lambda-Funktionen mit OpenTelemetry instrumentiert. Hierfür kommt die AWS Distro for 
+OpenTelemetry \ac{ADOT} zum Einsatz. ADOT bietet vorgefertigte Lambda-Layer für jede unterstützte Sprache, die alle notwendigen 
+Abhängigkeiten (SDK, Collector, Exporters) enthalten. Für die Instrumentierung wird der entsprechende Layer in 
+der Lambda-Konfiguration referenziert. Um im Rahmen der Zeit- und Ressourcenbeschränkungen dieser Arbeit zu bleiben, 
+wird auf eine manuelle, Code-basierte Instrumentierung verzichtet. Stattdessen erfolgt die Instrumentierung, wie in der Arbeit von
+Eder. et al \cite{10254754}, ausschließlich über die automatische Erfassung von Traces durch \ac{ADOT}.
+Als Sampling-Strategie wird \emph{Head Sampling} mit einer Rate von 100\,\% verwendet, d.~h. jeder Trace wird vollständig aufgezeichnet. 
+Dies dient dazu, vergleichbare Bedingungen zu allen vorherigen Studien (insb.~\cite{10254754}) zu schaffen.
+
+Die so instrumentierten Funktionen exportieren die Trace-Daten über den ADOT-Collector an \emph{AWS X-Ray}. 
+X-Ray dient als Tracing-Backend und ermöglicht die spätere Überprüfung der Vollständigkeit der Traces. 
+Die Integration ist über die Umgebungsvariable \texttt{AWS\_LAMBDA\_EXEC\_WRAPPER} bzw. durch entsprechende Konfiguration in 
+der \texttt{function.properties} der Lambda-Funktionen realisiert.
+
+\section{Konfiguration der AWS Lambda-Umgebung}
+\label{sec:konfiguration}
+
+Um eine hohe Vergleichbarkeit der Messungen zu gewährleisten, werden alle Funktionen mit identischen, kontrollierten 
+Parametern betrieben. Die Konfiguration orientiert sich an typischen Produktionseinstellungen und wird über die AWS Management Console 
+sowie Infrastructure-as-Code (AWS SAM) festgelegt.
+
+Tabelle~\ref{tab:konfiguration} fasst die konstant gehaltenen Konfigurationsparameter zusammen.
+
+\begin{table}[H]
+\centering
+\caption{Konstante Konfigurationsparameter der Lambda-Funktionen}
+\label{tab:konfiguration}
+\begin{tabular}{|p{3cm}|p{3cm}|p{5.5cm}|}
+\hline
+\textbf{Parameter} & \textbf{Wert} & \textbf{Begründung} \\
+\hline
+Region & \texttt{Frankfurt (eu-central-1)} & Minimierung von Netzwerklatenz-Varianz durch einheitliche Region. \\
+\hline
+Speicher (Memory) & 1024 MB & Ausreichend für den Funktionsumfang. \\
+\hline
+Ephemeraler Speicher & 512 MB & Standardwert, für die Funktionen ausreichend. \\
+\hline
+Timeout & 15 Sekunden & Ausreichend für alle Benchmarks (auch langsamste Kombination). \\
+\hline
+Reservierte Konkurrenz & 200 & Begrenzung der parallelen Ausführungen, um kontrollierte Last zu erzeugen und Überlastung zu vermeiden. \\
+\hline
+Laufzeit (Runtime Environment) & Java 21, Python 3.13, Node.js 22.x & Aktuelle, von \ac{ADOT}-Lambda-Layers unterstützte Versionen der Sprachen. \\
+\hline
+IAM-Rolle &  Rolle mit minimalen Berechtigungen & Erlaubt nur die notwendigen Aktionen: \texttt{lambda:InvokeFunction} für Benchmark 1 
+und \texttt{dynamodb:GetItem} / \texttt{PutItem} für Benchmarks 4/5, sowie das Schreiben von Logs auf CloudWatch. \\
+\hline
+\end{tabular}
+\end{table}
+
+Die reservierte Konkurrenz von 200 wurde gewählt, um eine definierte maximale Parallelität zu haben. Dies verhindert, 
+dass AWS Lambda unbegrenzt skaliert und möglicherweise die Messergebnisse durch unterschiedliches Skalierungsverhalten bei den 
+verschiedenen Funktionen verfälscht.
+
+\section{Messgrößen und Berechnung des Overheads}
+\label{sec:messgroessen}
+
+Die zentralen Performance-Metriken werden aus den von AWS bereitgestellten CloudWatch Logs extrahiert. Jede Lambda-Invocation 
+erzeugt einen Logeintrag, der die folgenden Felder enthält:
+
 \begin{itemize}
-	\item \textbf{H1 (Runtime):} Bei den betrachteten I/O-lastigen Benchmarks (Lambda→Lambda, HTTP GET/POST extern, DynamoDB Read/Write) liegt der relative Runtime-Overhead durch OpenTelemetry für Java höher als für Python und für Python höher als für NodeJS.
-	\item \textbf{H2 (Memory):} Der zusätzliche Memory-Overhead ist in Java höher als in Python und NodeJS für dieselben Benchmarks, bedingt durch JVM-Overheads.
-	\item \textbf{H3 (Cold Start):} OpenTelemetry erhöht die Cold-Start-Latenz in Java stärker als in Python und NodeJS; der Effekt bleibt jedoch unter 25\% bei den betrachteten Benchmarks, auch wenn Traces mitsamt Log-Export aufgezeichnet werden.
+    \item \emph{\texttt{Duration}} (in ms): Die vom Handler gemessene Ausführungsdauer der Funktion. 
+	Sie umfasst die Zeit von Beginn der Handler-Ausführung bis zu deren Ende.
+    \item \emph{\texttt{Max Memory Used}} (in MB): Der maximale Arbeitsspeicher, der während der Ausführung benutzt wurde.
+    \item \emph{\texttt{Init Duration}} (in ms): Die Dauer der Initialisierungsphase bei einem Kaltstart. Dieses Feld erscheint 
+	nur im Logeintrag der Kaltstarts.
 \end{itemize}
 
-Die Hypothesen werden als widerlegbar betrachtet und anhand von Mittelwerten und Streuungsmaßen aus mindestens drei wiederholten Testläufen pro Benchmark und Sprache überprüft.
+Zusätzlich wird für die instrumentierten Funktionen die Anzahl der erzeugten Traces überprüft (durch Abfragen in der AWS X-Ray 
+Konsole bzw. CLI), um sicherzustellen, dass für jede Invocation auch tatsächlich ein Trace exportiert wurde.
+
+Der relative prozentuale Overhead für eine Metrik \(M\) wird wie folgt berechnet:
+
+\begin{equation}
+\text{Overhead}_{M} = \frac{M_{\text{mit OTel}} - M_{\text{ohne OTel}}}{M_{\text{ohne OTel}}} \times 100\%
+\label{eq:overhead}
+\end{equation}
+
+Dabei bezeichnet \(M_{\text{mit OTel}}\) den gemessenen Wert der instrumentierten Version und \(M_{\text{ohne OTel}}\) 
+den Wert der nicht instrumentierten Baseline. Für die Berechnung werden jeweils die Mittelwerte über alle gültigen Messungen 
+einer Kombination (Sprache, Benchmark, Instrumentierungsstatus) verwendet. Kaltstart-Metriken (\texttt{Init Duration}) 
+werden separat betrachtet und nicht in die Mittelwertbildung für warme Starts einbezogen.
+
+\section{Durchführung der Messungen}
+\label{sec:durchfuehrung}
+
+Die Messungen wurden in mehreren Phasen durchgeführt, um eine ausreichende statistische Basis zu schaffen und 
+Störeinflüsse zu minimieren. Es wurden jeweils 10 Messvorgänge je 1.200 Aufrufe pro Kombination (Sprache, Benchmark, 
+Instrumentierungsstatus) durchgeführt, was insgesamt 12.000 Aufrufe (jeweils ~10.000 Warmstarts und ~2.000 Kaltstarts) pro 
+Kombination ergibt. Nach jedem Messvorgang wurden die Funktionen, wie bei der Arbeit von Eder et al. \cite{10254754} erneut deployed, 
+um Kaltstarts zu erzwingen und eine Durchmischung der Ausführungsumgebungen zu gewährleisten (reduziert die Wahrscheinlichkeit, dass mehrere 
+Aufrufe auf derselben physischen Maschine ausgeführt werden). \\Die Aufrufe wurden mit einem Python-Skript parallelisiert, 
+um die reservierte Konkurrenz von 200 zu nutzen und eine realistische Last zu simulieren. Es wurde jedoch kaum eine Parallelität 
+von 200 erreicht, da die Funktionen aufgrund der kurzen Ausführungszeiten schnell freigegeben wurden. Nur in einigen Fällen, 
+insbesondere bei Java, kam es zu kurzzeitigen Spitzen von bis zu 200 parallelen Ausführungen bei den Kaltstarts. Die Parallelität sank 
+unmittelbar nach einigen Aufrufen im Anschluss an die Kaltstarts wieder auf wenige parallele Aufrufe (15 bis 30). Dies gewährleistet, 
+dass die Einschwingphase der Funktionen (\ac{JIT}-Optimierung bei Java und Node.js und Bytecode-Optimierung bei Python) 
+gut abgedeckt wird, da es genug Warmstarts nach den Optimierungen gab und ein stabiler Zustand erreicht wurde. Da mindestens 
+2.000 Kaltstarts pro Kombination angestrebt wurden, wurden die Funktionen ergänzend zu den 10 Messvorgängen solange redeployed und 
+aufgerufen, bis die gewünschte Anzahl an Kaltstarts (2.000) erreicht wurde.
+
+
+\paragraph{1. Baseline-Messungen (ohne Instrumentierung):}
+Zunächst wurden für jede Sprache und jeden Microbenchmark 12.000 asynchrone Aufrufe der nicht instrumentierten Funktion durchgeführt. 
+Nach jedem Block wurde die Funktion redeployed, um eine neue Container-Instanz zu erzwingen.
+
+\paragraph{2. Messungen mit Instrumentierung:}
+Die gleiche Prozedur wurde für die mit ADOT instrumentierten Versionen jeder Funktion wiederholt. Auch hier wurden 12.000 Aufrufe pro 
+Kombination durchgeführt, jeweils mit einer Funktionsaktualisierung zwischen den Blöcken, um Kaltstarts zu erzwingen.
+
+\paragraph{3. Behandlung von Kaltstarts:}
+Kaltstarts wurden durch die Analyse der CloudWatch Logs identifiziert. Jeder Logeintrag, der das Feld \texttt{Init Duration} enthält, 
+wurde als Kaltstart markiert.
+
+\paragraph{4. Berücksichtigung der Einschwingphase:}
+Insbesondere für Java und Node.js ist bekannt, dass \ac{JIT}-Compiler erst nach mehreren Durchläufen optimierten Code produzieren. 
+Um diesen Effekt zu berücksichtigen, wird bei der Auswertung der Daten, neben dem Mittelwert, auch der Median betrachtet.
+\section{Statistische Auswertung}
+\label{sec:auswertung}
+
+Um die in Kapitel~\ref{ch:intro} formulierten Forschungsfragen zu beantworten, wurden für jedes der drei Effizienzkriterien – 
+Laufzeit (Runtime), Speicherverbrauch (Memory Usage) und Initialisierungsdauer (Init Duration) – die folgenden Hypothesen aufgestellt. 
+Dabei werden zwei grundsätzliche Fragestellungen adressiert - der Unterschied zwischen Messungen ohne Tracing und mit Tracing (H1) 
+sowie die Abweichungen zwischen den einzelnen Programmiersprachen (H2).
+
+\paragraph{H1 – Tracing-Overhead:} Der Effizienz-Overhead ohne Einsatz von Tracing ist geringer als bei Verwendung von 
+OpenTelemetry in einer bestimmten Programmiersprache \(s\). Formal:
+\[
+H_0: \mu_{\text{ohne}} \ge \mu_s \quad \text{vs.} \quad H_1: \mu_{\text{ohne}} < \mu_s,
+\]
+wobei \(\mu_{\text{ohne}}\) den mittleren Wert der Metrik ohne Instrumentierung und \(\mu_s\) den mittleren Wert der 
+Metrik mit Instrumentierung in Sprache \(s\) bezeichnet.
+
+\paragraph{H2 – Sprachspezifische Abweichungen:} Es besteht ein signifikanter Unterschied im Effizienz-Overhead zwischen 
+zwei Programmiersprachen \(s_1\) und \(s_2\). Formal:
+\[
+H_0: \mu_{s_1} = \mu_{s_2} \quad \text{vs.} \quad H_1: \mu_{s_1} \neq \mu_{s_2}.
+\]
+
+In beiden Fällen wird von unbekannter Varianz ausgegangen. Für das Signifikanzniveau wird \(\alpha = 0{,}05\) festgelegt.
+
+\begin{itemize}
+    \item \textbf{Deskriptive Statistik:} Für jede Metrik (Runtime, Memory, Init Duration) werden pro Sprache, Benchmark und 
+	Instrumentierungsstatus Mittelwert, Median, Standardabweichung sowie Minimum und Maximum berechnet. 
+	Diese Werte dienen als erster Überblick über die Datenverteilung.
+    \item \textbf{Visuelle Aufbereitung:} Die Ergebnisse werden mittels Boxplots visualisiert, um die Verteilung und Ausreißer 
+	darzustellen. Zusätzlich werden Balkendiagramme für den direkten Vergleich der prozentualen Overheads verwendet.
+    \item \textbf{Software:} Die statistische Auswertung erfolgt mit der Programmiersprache Python unter Verwendung der Bibliotheken \texttt{pandas}, \texttt{numpy}, \texttt{scipy.stats}, \texttt{statsmodels} und \texttt{matplotlib} / \texttt{seaborn} für die grafische Darstellung.
+\end{itemize}
+
+Die Ergebnisse dieser Auswertung werden in Kapitel~\ref{ch:ergebnisse} präsentiert und in Kapitel~\ref{ch:diskussion} diskutiert.
