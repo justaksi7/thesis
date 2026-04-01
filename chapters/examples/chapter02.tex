@@ -1,677 +1,347 @@
-\chapter{Theoretische Grundlagen}
+﻿\chapter{Theoretische Grundlagen}
 \label{ch:background}
-In diesem Kapitel werden die wesentlichen theoretischen Grundlagen vorgestellt, die für das Verständnis
-dieser Arbeit notwendig sind. Zunächst werden die grundlegenden Konzepte von Cloud Computing und 
-Microservices-Architektur erläutert, um die Ausgangslage verteilter Systeme zu verstehen.
-Darauffolgend werden Serverless-Computing und \ac{FaaS} erläutert, wobei \ac{AWS} als konkrete Plattform
-und \ac{AWS} Lambda als konkrete \ac{FaaS}-Implementierung im Mittelpunkt stehen. Anschließend werden 
-Observability, Distributed Tracing, OpenTelemetry und die \ac{ADOT} vorgestellt. 
-Abschließend werden Cloud-Ressourcen und -Dienste von \ac{AWS} wie z. B. \ac{AWS} CloudWatch, \ac{AWS} X-Ray 
-beschrieben, die für die Implementierung und Evaluierung der in dieser Arbeit vorgeschlagenen Lösung relevant sind.
+
+In diesem Kapitel werden die wesentlichen theoretischen Grundlagen vorgestellt, die für das Verständnis dieser Arbeit notwendig sind. Zunächst werden die grundlegenden Konzepte von Cloud Computing und Microservices-Architektur erläutert, um die Ausgangslage verteilter Systeme zu verstehen. Darauffolgend werden Serverless-Computing und \ac{FaaS} erläutert, wobei \ac{AWS} als konkrete Plattform und \ac{AWS} Lambda als konkrete \ac{FaaS}-Implementierung im Mittelpunkt stehen. Anschließend werden Observability, Distributed Tracing, OpenTelemetry und die \ac{ADOT} vorgestellt. Abschließend werden Cloud-Ressourcen und -Dienste von \ac{AWS} wie z. B. \ac{AWS} CloudWatch, \ac{AWS} X‑Ray beschrieben, die für die Implementierung und Evaluierung der in dieser Arbeit vorgeschlagenen Lösung relevant sind.
 
 \section{Cloud Computing}
 \label{sec:cloud}
-In traditionellen IT-Infrastrukturen mussten Unternehmen und Endnutzer ihre physischen Server in ihren eigenen
-Räumlichkeiten betreiben – inklusive aller damit verbundenen Aufgaben wie z. B. Wartung, Stromversorgung,
-Internetverbindung, Skalierung etc. Cloud Computing ermöglicht Unternehmen und Endnutzern, 
-IT-Ressourcen wie z. B. Rechenleistung, Speicher u. v. m. über das Internet zu buchen und zu nutzen, ohne sich um die zugrunde liegende Infrastruktur
-kümmern zu müssen. Die Cloud-Anbieter kümmern sich um die Bereitstellung, Wartung und Skalierung der Infrastruktur, während die Nutzer sich auf die Entwicklung und den Betrieb ihrer Anwendungen konzentrieren können.
-Damit ist die IT-Infrastruktur nicht mehr an einen physischen Standort gebunden, sondern kann von überall aus über das Internet genutzt werden.
 
-\subsection{Definition von Cloud Computing}
-Laut \ac{NIST} ist Cloud Computing ein nutzungsbasiertes 
-Abrechnungsmodell, das einen nutzbaren, bequemen und bedarfsgerechten Netzwerkzugriff auf konfigurierbare,
- gemeinsam genutzte Rechenressourcenpools (Ressourcen wie Speicher, Software und Dienste) bietet, 
- die schnell und mit minimalem Verwaltungsaufwand oder geringer Interaktion mit Dienstanbietern
-  bereitgestellt werden können\cite{Mell2011NIST}. Das ist eine gut etablierte und weit verbreitete 
-  Definition, die auch von anderen Organisationen wie z. B. Huawei Technologies Co., Ltd. 
-  übernommen wird\cite{Huawei2023CloudComputing}.
+Cloud Computing ermöglicht den bedarfsgerechten Zugriff auf IT-Ressourcen über das Internet, ohne dass der Nutzer die zugrunde liegende Infrastruktur selbst verwalten muss~\cite{Mell2011NIST}. Für diese Arbeit ist vor allem die nutzungsbasierte Abrechnung (Pay‑per‑Use) relevant, da sie die wirtschaftliche Bedeutung des durch OpenTelemetry verursachten Overheads unterstreicht – jede zusätzliche Millisekunde Laufzeit wirkt sich direkt auf die Kosten aus.
+
+Cloud Computing zeichnet sich durch fünf wesentliche Merkmale aus, die Huawei Technologies Co., Ltd. in \emph{Cloud Computing Technology} wie folgt beschreibt~\cite{Huawei2023CloudComputing}:
+\begin{itemize}
+    \item \textbf{Bedarfsgerechte Selbstbedienung (On-Demand Self-Service):} Nutzer können Rechenressourcen eigenständig und ohne menschliche Interaktion mit dem Anbieter beziehen.
+    \item \textbf{Umfassender Netzwerkzugang (Extensive Network Access):} Alle Cloud-Dienste sind über das Netzwerk (meist Internet) standardisiert und von verschiedenen Endgeräten erreichbar.
+    \item \textbf{Ressourcenbündelung (Resource Pooling):} Physische und virtuelle Ressourcen werden in einen gemeinsamen Pool zusammengefasst und dynamisch an mehrere Nutzer verteilt.
+    \item \textbf{Schnelle elastische Skalierung (Fast and Elastic Scaling):} Ressourcen können je nach Bedarf automatisch oder manuell vergrößert oder verkleinert werden.
+    \item \textbf{Messbare Nutzung (Measurable Services):} Die Nutzung wird erfasst, überwacht und abgerechnet – Grundlage für Pay‑per‑Use-Modelle.
+\end{itemize}
+
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/Cloud_Computing.png}
- \caption{Komponenten von Cloud Computing\cite{Huawei2023CloudComputing}}
+ \includegraphics[width=0.5\textwidth]{gfx/examples/Cloud_Computing.png}
+ \caption{Komponenten von Cloud Computing~\cite{Huawei2023CloudComputing}}
  \label{fig:chapter02:cloud_computing}
 \end{figure}
-Cloud Computing zeichnet sich durch fünf wesentliche Merkmale aus, die Huawei Technologies
-Co., Ltd. in dem Buch \emph{Cloud Computing Technology} wie folgt beschreibt:\\
-
-\textbf{Bedarfsgerechte Selbstbedienung (On-Demand Self-Service)} ermöglicht es Nutzern, Rechenressourcen wie Speicher oder Rechenleistung eigenständig und ohne menschliche Interaktion mit dem Anbieter zu beziehen – vergleichbar mit der Selbstbedienung im Supermarkt, wo Kunden nach Bedarf auswählen und nehmen.
-
-\textbf{Umfassender Netzwerkzugang (Extensive Network Access)} bedeutet, dass alle Cloud-Dienste über das Netzwerk erreichbar sind, in der Regel über das Internet. Der Zugriff erfolgt standardisiert und von verschiedenen Endgeräten wie PCs, Smartphones oder Tablets aus.
-
-Durch \textbf{Ressourcenbündelung (Resource Pooling)} werden die physischen und virtuellen Ressourcen des Anbieters in einen gemeinsamen Pool zusammengefasst und dynamisch an mehrere Nutzer verteilt. Dabei werden Ressourcen wie Speicher oder CPU in kleine Einheiten zerlegt (z.\,B. Gigabyte statt ganzer Festplatten), um eine flexible und effiziente Zuweisung zu ermöglichen.
-
-\textbf{Schnelle elastische Skalierung (Fast and Elastic Scaling)} erlaubt es, Ressourcen je nach Bedarf automatisch oder manuell zu vergrößern oder zu verkleinern. Für den Nutzer wirken die Kapazitäten dadurch nahezu unbegrenzt, was eine kosteneffiziente Anpassung an Lastspitzen ermöglicht.
-
-Schließlich werden alle Dienste durch \textbf{messbare Nutzung (Measurable Services)} kontrolliert: Die Inanspruchnahme von Ressourcen wird genau erfasst, überwacht und abgerechnet – sei es nach Zeit, Speichervolumen oder Anfragenzahl. Dies schafft Transparenz und ist die Grundlage für nutzungsbasierte Abrechnungsmodelle (Pay-per-Use)~\cite{Huawei2023CloudComputing}.
+Abbildung~\ref{fig:chapter02:cloud_computing} veranschaulicht die grundlegenden Komponenten des Cloud Computing.
 
 \subsection{Servicemodelle des Cloud Computing}
 \label{subsec:service_models}
 
-Cloud-Dienste werden typischerweise in drei Servicemodelle unterteilt, die sich im Grad der Abstraktion und der Verantwortungsteilung zwischen Anbieter und Nutzer unterscheiden\cite{Huawei2023CloudComputing}.
-
-\textbf{\ac{IaaS}:} Der Anbieter stellt virtualisierte Rechenressourcen wie Server, Speicher und Netzwerke bereit. Der Nutzer kann eigene Betriebssysteme und Anwendungen installieren und verwalten. Bekannte Beispiele sind Amazon EC2 oder Google Compute Engine. Die zugrunde liegende Struktur des IaaS-Modells ist in Abbildung~\ref{fig:chapter02:IaaS} dargestellt.
+Cloud-Dienste werden üblicherweise in drei Servicemodelle unterteilt.\\ \ac{IaaS}, \ac{PaaS} und \ac{SaaS}~\cite{Huawei2023CloudComputing}.  
+Da für diese Arbeit nur ein grundlegendes Verständnis von \ac{PaaS} relevant ist, wird das Modell kurz erläutert und alle 3 Servicemodelle 
+werden anhand von Grafiken zur Zwecke der Abgrenzungveranschaulicht. 
+\emph{Platform as a Service} stellt eine komplette Entwicklungsumgebung bereit, die die technische Infrastruktur abstrahiert. 
+Nutzer entwickeln und betreiben ihre Anwendungen direkt auf dieser Plattform, ohne sich um Betriebssystemen, Skalierung oder Wartung 
+kümmern zu müssen. Prominente Beispiele für diesen Ansatz sind die Google App Engine oder AWS Elastic Beanstalk.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/IaaS.png}
- \caption{IaaS-Struktur \cite{Huawei2023CloudComputing}}
+ \includegraphics[width=0.5\textwidth]{gfx/examples/IaaS.png}
+ \caption{IaaS-Struktur~\cite{Huawei2023CloudComputing}}
  \label{fig:chapter02:IaaS}
 \end{figure}
-
-\textbf{\ac{PaaS}:} Hier wird eine Entwicklungsumgebung bereitgestellt, die die zugrunde liegende Infrastruktur vollständig abstrahiert. Der Nutzer entwickelt und betreibt seine Anwendungen, ohne sich um Betriebssysteme, Skalierung oder Wartung kümmern zu müssen. Beispiele hierfür sind Google App Engine oder AWS Elastic Beanstalk. Abbildung~\ref{fig:chapter02:PaaS} veranschaulicht die Architektur von PaaS.
-
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/PaaS.png}
- \caption{PaaS-Struktur \cite{Huawei2023CloudComputing}}
+ \includegraphics[width=0.5\textwidth]{gfx/examples/PaaS.png}
+ \caption{PaaS-Struktur~\cite{Huawei2023CloudComputing}}
  \label{fig:chapter02:PaaS}
 \end{figure}
-
-\textbf{\ac{SaaS}:} Der Anbieter stellt fertige Anwendungen über das Internet bereit. Der Nutzer greift darauf zu, hat aber keinerlei Kontrolle über die zugrunde liegende Infrastruktur oder Plattform. Typische Vertreter sind Google Workspace oder Microsoft Office 365. Die prinzipielle Funktionsweise von SaaS ist in Abbildung~\ref{fig:chapter02:SaaS} skizziert.
-
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/SaaS.png}
- \caption{SaaS-Struktur \cite{Huawei2023CloudComputing}}
+ \includegraphics[width=0.5\textwidth]{gfx/examples/SaaS.png}
+ \caption{SaaS-Struktur~\cite{Huawei2023CloudComputing}}
  \label{fig:chapter02:SaaS}
 \end{figure}
-
-Eine spezielle Ausprägung von PaaS ist das \acf{FaaS}-Modell, bei dem Entwickler einzelne Funktionen als Reaktion auf Ereignisse ausführen können, ohne sich um Server oder Laufzeitumgebungen kümmern zu müssen. Dieses Modell wird in Abschnitt \ref{sec:serverless} detailliert behandelt.
-
-\subsection{Betriebsmodelle des Cloud Computing}
-Cloud Computing kann auch nach der Art der Betriebsmodelle klassifiziert werden. Die gängigsten Betriebsmodelle sind Public Cloud, Private Cloud, Community Cloud, Hybrid Cloud und Industry Cloud\cite{Huawei2023CloudComputing}.
-
-\textbf{Public Cloud (Öffentliche Cloud):} Die Public Cloud ist eine für die Allgemeinheit zugängliche Cloud-Umgebung, die sich im Besitz eines Drittanbieters befindet. Der Anbieter übernimmt die gesamte Bereitstellung, Verwaltung und Wartung der Infrastruktur. Nutzer teilen sich die Ressourcen und zahlen nur für die tatsächlich genutzten Leistungen (Pay-per-Use). Sie haben jedoch keine Kontrolle über die zugrunde liegende physische Infrastruktur und kennen die anderen Nutzer nicht. Beispiele sind Amazon Web Services (AWS), Google Cloud Platform, Microsoft Azure sowie deutsche Anbieter wie die Deutsche Telekom (Open Telekom Cloud) oder SAP.
-
-\textbf{Private Cloud:} Die Private Cloud wird exklusiv für eine einzelne Organisation betrieben – entweder intern im eigenen Rechenzentrum oder extern gehostet. Im Gegensatz zur Public Cloud hat der Nutzer die volle Kontrolle über die Infrastruktur, kann Sicherheitsrichtlinien selbst festlegen und bestimmen, wer Zugriff hat. Private Clouds bieten höhere Sicherheit und Datenschutz, sind aber in der Regel teurer und weniger skalierbar als Public Clouds.
-
-\textbf{Community Cloud:} Die Community Cloud ist ein Kompromiss zwischen Public und Private Cloud. Sie wird von mehreren Organisationen mit gemeinsamen Interessen oder Anforderungen gemeinsam genutzt – beispielsweise von Behörden, Forschungseinrichtungen oder Unternehmen einer Branche. Die Infrastruktur kann von einem der Mitglieder oder einem Drittanbieter betrieben werden. Die Kosten und Vorteile werden unter den Teilnehmern aufgeteilt.
-
-\textbf{Hybrid Cloud:} Die Hybrid Cloud kombiniert Public und Private Cloud. Unternehmen können kritische Anwendungen und sensible Daten in der Private Cloud betreiben, während weniger kritische Workloads in die kostengünstigere Public Cloud ausgelagert werden. Dies ermöglicht eine flexible und kosteneffiziente Nutzung der jeweiligen Vorteile. Hybride Modelle sind oft ein Übergangsschritt von der Private zur Public Cloud.
-
-\textbf{Industry Cloud (Branchencloud):} Die Industry Cloud ist speziell auf die Anforderungen einer bestimmten Branche zugeschnitten (z. B. Gesundheitswesen, Automobilindustrie). Sie bietet branchenspezifische Anwendungen, Datenmodelle und Sicherheitsstandards. Industry Clouds können auf Public, Private oder Community Clouds aufbauen und sind für Nutzer außerhalb der Branche meist wenig relevant.
-
-\textbf{Weitere Cloud-Typen:} Darüber hinaus existieren weitere Klassifizierungen wie die Consumer Cloud (für Endverbraucher, z. B. persönliche Datenspeicherung) und die Enterprise Cloud (für Unternehmen mit umfassenden IT-Dienstleistungen). Diese sind jedoch im Kern spezifische Ausprägungen der oben genannten Modelle.
-\begin{figure}[H]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/Private_Public_Comunity.png}
- \caption{Betriebsmodelle von Cloud Computing \cite{Huawei2023CloudComputing}}
- \label{fig:chapter02:cloud_betriebsmodelle}
-\end{figure}
+Die Abbildungen~\ref{fig:chapter02:IaaS}, \ref{fig:chapter02:PaaS} und \ref{fig:chapter02:SaaS} zeigen die unterschiedlichen Verantwortungsbereiche bei den drei Servicemodellen.
+Eine besondere Ausprägung von PaaS ist das \acf{FaaS}-Modell, bei dem Entwickler einzelne Funktionen 
+als Reaktion auf Ereignisse ausführen können, ohne sich um Server oder Laufzeiten zu kümmern (siehe Abschnitt~\ref{sec:serverless}).  
+Die in dieser Arbeit untersuchten AWS-Lambda-Funktionen folgen genau diesem FaaS-Modell.
 
 \section{Microservices und Event-Driven Architecture}
-Nachdem im vorherigen Abschnitt die Grundlagen von Cloud Computing erläutert wurden,
-werden in diesem Abschnitt die Konzepte von Microservices und Event-Driven Architecture vorgestellt.
-Microservices und Event-Driven Architecture sind zwei eng miteinander verbundene Architekturstile,
-die die Grundlage moderner Cloud-nativer Software bilden \cite{Fowler2024Microservices}\cite{Katzer2024Serverless}.
-Während Microservices die strukturelle Aufteilung einer Anwendung in unabhängige, lose gekoppelte Dienste 
-beschreibt\cite{Fowler2024Microservices}, definiert \ac{EDA} ein Kommunikationsmuster,
-bei dem Dienste über Ereignisse miteinander interagieren, anstatt direkt synchron zu kommunizieren\cite{AWSEventDrivenArchitecture}.
-Zusammen bilden \ac{EDA} und Microservices das Fundament für moderne, skalierbare, resiliente und
-reaktive Systeme.
+\label{sec:microservices-eda}
+
+Microservices und \ac{EDA} sind zwei eng verbundene Architekturstile moderner Cloud-nativer Systeme~\cite{Fowler2024Microservices,Katzer2024Serverless}.  
+Während Microservices eine Anwendung in kleine, unabhängig bereitstellbare Dienste unterteilen~\cite{Fowler2024Microservices}, definiert \ac{EDA} ein asynchrones Kommunikationsmuster über Ereignisse~\cite{AWSEventDrivenArchitecture}.  
+Für diese Arbeit ist das Zusammenspiel beider Konzepte zentral, weil die zu untersuchenden AWS-Lambda-Funktionen typischerweise als Event-Consumer oder -Producer in einer \ac{EDA}-Umgebung agieren~\cite{AWSLambdaDocs} und die Kommunikation zwischen ihnen (z. B. eine Lambda-Funktion ruft eine andere auf) der fünf Microbenchmarks entspricht.
 
 \subsection{Microservices}
-Die Microservices-Architektur ist ein Ansatz zur Entwicklung einer einzelnen Anwendung als einer Sammlung kleiner, unabhängiger Dienste. Jeder Dienst läuft in einem eigenen Prozess und kommuniziert über leichtgewichtige Mechanismen, häufig eine \ac{HTTP}-Ressourcen-API \cite{Fowler2024Microservices}. Diese Dienste sind um die Geschäftslogik der Anwendung herum organisiert und können vollständig automatisiert und unabhängig voneinander bereitgestellt werden.
+Microservices sind unabhängige, lose gekoppelte Dienste, die jeweils einen eigenen Geschäftsbereich abdecken. Sie können in unterschiedlichen Programmiersprachen implementiert werden und werden separat skaliert und deployed~\cite{Fowler2024Microservices}. Diese technologische Vielfalt ist für diese Arbeit relevant, da der Performance-Overhead von OpenTelemetry sprachspezifisch ist – die Wahl der Sprache beeinflusst also die Messergebnisse direkt.
 
-Zu den zentralen Merkmalen von Microservices gehört die unabhängige Bereitstellung, die es erlaubt, 
-jeden Dienst separat zu entwickeln, zu testen und zu deployen, ohne andere Teile der Anwendung zu 
-beeinträchtigen. Dies ermöglicht schnellere Release-Zyklen und geringere Risiken bei Updates.
-Ein weiteres charakteristisches Merkmal ist die dezentrale Datenverwaltung: 
-Im Gegensatz zu monolithischen Anwendungen, die oft eine gemeinsame Datenbank nutzen, 
-bevorzugt die Microservices-Architektur das Prinzip „Database per Service“. 
-Jeder Service verwaltet seine eigene, private Datenbank, was die Kopplung reduziert. 
-Darüber hinaus können Dienste unabhängig voneinander skaliert werden. 
-Funktionen, die sich oft wiederholen, wie etwa ein Bestellservice, können auf mehr Ressourcen verteilt werden 
-als sich weniger oft wiederholende Funktionen, was zu einer effizienteren Ressourcennutzung führt. 
-Schließlich ermöglicht die technologische Vielfalt, dass Teams für jeden Microservice die am besten
- geeignete Programmiersprache, Datenbank oder das passende Framework wählen können\cite{Fowler2024Microservices}.
-
- \begin{figure}[H]
+\begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/monolith-vs-microservices.png}
  \caption{Monolith vs Microservices \href{https://vivasoftltd.com/trade-offs-for-monoliths-and-microservices/}{[source]}}
  \label{fig:chapter02:EDA}
 \end{figure}
-Die Entkopplung durch Microservices bringt jedoch auch neue Herausforderungen mit sich, 
-insbesondere bei der Kommunikation und der Wahrung der Datenkonsistenz über mehrere Dienste hinweg\cite{Fowler2024Microservices}.
-Genau hier setzt die  \ac{EDA} an, die eine asynchrone und lose gekoppelte Kommunikation ermöglicht\cite{AWSEventDrivenArchitecture}.
+Abbildung~\ref{fig:chapter02:EDA} stellt den strukturellen Unterschied zwischen einem Monolithen und einer Microservices-Architektur dar.
 
 \subsection{Event-Driven Architecture}
-Die Event-Driven Architecture ist ein Architekturmuster für Microservices, bei dem der Datenfluss im System durch 
-Ereignisse (Events) gesteuert wird. Ein Event ist eine Zustandsänderung innerhalb eines
-Systems, wie zum Beispiel „Bestelleingang“, „Zahlungseingang“ oder „Artikelversand“.
-Anstatt dass Dienste direkt miteinander synchron kommunizieren, etwa mittels \ac{HTTP}-Request und Response,
-kommunizieren sie asynchron über asynchrone Events\cite{AWSEventDrivenArchitecture}.\\
-Die Kernkomponenten einer \ac{EDA} umfassen den Event Producer, der ein Event erzeugt und publiziert, 
-ohne in der Regel zu wissen, welche anderen Dienste dieses Event konsumieren werden\cite{AzureEventDrivenArchitecture}. 
-Ein Event Broker, eine Middleware-Komponente wie Apache Kafka, RabbitMQ, AWS \ac{SNS} / \ac{SQS}, 
-Azure Queue Storage oder Azure Service Bus, nimmt die Events von den Producern entgegen, 
-speichert sie persistent und leitet sie an Consumer weiter. Der Broker entkoppelt Producer und Consumer 
-vollständig voneinander. Die Event Consumer abonnieren Events und reagieren darauf, 
-wobei sie selbst wieder neue Events publizieren können\cite{AzureEventDrivenArchitecture}.
+In einer \ac{EDA} kommunizieren Dienste nicht synchron über \ac{HTTP}, sondern asynchron über Ereignisse. Ein \textit{Event Producer} sendet ein Ereignis an einen \textit{Event Broker} (z. B. AWS SNS/SQS), von dem es von \textit{Event Consumern} abgeholt wird~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}.  
+Diese Entkopplung erhöht die Ausfallsicherheit und ist die Grundlage für die ereignisgesteuerte Ausführung von AWS-Lambda-Funktionen~\cite{Rocha2021Practical}. Für die Messungen in dieser Arbeit ist die Art der Ereignisverarbeitung (synchron vs. asynchron) nicht primär relevant; wichtig ist, dass die Funktionen durch AWS-eigene Trigger oder direkte Aufrufe angestoßen werden.
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/EDA.png}
- \caption{EDA-Struktur \cite{AzureEventDrivenArchitecture}}
+ \caption{EDA-Struktur~\cite{AzureEventDrivenArchitecture}}
  \label{fig:chapter02:monolith-vs-microservices}
 \end{figure}
+Abbildung~\ref{fig:chapter02:monolith-vs-microservices} zeigt die typischen Komponenten einer Event-Driven Architecture.
 
 \subsection{Zusammenspiel von Microservices und EDA}
-Die Kombination von Microservices und \ac{EDA} adressiert zentrale Herausforderungen verteilter Systeme. 
-Durch lose Kopplung müssen Dienste keine Kenntnis voneinander haben: Ein Producer publiziert ein Event, 
-ohne die Consumer zu kennen. Fällt ein Consumer aus, bleibt der Producer funktionsfähig, 
-was die Ausfallsicherheit erhöht\cite{Rocha2021Practical}.
-Für diese Arbeit ist dieses Zusammenspiel fundamental. Serverless-Funktionen \ac{FaaS} wie AWS Lambda 
-werden durch Events ausgelöst\cite{AWSLambdaDocs} und sie können auch selber Events auslösen, sie sind 
-also eine der beliebtesten Optionen für Event-Consumer und -Producer\cite{AWSLambdaDocs} und im Kontext 
-von Serverless-Computing bildet \ac{FaaS} das Herzstück der Anwendungslogik\cite{Katzer2024Serverless}.
+Die Kombination von Microservices und \ac{EDA} adressiert zentrale Herausforderungen verteilter Systeme. Durch lose Kopplung müssen Dienste keine Kenntnis voneinander haben: Ein Producer publiziert ein Event, ohne die Consumer zu kennen. Fällt ein Consumer aus, bleibt der Producer funktionsfähig, was die Ausfallsicherheit erhöht~\cite{Rocha2021Practical}.  
+Für diese Arbeit ist dieses Zusammenspiel fundamental, da die AWS-Lambda-Funktionen sowohl Events konsumieren als auch produzieren können~\cite{AWSLambdaDocs} und damit das Herzstück serverloser Anwendungen bilden~\cite{Katzer2024Serverless}.
 
 \section{Serverless-Computing und Function as a Service}
 \label{sec:serverless}
-Nachdem die grundlegenden Konzepte von Cloud Computing, Microservices und Event-Driven Architecture erläutert wurden,
-wird in diesem Abschnitt das Konzept von Serverless-Computing und insbesondere \ac{FaaS} vorgestellt.
-Insbesondere das \ac{FaaS}-Modell bildet das Herzstück moderner serverloser Anwendungen\cite{Katzer2024Serverless}.
 
-\subsection{Serverless Computing als Paradigma}
-Serverless Computing ist ein Cloud-Ausführungsmodell, bei dem die Cloud-Anbieter die gesamte Verwaltung der Serverinfrastruktur 
-vollständig übernehmen\cite{IBMFaaS}. Entwickler können sich ausschließlich auf die Entwicklung von Anwendungslogik 
-konzentrieren, ohne sich um Provisioning, Skalierung oder Wartung von Servern kümmern zu müssen\cite{IBMFaaS}.
-Die Bezeichnung „serverless“ ist dabei irreführend, da selbstverständlich weiterhin Server im Hintergrund laufen, jedoch 
-sind diese für den Entwickler vollständig abstrahiert und werden vom Cloud-Anbieter verwaltet\cite{IBMFaaS}.\\
-Das Paradigma des Serverless Computing umfasst verschiedene Arten von Diensten. 
-Neben der Ausführung von Code in Form von Funktionen gehören dazu auch vollständig verwaltete Datenbanken, 
-Nachrichtenwarteschlangen oder \ac{API}-Gateways\cite{IBMFaaS}. 
-Die Gemeinsamkeit aller serverlosen Dienste ist, dass sie automatisch skalieren, nutzungsbasiert abgerechnet werden und 
-keine manuelle Infrastrukturverwaltung erfordern\cite{IBMFaaS}.
+Serverless-Computing ist ein Cloud-Ausführungsmodell, bei dem der Anbieter die gesamte Serverinfrastruktur verwaltet und der Entwickler sich nur auf die Anwendungslogik konzentriert. Der Begriff „serverless“ ist irreführend, da weiterhin Server im Hintergrund laufen, diese aber vollständig abstrahiert sind~\cite{IBMFaaS}.  
+Für diese Arbeit ist das \acf{FaaS}-Modell zentral, weil es die Ausführung einzelner Funktionen in AWS Lambda definiert.
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/serverless.png}
  \caption{Serverless Computing \href{https://www.xenonstack.com/blog/aws-serverless-computing/}{[source]}}
  \label{fig:chapter02:serverless}
 \end{figure}
+Abbildung~\ref{fig:chapter02:serverless} verdeutlicht die Abstraktion der Infrastruktur beim Serverless-Modell.
 
-\subsection{Function as a Service als zentrale Ausprägung}
-Im Zentrum des Serverless Computing steht das \ac{FaaS}-Modell\cite{AWSServerlessComputing}. 
-Dabei wird die Geschäftslogik einer Anwendung in Form von kleinen, unabhängigen und zustandslosen Funktionen implementiert\cite{IBMFaaS}. 
-Diese Funktionen werden durch definierte Ereignisse ausgelöst, wie etwa \ac{HTTP}-Anfragen, Datei-Uploads in einen Storage, 
-Datenbankänderungen oder Nachrichten in einer Queue\cite{IBMFaaS}.\\
-Die wesentlichen Merkmale von FaaS lassen sich in einigen Punkten zusammenfassen. Die Ausführung erfolgt ereignisgesteuert, 
-das heißt, Funktionen werden nur dann aktiviert, wenn ein spezifisches Ereignis eintritt, sonst verbleiben sie in einem Ruhezustand 
-und verbrauchen keine Ressourcen\cite{IBMFaaS}. Die Skalierung passiert automatisch und dynamisch – die Plattform skaliert die Anzahl 
-der Funktionen nahezu augenblicklich entsprechend der eingehenden Last, von einer einzelnen Instanz bis hin zu tausenden parallelen 
-Instanzen, ohne dass manueller Eingriff notwendig ist\cite{IBMFaaS}. Abgerechnet wird ausschließlich die tatsächliche Ausführungszeit 
-der Funktionen, typischerweise in Millisekunden-Schritten, sodass für Zeiten der Inaktivität keine Kosten entstehen\cite{IBMFaaS}. 
-Ein weiteres  Merkmal ist die Zustandslosigkeit – jede Funktion wird in einer isolierten, kurzlebigen Umgebung ausgeführt und 
-teilt keinen internen Zustand mit vorherigen Ausführungen\cite{IBMFaaS}.\\
-Die Architektur hinter FaaS-Plattformen nutzt Container-Technologie. Die Cloud-Anbieter halten vorkonfigurierte Container 
-mit gängigen Laufzeitumgebungen bereit. Wenn ein Ereignis eintritt, wird die entsprechende Funktion aus dem Speicher geladen, 
-in einen solchen Container eingefügt und ausgeführt. Nach Abschluss der Ausführung wird der Container wieder freigegeben\cite{ServerlessAWSLambda}.
+\subsection{FaaS als zentrale Ausprägung}
+
+Bei FaaS wird die Geschäftslogik in kleine, zustandslose Funktionen unterteilt, die durch Ereignisse (z. B. \ac{HTTP}-Anfragen, Datenbankänderungen) ausgelöst werden~\cite{IBMFaaS}.  
+Die wichtigsten Eigenschaften für diese Arbeit sind:
+\begin{itemize}
+    \item \textbf{Ereignisgesteuerte Ausführung:} Funktionen werden nur bei Bedarf aktiviert und verbrauchen im Leerlauf keine Ressourcen. Das beeinflusst die Messung von Kaltstarts und Speicherverbrauch.
+    \item \textbf{Automatische Skalierung:} Die Plattform skaliert die Anzahl der Instanzen dynamisch, was die Messung bei steigender Last relevant macht.
+    \item \textbf{Pay-per-Use-Abrechnung:} Abgerechnet wird nach Ausführungszeit und Speicherzuweisung. Dadurch wirkt sich jeder durch Tracing verursachte Overhead direkt auf die Kosten aus.
+\end{itemize}
+FaaS-Plattformen setzen intern auf Container-Technologie: Bei einem Aufruf wird die Funktion in einen vorkonfigurierten Container geladen und ausgeführt. Nach Abschluss bleibt der Container kurz erhalten (Warmstart) oder wird freigegeben (Kaltstart)~\cite{ServerlessAWSLambda}.
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/FaaS.jpg}
  \caption{Function as a Service \href{https://www.wallarm.com/what/what-is-faas-function-as-a-service}{[source]}}
  \label{fig:chapter02:faas}
 \end{figure}
+Abbildung~\ref{fig:chapter02:faas} zeigt das Prinzip von FaaS: Entwickler stellen nur den Code bereit, die Plattform kümmert sich um die Ausführung.
 
 \subsection{Abgrenzung zu anderen Servicemodellen}
 
-Um das \ac{FaaS}-Modell präzise einordnen zu können, ist eine Abgrenzung zu den bereits in 
-dem Unterabschnitt \ref{subsec:service_models} vorgestellten Servicemodellen hilfreich. 
-\ac{FaaS} unterscheidet sich grundlegend von \ac{IaaS}, \ac{PaaS} und \ac{SaaS}. 
-Bei \ac{IaaS} mieten Nutzer virtuelle Maschinen und sind für die Verwaltung des Betriebssystems, 
-der Laufzeitumgebungen und der Anwendungen selbst verantwortlich, während \ac{FaaS} die 
-Infrastruktur vollständig abstrahiert und der Nutzer nur den Code bereitstellt. \ac{PaaS} 
-bietet zwar eine verwaltete Plattform für vollständige Anwendungen, doch müssen Entwickler dort 
-Skalierung und Instanzenverwaltung berücksichtigen. \ac{FaaS} begrenzt den Fokus auf einzelne 
-Funktionen und skaliert automatisch hoch und herunter. \ac{SaaS} stellt fertige Anwendungen bereit, 
-die Nutzer konsumieren und \ac{FaaS} bietet eine abstrahierte Umgebung zur Ausführung von Funktionen.
+Im Gegensatz zu \ac{IaaS}, bei dem der Nutzer virtuelle Maschinen selbst verwaltet, oder \ac{PaaS}, das eine Plattform für vollständige Anwendungen bereitstellt, beschränkt sich \ac{FaaS} auf einzelne Funktionen und skaliert automatisch. \ac{SaaS} liefert fertige Anwendungen, während FaaS nur die Ausführungsumgebung zur Verfügung stellt.
 
-\subsection{Vorteile und Herausforderungen}
+\subsection{Vorteile und Herausforderungen im Kontext dieser Arbeit}
 
-Serverless Computing und insbesondere \ac{FaaS} haben mehrere Vorteile. 
-Die Reduzierung des operativen Aufwands steht dabei an erster Stelle – Entwickler können sich 
-ausschließlich auf die Implementierung von Geschäftslogik konzentrieren, während der Cloud-Anbieter 
-alle infrastrukturellen Aufgaben übernimmt. Die Kosteneffizienz durch das Pay-per-Use-Modell 
-ermöglicht insbesondere für Anwendungen mit variabler oder unvorhersehbarer Last signifikante 
-Einsparungen im Vergleich zu traditionellen Modellen, bei denen für ungenutzte Kapazitäten gezahlt 
-werden müssen. Die automatische Skalierbarkeit stellt sicher, dass Anwendungen auch bei unerwarteten 
-Lastspitzen performant bleiben, ohne dass Kapazitäten manuell angepasst werden müssen\\
-Es gibt jedoch auch Nachteile, die bei der Entwicklung von serverlosen Anwendungen berücksichtigt 
-werden müssen. Die sogenannten Cold Starts beschreiben die initiale Verzögerung beim ersten Aufruf 
-einer Funktion nach einer Phase der Inaktivität\cite{Rodriguez2024Evaluation}. Da die Plattform die 
-Ausführungsumgebung erst initialisieren muss, kann dies zu Latenzen von mehreren hundert Millisekunden oder sogar Sekunden 
-führen, was für latenzempfindliche Anwendungen problematisch sein kann. 
-Darüber hinaus haben \ac{FaaS}-Lösungen technische Beschränkungen\cite{ServerlessAWSLambda} – die maximale Ausführungsdauer einer Funktion 
-ist begrenzt – bei AWS Lambda beispielsweise auf 15 Minuten\cite{ServerlessAWSLambda} –, was das Modell für lange Prozesse wie 
-komplexe Batch-Jobs ungeeignet macht. Und nicht zuletzt birgt die enge Bindung an einen bestimmten Cloud-Anbieter die Gefahr des 
-Vendor Lock-in, da die Implementierungen und \ac{API}s der verschiedenen Anbieter nicht unbedingt portabel sind.
+Serverless-Anwendungen reduzieren den operativen Aufwand und ermöglichen eine kosteneffiziente Skalierung. Allerdings gibt es spezifische Herausforderungen, die für die Messung relevant sind:
+\begin{itemize}
+    \item \textbf{Cold Starts:} Die Initialisierungsverzögerung beim ersten Aufruf kann mehrere hundert Millisekunden bis Sekunden betragen~\cite{Rodriguez2024Evaluation}. Diese wird in dieser Arbeit als eine der drei Hauptmetriken erfasst.
+    \item \textbf{Technische Beschränkungen:} Die maximale Ausführungsdauer ist auf 15 Minuten begrenzt, was für die kurzen Microbenchmarks in dieser Arbeit unproblematisch ist~\cite{ServerlessAWSLambda}.
+    \item \textbf{Vendor Lock-in:} Durch die Verwendung von AWS-spezifischen Diensten (Lambda, DynamoDB) entsteht eine Bindung an den Anbieter. Da diese Arbeit jedoch ausschließlich auf AWS durchgeführt wird, ist dies für die Aussagekraft der Ergebnisse nicht einschränkend.
+\end{itemize}
 
 \section{AWS Lambda als konkrete FaaS-Plattform}
 \label{sec:aws-lambda}
 
-Nach der allgemeinen Einführung wird nun die konkrete Plattform dieser Arbeit vorgestellt – AWS Lambda. 
-Der von Amazon Web Services bereitgestellte Dienst gilt als einer der beliebtesten im Bereich \ac{FaaS} und zeichnet sich durch breite 
-Integration in das AWS-Ökosystem aus \cite{ServerlessAWSLambda}.
+AWS Lambda ist der von Amazon Web Services bereitgestellte FaaS-Dienst und gilt als einer der beliebtesten Vertreter dieser Kategorie~\cite{ServerlessAWSLambda}. Er bildet die Plattform für alle in dieser Arbeit durchgeführten Experimente.
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/lambda.png}
  \caption{AWS Lambda \href{https://aws.amazon.com/lambda/}{[source]}}
  \label{fig:chapter02:aws_lambda}
 \end{figure}
+Abbildung~\ref{fig:chapter02:aws_lambda} zeigt das AWS-Lambda-Logo; der Dienst ist die zentrale Ausführungsumgebung dieser Arbeit.
 
 \subsection{Grundlegende Funktionsweise}
-AWS Lambda folgt einem ereignisgesteuerten Modell. Eine Lambda-Funktion ist ein Code-Block, der als Reaktion auf bestimmte Ereignisse 
-gestartet wird – z. B. wenn ein Benutzer auf eine Website klickt oder eine Datei in einen S3-Bucket hochgeladen wird. 
-Jede Funktion hat genau einen Function Handler, der als Einstiegspunkt dient. Dieser Handler empfängt die eingehenden Ereignisdaten 
-(meist ein JSON-Objekt) und verarbeitet sie. Während eine Funktion mehrere Methoden enthalten kann, gibt es immer nur einen einzigen 
-Handler. Zur Bereitstellung wird der Code zusammen mit den Abhängigkeiten in einem Deployment-Paket gebündelt, entweder als ZIP-Datei 
-oder als Container-Image \cite{AWSLambdaBasics}.\\
-Bei einem ersten Aufruf oder nach Inaktivität erstellt Lambda eine sichere, isolierte Ausführungsumgebung (Execution Environment). 
-Diese Umgebung verwaltet die notwendigen Prozesse und Ressourcen. Nach Abschluss der Funktion wird sie kurz beibehalten, sodass 
-folgende Aufrufe sie wiederverwenden können – was die Latenz bei warmen Starts deutlich reduziert. Innerhalb der Umgebung sorgt 
-eine sprachspezifische Runtime (z. B. Java, Python oder Node.js) für die Kommunikation zwischen dem Dienst und dem Funktionscode. 
-Für verwaltete Runtimes übernimmt AWS automatisch Sicherheitsupdates und Patches \cite{AWSLambdaBasics}.\\
-Der Aufruf einer Funktion kann entweder direkt über die Konsole, CLI oder SDKs erfolgen oder – im produktiven Einsatz typischer – 
-durch andere AWS-Dienste. Hierfür werden Trigger konfiguriert, die die Funktion mit einer Ereignisquelle verbinden. 
-Eine Funktion kann mehrere Trigger besitzen. Eine Lambda-Funktion kann von einer Vielzahl von 
-AWS-Diensten ausgelöst werden, darunter S3, DynamoDB, API Gateway, CloudWatch Events, CloudWatch Logs, 
-Kinesis, SQS und viele mehr \cite{AWSLambdaServices}.
-Bei Streaming-Diensten wie Kinesis oder SQS kommen statt Triggern Event Source Mappings 
-zum Einsatz, die die Quelle dauerhaft abfragen, Daten bündeln und zu der Funktion in Batches übergeben \cite{AWSLambdaBasics}.
+
+Eine Lambda-Funktion ist ein Code-Block, der durch ein Ereignis (z. B. eine \ac{HTTP}-Anfrage, ein Datei-Upload) ausgelöst wird. Die Funktion besitzt genau einen \textit{Handler}, der die Ereignisdaten verarbeitet. Bei der Bereitstellung werden Code und Abhängigkeiten als ZIP- oder Container-Image gepackt~\cite{AWSLambdaBasics}.  
+Lambda erstellt bei Bedarf eine isolierte Ausführungsumgebung (\textit{execution environment}), die nach der Ausführung kurz beibehalten wird, um nachfolgende Aufrufe schneller zu bedienen (Warmstart)~\cite{AWSLambdaBasics}. Für diese Arbeit ist diese Umgebung wichtig, da sie die Messung von Kalt- und Warmstarts ermöglicht.  
+Der Aufruf kann direkt über die Konsole, CLI oder SDKs erfolgen oder – im produktiven Einsatz typisch – durch andere AWS-Dienste (Trigger). Lambda-Funktionen können von vielen AWS-Diensten wie S3, DynamoDB, API Gateway oder SQS ausgelöst werden~\cite{AWSLambdaServices}.
 
 \subsection{Grenzen und Besonderheiten für die Messung}
-Für die experimentelle Evaluation sind einige technische Grenzen von AWS Lambda besonders relevant. 
-Die sogenannten Kaltstarts (Cold Start) beschreiben die initiale Verzögerung beim ersten Aufruf einer Funktion nach einer Phase 
-von Inaktivität\cite{Rodriguez2024Evaluation}. Diese kann mehrere Sekunden betragen\cite{Rodriguez2024Evaluation} und ist eine der 
-zentralen Metriken dieser Arbeit. Die maximale Ausführungsdauer einer Funktion beträgt 15 Minuten\cite{ServerlessAWSLambda}, 
-der konfigurierbare Arbeitsspeicher kann von 128 MB bis zu 10.240 MB in 1-MB-Schritten gewählt werden und Lambda
-alloziert proportional dazu auch die CPU-Leistung\cite{AWSLambdaMemory}.
 
-Lambda stellt einen flüchtigen lokalen Speicher (Ephemeral Storage) in dem /tmp-Verzeichnis bereit. Der flüchtige Speicher kann 
-von 512 MB bis zu 10.240 MB in 1-MB-Schritten konfiguriert werden\cite{AWSLambdaEphemeralStorage}. 
-Standardmäßig liegt die maximale Anzahl gleichzeitiger Ausführungen (Concurrency) von Lambda-Funktionen 
-pro AWS-Konto bei 1000, dies kann jedoch je nach Bedarf beliebig erweitert werden \cite{AWSLambdaConcurrency}.
-Die nutzungsbasierte Abrechnung (pro Million Anfragen und pro GB-Sekunde) unterstreicht die wirtschaftliche Relevanz des durch Tracing 
-verursachten Overheads. Jede zusätzliche Millisekunde Laufzeit wirkt sich direkt auf die Kosten aus.
+Für die experimentelle Evaluation sind folgende Grenzen relevant:
+\begin{itemize}
+    \item \textbf{Cold Starts:} Die Initialisierungsdauer wird über die CloudWatch-Metrik \textit{Init Duration} erfasst~\cite{Rodriguez2024Evaluation}.
+    \item \textbf{Speicher und CPU:} Der Arbeitsspeicher kann von 128 MB bis 10.240 MB konfiguriert werden; die CPU-Leistung skaliert proportional dazu~\cite{AWSLambdaMemory}. Diese Arbeit verwendet eine feste Speichergröße (1024 MB), um die Vergleichbarkeit zu gewährleisten.
+    \item \textbf{Ephemeral Storage:} Lambda stellt einen flüchtigen lokalen Speicher im \texttt{/tmp}-Verzeichnis bereit, der von 512 MB bis 10.240 MB konfigurierbar ist~\cite{AWSLambdaEphemeralStorage}. Für die Benchmarks wird dieser Speicher nicht genutzt.
+    \item \textbf{Concurrency:} Standardmäßig sind 1000 parallele Ausführungen pro Konto erlaubt~\cite{AWSLambdaConcurrency}. Da die Experimente sequenziell durchgeführt werden, spielt diese Grenze keine Rolle.
+\end{itemize}
+Die nutzungsbasierte Abrechnung pro GB-Sekunde unterstreicht die wirtschaftliche Relevanz des durch Tracing verursachten Overheads.
 
 \subsection{Lambda Layers}
-Ein Lambda Layer ist ein ZIP-Archiv, das ergänzenden Code wie Bibliotheksabhängigkeiten, benutzerdefinierte Runtimes oder 
-Konfigurationsdateien enthält \cite{AWSLambdaLayers}. Layer bieten mehrere Vorteile. Sie reduzieren die Größe von Deployment-Paketen, 
-trennen die Kernlogik von Abhängigkeiten und ermöglichen die gemeinsame Nutzung von Komponenten über mehrere Funktionen hinweg. 
-Zudem erlauben sie das Fixieren von SDK-Versionen. Pro Funktion können bis zu fünf Layer hinzugefügt werden. 
-Beim Einsatz extrahiert Lambda den Layer-Inhalt in das Verzeichnis `/opt` der Ausführungsumgebung, wo die Funktion darauf zugreifen 
-kann \cite{AWSLambdaLayers}. Für die vorliegende Arbeit ist insbesondere der von AWS bereitgestellte Layer für die \ac{ADOT} relevant, 
-der die Tracing-Abhängigkeiten kapselt und in Abschnitt \ref{sec:adot} näher beschrieben wird.
+\label{subsec:lambda-layers}
+
+Ein \textit{Layer} ist ein ZIP-Archiv, das Bibliotheken oder Konfigurationen kapselt und mehreren Funktionen gemeinsam zur Verfügung gestellt werden kann~\cite{AWSLambdaLayers}. Für diese Arbeit ist der von AWS bereitgestellte Layer für die \ac{ADOT} zentral, der die OpenTelemetry-Abhängigkeiten enthält und eine einfache, performante Instrumentierung ermöglicht (siehe Abschnitt~\ref{sec:adot}).
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=0.75\textwidth]{gfx/examples/lambda-layers-diagram.png}
- \caption{AWS Lambda Layers \cite{AWSLambdaLayers}}
+ \caption{AWS Lambda Layers~\cite{AWSLambdaLayers}}
  \label{fig:chapter02:aws_lambda_layers}
 \end{figure}
+Abbildung~\ref{fig:chapter02:aws_lambda_layers} zeigt schematisch, wie Layer in die Ausführungsumgebung eingebunden werden.
 
 \subsection{Häufigste Anwendungsfälle von AWS Lambda}
+\label{subsec:lambda-benchmarks}
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=0.75\textwidth]{gfx/examples/Microbenchmarks.png}
- \caption{Häufigste Anwendungsfälle von AWS Lambda \cite{10254754}}
+ \caption{Häufigste Anwendungsfälle von AWS Lambda~\cite{10254754}}
  \label{fig:chapter02:aws_lambda_use_cases}
 \end{figure}
-
-Die in Abbildung~\ref{fig:chapter02:aws_lambda_use_cases} dargestellten 5 Microbenchmarks sind die häufigsten Anwendungsfälle von 
-AWS Lambda\cite{Winzinger2021DataFlow}. Der Aufruf von einer weiteren AWS Lambda (Lambdaverkettung) – Microbenchmark 1, eine HTTP-GET-Anfrage an eine externe 
-API – Microbenchmark 2, eine HTTP-POST-Anfrage an eine externe API – Microbenchmark 3, eine Leseoperation aus einer 
-DynamoDB-Tabelle – Microbenchmark 4 und eine Schreiboperation in eine DynamoDB-Tabelle – Microbenchmark 5. Diese 5 Microbenchmarks bilden 
-die Grundlage für die experimentelle Evaluation in Kapitel 4.
+Die in Abbildung~\ref{fig:chapter02:aws_lambda_use_cases} dargestellten fünf Microbenchmarks repräsentieren die häufigsten Interaktionsmuster von AWS-Lambda-Funktionen~\cite{Winzinger2021DataFlow}:
+\begin{enumerate}
+    \item Aufruf einer weiteren Lambda-Funktion (Lambdaverkettung)
+    \item HTTP-GET-Anfrage an eine externe API
+    \item HTTP-POST-Anfrage an eine externe API
+    \item Leseoperation aus einer DynamoDB-Tabelle
+    \item Schreiboperation in eine DynamoDB-Tabelle
+\end{enumerate}
+Diese fünf Szenarien bilden die Grundlage für die experimentelle Evaluation in Kapitel 4 dieser Arbeit. Für jedes Szenario wird jeweils eine instrumentierte und eine nicht-instrumentierte Version der Funktion in den drei Sprachen Java, Python und Node.js implementiert.
 
 \section{Observability in verteilten Systemen}
 \label{sec:observability}
 
-Dieser Abschnitt widmet sich dem Thema der Observability in verteilten Systemen, insbesondere im Kontext von Cloud-nativen 
-verteilten Anwendungen.  
-In verteilten Umgebungen mit Microservices und serverlosen Funktionen 
-braucht man die Fähigkeit, den internen Zustand des Systems anhand seiner externen Ausgaben zu verstehen und darauf basierend handeln 
-zu können.
+Observability beschreibt die Fähigkeit, den internen Zustand eines Systems allein durch seine externen Ausgaben (Logs, Metriken, Traces) zu verstehen~\cite{Hausenblas2024Cloud}. In verteilten, Cloud-nativen Umgebungen ist dies eine Grundvoraussetzung für Fehlerdiagnose und Performance-Optimierung.
 
-\subsection{Definition und Abgrenzung}
-
-Der Begriff Observability (Beobachtbarkeit) beschreibt die Fähigkeit, den internen Zustand eines Systems allein durch die Messung 
-seiner externen Ausgaben zu verstehen\cite{Hausenblas2024Cloud}. Auf Cloud-native Umgebungen übertragen, bedeutet dies, aus verschiedenen Telemetriesignalen 
-– wie Logs, Metriken und Traces – wertvolle Erkenntnisse (sogenannte \textit{actionable insights}) 
-zu gewinnen, um das System zu verstehen und bei Bedarf steuernd einzugreifen\cite{Hausenblas2024Cloud}.
-
-Observability wird oft mit Monitoring gleichgesetzt, ist aber konzeptionell breiter. 
-Während Monitoring traditionell den Systemzustand anhand vordefinierter Metriken und Schwellwerte überwacht 
-(und damit die Frage "Was ist wann passiert?" beantwortet), hat Observability das Ziel, auch unbekannte Problemursachen 
-zu entdecken und zu verstehen – also die Frage "Warum ist etwas passiert?" zu beantworten\cite{Hausenblas2024Cloud}. 
-In der Praxis wird Monitoring häufig als Kurzbezeichnung für systemzustands- und leistungsbezogene Observability verwendet\cite{Hausenblas2024Cloud}.
-
-\subsection{Zentrale Konzepte und Komponenten}
-
-Für ein gutes Verständnis von Observability ist es nötig mehrere Kernkomponenten zu verstehen \cite{Hausenblas2024Cloud}. 
-Das \textbf{\ac{SUO}} ist das zu beobachtende System, zusammen mit den darauf ausgeführten Anwendungen\cite{Hausenblas2024Cloud}. 
-\textbf{Signale} sind die von außen beobachtbaren Informationen, die von verschiedenen \textbf{Quellen} 
-erzeugt werden – wie z. B. Microservices, Datenbanken, Betriebssystemen oder Cloud-Diensten\cite{Hausenblas2024Cloud}. 
-Diese Quellen müssen typischerweise instrumentiert werden, um Signale zu emittieren. 
-\textbf{Agenten} übernehmen die Sammlung, Verarbeitung und Weiterleitung der Signale\cite{Hausenblas2024Cloud}. 
-Die \textbf{Ziele (Destinations)} sind die Orte, an denen die Signale konsumiert werden – wie z. B. Visualisierungen 
-in Dashboards, Alerting-Systeme, Langzeitspeicher oder Analysewerkzeuge\cite{Hausenblas2024Cloud}. 
-Der gesamte Prozess der Signalsammlung, -verarbeitung und -aufnahme wird als \textbf{Telemetrie} bezeichnet\cite{Hausenblas2024Cloud}.
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/observability_struktur.png}
- \caption{Zentrale Konzepte der Observability \cite{Hausenblas2024Cloud}}
+ \caption{Zentrale Konzepte der Observability~\cite{Hausenblas2024Cloud}}
  \label{fig:chapter02:observability}
 \end{figure}
+Abbildung~\ref{fig:chapter02:observability} stellt die zentralen Komponenten der Observability dar: System under Observation, Signale, Agenten und Ziele.
 
 \subsection{Die drei Säulen der Observability}
+Die drei zentralen Signaltypen sind:
+\begin{itemize}
+    \item \textbf{Logs:} detaillierte, zeitgestempelte Ereignisaufzeichnungen.
+    \item \textbf{Metriken:} numerische Messwerte (z. B. CPU-Auslastung, Fehlerrate), die sich für Dashboards und Alerts eignen.
+    \item \textbf{Traces:} Nachverfolgung einer Anfrage durch verschiedene Dienste hinweg.
+\end{itemize}
+Erst die Kombination aller drei Säulen ermöglicht ein vollständiges Bild des Systemverhaltens~\cite{Hausenblas2024Cloud}. Für diese Arbeit sind \textit{Metriken} (Laufzeit, Speicher, Kaltstartdauer) und \textit{Traces} (zur Sicherstellung der korrekten Instrumentierung) die relevanten Signaltypen.
 
-Observability stützt sich auf drei zentrale Signaltypen, die als die drei Säulen der Observability bezeichnet werden – 
-Logs, Metriken und Traces\cite{Hausenblas2024Cloud}.
-
-\textbf{Logs} sind detaillierte, mit einem Zeitstempel versehene Aufzeichnungen von Ereignissen, die während der Ausführung 
-einer Anwendung auftreten. Sie können strukturiert (z.B. im JSON-Format) oder unstrukturiert vorliegen und liefern wertvollen 
-Kontext für die Fehlerdiagnose – z. B. einen Fehler beim Datenbankzugriff oder die erfolgreiche Verarbeitung einer Bestellung\cite{Hausenblas2024Cloud}.
-
-\textbf{Metriken} sind numerische Messwerte, die in regelmäßigen Abständen erfasst werden und den Zustand eines Systems quantifizieren. 
-Dazu gehören beispielsweise CPU-Auslastung, Speicherverbrauch, Anfragen pro Sekunde oder Fehlerraten. 
-Metriken eignen sich besonders gut für die frühzeitige Erkennung von Trends und Anomalien\cite{Hausenblas2024Cloud}.
-
-\textbf{Traces} nehmen den vollständigen Lebenszyklus einer Anfrage nach, während sie durch verschiedene Dienste und Komponenten 
-eines verteilten Systems geht. Ein Trace besteht aus mehreren Spans, wobei jeder Span eine einzelne Operation repräsentiert – 
-wie z. B. einen Datenbankaufruf oder die Validierung einer Eingabe. Durch eine eindeutige Trace-ID, die über alle Dienste hinweg 
-propagiert wird, lässt sich der gesamte Pfad einer Benutzeranfrage rekonstruieren\cite{Hausenblas2024Cloud}.
-
-Erst die Zusammenarbeit dieser drei Säulen ermöglicht ein vollständiges Bild des Systemverhaltens – Metriken geben einen ersten Hinweis 
-auf ein Problem ("Die Fehlerrate steigt"), Traces zeigen, wo das Problem auftritt ("Service X betroffen"), und Logs erklären schließlich 
-die genaue Ursache ("Die Verbindung zur Datenbank wurde abgelehnt")\cite{Hausenblas2024Cloud}.
-
-\subsection{Rollen und Anwendungsfälle}
-
-Observability adressiert unterschiedliche Rollen innerhalb einer Organisation mit jeweils spezifischen Fragestellungen\cite{Hausenblas2024Cloud}. 
-Entwickler nutzen Traces, um langsame Code-Pfade zu identifizieren, und Logs, um Fehler zu diagnostizieren. 
-DevOps-Verantwortliche und \ac{SRE} verwenden Metriken für Dashboards und Alerts, um die Systemgesundheit 
-zu überwachen und bei Störungen schnell reagieren zu können. Plattformbetreiber interessieren sich für niedrigschwellige Signale wie 
-Ressourcenauslastung und Kosten. Selbst nicht-technische Rollen wie Produktmanager können von Observability profitieren, 
-etwa durch Dashboards zur Bereitstellungsgeschwindigkeit oder zur Einhaltung von \ac{SLA}\cite{Hausenblas2024Cloud}.
-
-\begin{table}[H]
-\centering
-\caption{Beispielhafte Observability-Abläufe nach Rollen \cite{Hausenblas2024Cloud}}
-\label{tab:observability-flows}
-\begin{tabularx}{\textwidth}{|l|X|}
-\hline
-\textbf{Rolle} & \textbf{Beispielhafter Ablauf} \\
-\hline
-Entwickler & Nutzt Traces, um herauszufinden, welcher Microservice entlang des Anforderungspfads langsam ist. \\
-\hline
-Entwickler & Nutzt kontinuierliches Profiling, um den Hot Path eines Microservice zu beschleunigen. \\
-\hline
-DevOps & Erhält einen Alarm über eine ausgefallene Komponente und nutzt dann in einem Dashboard dargestellte Metriken, um den Alarm im Kontext zu verstehen. \\
-\hline
-DevOps & Nutzt Metriken, um die Komponenten einzugrenzen, die hohe Latenz verursachen; wechselt dann zu Traces, um in einen spezifischen Anforderungspfad einzutauchen; und betrachtet anschließend Logs eines Microservice, der auf diesem Pfad arbeitet, um Details zu erhalten (Korrelation). \\
-\hline
-\ac{SRE} & Verfolgt Ziele und deren Erfüllung und berät Entwickler über Dashboards. \\
-\hline
-Plattformbetreiber & Nutzt ein Dashboard auf Clusterebene, um die automatische Skalierung über die Zeit zu verfolgen. \\
-\hline
-Release-Ingenieur & Nutzt ein Dashboard, um den Build-Fortschritt eines Microservice-Artefakts (z.B. ein Container-Image) zu überwachen, um beispielsweise Leistungsrückschritte zu verhindern. \\
-\hline
-Produktmanager & Nutzt ein CD-Dashboard, um den Bereitstellungsfortschritt von Microservices zu überwachen. \\
-\hline
-Business-Stakeholder & Nutzt ein Dashboard, um wöchentliche Umsätze und \ac{SLA}-Verletzungen zu verfolgen. \\
-\hline
-\end{tabularx}
-\end{table}
-
-\subsection{Herausforderungen in Cloud-nativen Umgebungen}
-
-Cloud-native Systeme haben besondere Anforderungen an die Observability\cite{Hausenblas2024Cloud}. 
-Sie sind von Natur aus verteilt – die Kommunikation passiert nicht innerhalb eines Prozesses, sondern über das Netzwerk. 
-Zusätzlich sind beteiligte Komponenten volatil – Container-Instanzen kommen und gehen, IP-Adressen ändern sich, 
-neue Versionen von Lambda-Funktionen werden sehr oft ausgerollt. Das macht traditionelle Überwachungsansätze, 
-die auf langlaufenden Prozessen und festen Instanzen basieren, oft unzureichend\cite{Hausenblas2024Cloud}.
-
-Observability adressiert diese Herausforderungen, indem sie eine automatisierte Sammlung aller relevanten Signale ermöglicht und 
-diese als Grundlage für Entscheidungen nutzbar macht\cite{Hausenblas2024Cloud}. Die Korrelation von verschiedenen Signaltypen ist 
-dabei entscheidend. Ein \ac{SRE} könnte z. B. über einen Metrik-Alarm über eine erhöhte Fehlerrate informiert werden, 
-über eine Trace-ID, die in der Metrik eingebettet ist, zum detaillierten Trace navigieren und schließlich in den Logs des betroffenen 
-Dienstes die Ursache finden\cite{Hausenblas2024Cloud}.
-
-\subsection{Kosten und Nutzen}
-
-Die Investitionen (z. B. Zeit und Geld) in Observability sind mit verschiedenen Faktoren verbunden – Entwicklungszeit für die Instrumentierung, Speicherkosten 
-für die Signalaufbewahrung, Rechenzeit für Agenten und Netzwerkverkehr\cite{Hausenblas2024Cloud}. 
-Der Nutzen ist schwerer zu quantifizieren, kann aber beispielsweise an der \ac{MTTR} gemessen werden. 
-Auch weiche Faktoren wie reduzierte Belastung im Bereitschaftsdienst tragen zum Gesamtnutzen bei\cite{Hausenblas2024Cloud}.
-
-\subsection{Portabilität durch offene Standards}
-
-Ein wichtiges Prinzip moderner Observability ist die Vermeidung von Vendor-Lock-in durch den Einsatz offener Standards und 
-Open-Source-Werkzeuge\cite{Hausenblas2024Cloud}. Instrumentiert man Anwendungen beispielsweise mit OpenTelemetry, 
-kann man später zwischen verschiedenen Zielsystemen wechseln, ohne die Anwendung selbst ändern zu müssen. 
-Dieser Aspekt ist für die vorliegende Arbeit von zentraler Bedeutung, 
-da OpenTelemetry als herstellerneutraler Standard für die Instrumentierung verwendet wird und im Abschnitt \ref{sec:otel}
-ausführlich behandelt wird.
+\subsection{OpenTelemetry und Portabilität}
+Ein wichtiges Prinzip moderner Observability ist die Vermeidung von Vendor-Lock-in durch offene Standards. OpenTelemetry hat sich als herstellerneutraler Standard für die Erfassung und den Export von Telemetriedaten etabliert~\cite{OpenTelemetryInstrumentation,OpenTelemetryWhatIs,OpenTelemetryDocs}.  
+Instrumentiert man Anwendungen mit OpenTelemetry, kann man später zwischen verschiedenen Backends wechseln, ohne den Code anpassen zu müssen. Dieser Aspekt ist für diese Arbeit von zentraler Bedeutung, da OpenTelemetry als Instrumentierungs-Framework verwendet wird (siehe Abschnitt~\ref{sec:otel}).
 
 \section{OpenTelemetry}
 \label{sec:otel}
 
-Nachdem im vorherigen Abschnitt die Grundlagen der Observability erläutert wurden, wird in diesem Abschnitt die praktische Umsetzung 
-mit OpenTelemetry näher beschrieben. 
-OpenTelemetry hat sich als ein herstellerneutraler Standard etabliert, der die Erfassung und den Export von Telemetriedaten 
-vereinheitlicht\cite{OpenTelemetryInstrumentation,OpenTelemetryWhatIs,OpenTelemetryDocs}.
+OpenTelemetry ist ein herstellerneutraler Open-Source-Standard für die Erfassung von Telemetriedaten (Traces, Metriken, Logs). Es entstand aus der Zusammenführung der Projekte OpenTracing und OpenCensus und wird von der \ac{CNCF} betreut~\cite{OpenTelemetryWhatIs}.  
+Für diese Arbeit wird OpenTelemetry genutzt, um die AWS-Lambda-Funktionen zu instrumentieren und den daraus resultierenden Performance-Overhead zu messen.
 
 \subsection{Entstehung und Zielsetzung}
-
-OpenTelemetry entstand aus der Zusammenführung der beiden Vorgängerprojekte OpenTracing und OpenCensus und wird heute als 
-Projekt von der \ac{CNCF} betreut\cite{OpenTelemetryWhatIs}. Das Ziel des Frameworks ist es, eine einzige, einheitliche Bibliothek zur 
-Verfügung zu stellen, mit der Entwickler Logs, Metriken und Traces erfassen und an verschiedene Observability-Backends senden können – 
-ohne für jedes Ziel neu instrumentieren zu müssen\cite{OpenTelemetryInstrumentation}. OpenTelemetry fungiert damit als eine Art 
-"gemeinsame Sprache" für Observability-Daten und vermeidet Vendor-Lock-in\cite{OpenTelemetryWhatIs}.
+OpenTelemetry vereinheitlicht die Erfassung von Telemetriedaten und stellt eine gemeinsame API bereit, sodass Anwendungen nicht für jedes Backend neu instrumentiert werden müssen. Ziel ist es, eine einheitliche Bibliothek für Logs, Metriken und Traces zu schaffen und Vendor-Lock-in zu vermeiden~\cite{OpenTelemetryInstrumentation,OpenTelemetryWhatIs}.
 
 \subsection{Kernkomponenten und Architektur}
+Die OpenTelemetry-Architektur besteht aus mehreren modularen Komponenten~\cite{OpenTelemetryComponents,OpenTelemetryInstrumentation}:
+\begin{itemize}
+    \item \textbf{API und SDK:} Die \ac{API} definiert, wie Telemetriedaten erzeugt werden; das \ac{SDK} bietet konkrete Implementierungen und Konfigurationsmöglichkeiten (z. B. Sampling, Export). Entwickler können zwischen manueller (codebasierter) und automatischer (Zero-Code-)Instrumentierung wählen.
+    \item \textbf{Instrumentierungsbibliotheken:} Vorgefertigte Bibliotheken für gängige Frameworks (HTTP, Datenbanken), die automatisch Telemetriedaten erzeugen. Langfristig sollen alle wichtigen Bibliotheken standardmäßig beobachtbar sein.
+    \item \textbf{Collector:} Eine optionale Komponente, die Telemetriedaten empfängt, verarbeitet (filtern, anreichern, bündeln) und an ein oder mehrere Backends weiterleitet. Der Einsatz eines Collectors entkoppelt die Instrumentierung vom Backend und bietet zentrale Kontrollmöglichkeiten. In dieser Arbeit wird jedoch kein separater Collector eingesetzt; die Daten werden direkt über den AWS-spezifischen ADOT-Layer exportiert.
+    \item \textbf{Exporter und Propagators:} Exporter senden die Daten an ein Backend (hier AWS X-Ray), Propagators übertragen Kontextinformationen (z. B. Trace-IDs) zwischen Diensten, z. B. über \ac{HTTP}-Header.
+\end{itemize}
 
-Die Architektur von OpenTelemetry folgt einem durchdachten, modularen Aufbau, der sich grob in drei Schichten gliedern lässt: die Datenerfassung im Code, die optionale Verarbeitung durch einen Collector und den Export an ein Backend [citation:6].
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=1.0\textwidth]{gfx/examples/otel_collector.png}
+ \caption{OpenTelemetry Collector~\cite{OpenTelemetryCollector}}
+ \label{fig:chapter02:otel_collector}
+\end{figure}
+Abbildung~\ref{fig:chapter02:otel_collector} zeigt die Rolle des Collectors in der Telemetrie-Pipeline.
 
-\begin{description}
-    \item[API und SDK:] Auf der untersten Ebene stellt OpenTelemetry für jede unterstützte Programmiersprache eine spezifische 
-    \emph{\ac{API}} bereit. Diese definiert, wie Telemetriedaten erzeugt werden. Das dazugehörige \emph{\ac{SDK}} ist die konkrete 
-    Implementierung dieser \ac{API} und bietet Konfigurationsmöglichkeiten wie die Steuerung des Samplings, 
-    das Hinzufügen von Attributen oder das Festlegen von Exporteuren\cite{OpenTelemetryComponents,OpenTelemetryInstrumentation}. 
-    Entwickler können zwischen zwei Hauptarten der Instrumentierung wählen – der \emph{code-basierten Instrumentierung}, 
-    bei der die \ac{API} manuell im Code eingefügt wird, und der \emph{Zero-Code-Instrumentierung}, die automatisch über Agents 
-    oder spezielle Bibliotheken erfolgt, ohne den Quellcode zu verändern\cite{OpenTelemetryInstrumentation,OpenTelemetryComponents}.
-    
-    \item[Instrumentierungsbibliotheken:] Viele bekannte Frameworks und Bibliotheken (z.B. für HTTP, Datenbankzugriffe) 
-    sind nicht von sich aus mit OpenTelemetry instrumentiert. Daher bietet OpenTelemetry für gängige Sprachen vorgefertigte 
-    \emph{Instrumentierungsbibliotheken}. Diese erzeugen automatisch Telemetriedaten für die Operationen dieser Bibliotheken, 
-    wie z. B. eingehende und ausgehende HTTP-Requests\cite{OpenTelemetryComponents,OpenTelemetryInstrumentation}. Ein langfristiges Ziel des Projekts ist es, 
-    dass alle wichtigen Bibliotheken standardmäßig beobachtbar (observable per default) sind\cite{OpenTelemetryComponents,OpenTelemetryInstrumentation}.
-    
-    \item[OpenTelemetry Collector:] Der \emph{Collector} ist eine zentrale, vendorneutrale Komponente, die als eigenständiger Dienst läuft. 
-    Er kann Telemetriedaten in verschiedenen Formaten (z.B. OTLP, Jaeger, Prometheus) empfangen, kann diese Daten verarbeiten 
-    (z.B. filtern, anreichern, bündeln) und an ein oder mehrere Backends exportieren\cite{OpenTelemetryComponents,OpenTelemetryCollector}. 
-    Der Einsatz eines Collectors ist Best Practice, da er die Instrumentierung vom Backend entkoppelt, Daten puffern kann 
-    und zentrale Kontrollmöglichkeiten über die Datenverarbeitung bietet\cite{OpenTelemetryComponents,OpenTelemetryCollector}.
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1.0\textwidth]{gfx/examples/otel_collector.png}
-      \caption{OpenTelemetry Collector \cite{OpenTelemetryCollector,OpenTelemetryCollector}}
-      \label{fig:chapter02:otel_collector}
-    \end{figure}
-    
-    \item[Exporters und Propagators:] \emph{Exporter} sind für den Transport der gesammelten Daten an ein bestimmtes Ziel verantwortlich. 
-    OpenTelemetry unterstützt mehrere Arten von Exporter, darunter Jaeger, Zipkin und verschiedene kommerzielle Anbieter. 
-    Der standardisierte Export erfolgt oft über das \emph{\ac{OTLP}}\cite{OpenTelemetryComponents,OpenTelemetryCollector}. Für die Nachverfolgung über 
-    Services hinweg sorgen \emph{Propagators}. Sie serialisieren und deserialisieren Kontextinformationen wie Trace-IDs und 
-    übergeben sie bei der Kommunikation von einem Service an den nächsten, z. B. über \ac{HTTP}-Header\cite{OpenTelemetryComponents}.
-\end{description}
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/otel_structure.png}
- \caption{OpenTelemetry \cite{OpenTelemetryDocs}}
+ \caption{OpenTelemetry~\cite{OpenTelemetryDocs}}
  \label{fig:chapter02:otel}
 \end{figure}
+Abbildung~\ref{fig:chapter02:otel} gibt einen Überblick über die OpenTelemetry-Komponenten und deren Zusammenspiel.
 
 \subsection{Sampling-Strategien}
 \label{subsec:sampling}
+Um das Datenvolumen zu reduzieren, können Sampling-Strategien angewendet werden~\cite{OpenTelemetrySampling}. 
 
-Ein zentrales Konzept zur Steuerung des Datenvolumens und der damit verbundenen Kosten ist das Sampling. 
-Wenn die Mehrheit der Anfragen erfolgreich ist und mit moderater Latenz ohne Fehler abgeschlossen wird, 
-ist es nicht notwendig, 100 Prozent aller Traces zu erfassen, um ein System aussagekräftig zu beobachten. 
-Es reicht, die richtige Stichprobe (das \textit{Sampling}) zu wählen \cite{OpenTelemetrySampling}.
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/otel_sampling.png}
- \caption{Samplingkriterien \cite{OpenTelemetrySampling}}
+ \caption{Samplingkriterien~\cite{OpenTelemetrySampling}}
  \label{fig:chapter02:sampling}
 \end{figure}
+Abbildung~\ref{fig:chapter02:sampling} veranschaulicht, nach welchen Kriterien Sampling-Entscheidungen getroffen werden können.
 
 \paragraph{Terminologie und Grundprinzip}
-Wenn es um Sampling geht, ist eine konsistente Terminologie wichtig. 
-Ein Trace oder Span gilt als \emph{gesampelt (sampled)}, wenn er vom Sampler ausgewählt, verarbeitet und exportiert wird. 
-Ist dies nicht der Fall, gilt er als \emph{nicht gesampelt (not sampled)}\cite{OpenTelemetrySampling}. 
-Sampling ist eine der effektivsten Methoden, um Observability-Kosten zu senken, ohne den Überblick zu verlieren. 
-Eine kleinere Datenmenge kann die Gesamtmenge genau abbilden. Bei Systemen mit hohem Durchsatz kann eine Sampling-Rate von einem 
-Prozent oder weniger bereits sehr repräsentativ für die restlichen 99 Prozent der Daten sein \cite{OpenTelemetrySampling}. 
-Ob Sampling sinnvoll ist, hängt von Faktoren wie der Datenmenge, der Art der Workloads und den vorhandenen Ressourcen ab\cite{OpenTelemetrySampling}.
+Ein Trace oder Span gilt als \emph{gesampelt (sampled)}, wenn er vom Sampler ausgewählt, verarbeitet und exportiert wird; andernfalls als \emph{nicht gesampelt (not sampled)}. Sampling ist eine effektive Methode, um Observability-Kosten zu senken, insbesondere bei hohem Durchsatz~\cite{OpenTelemetrySampling}. Ob Sampling sinnvoll ist, hängt von Datenmenge, Workload und Ressourcen ab.
 
 \paragraph{Head Sampling}
-\emph{Head Sampling} ist eine Technik, bei der die Entscheidung über die Aufzeichnung eines Traces so früh wie möglich getroffen wird. 
-Ein Trace wird also nicht als Ganzes betrachtet, um zu entscheiden, ob es aufgezeichnet wird. Die gängigste Form ist das 
-\emph{Consistent Probability Sampling} (auch deterministisches Sampling). Dabei wird die Entscheidung basierend auf der Trace-ID 
-und einem gewünschten Prozentsatz der aufzuzeichnenden Traces getroffen. Das stellt sicher, dass vollständige Traces mit einer 
-konstanten Rate (z. B. 5\% aller Traces) erfasst werden\cite{OpenTelemetrySampling}. 
-Die Vorteile von Head Sampling sind seine Einfachheit, leichte Konfigurierbarkeit und Effizienz. 
-Es kann an jedem Punkt der Telemetrie-Pipeline durchgeführt werden. 
-Der Hauptnachteil ist, dass die Sampling-Entscheidung nicht auf dem gesamten Trace basieren kann. 
-So ist es mit Head Sampling allein nicht möglich, alle Traces zu erfassen, die einen Fehler enthalten\cite{OpenTelemetrySampling}.
+\emph{Head Sampling} entscheidet bereits zu Beginn eines Traces, ob er aufgezeichnet wird. Die gängigste Form ist das \emph{Consistent Probability Sampling} (deterministisches Sampling), bei dem anhand der Trace-ID und einer konstanten Rate (z. B. 5\%) entschieden wird. Vorteile sind Einfachheit und Effizienz; Nachteil ist, dass die Entscheidung nicht auf dem gesamten Trace basieren kann, sodass beispielsweise Fehler-Traces nicht gezielt erfasst werden können~\cite{OpenTelemetrySampling}.
 
 \paragraph{Tail Sampling}
-\emph{Tail Sampling} trifft die Entscheidung, ob ein Trace aufgezeichnet wird, erst unter Berücksichtigung aller oder der meisten 
-Spans innerhalb des Traces. Diese Methode bietet wesentlich komplexere und intelligentere Filterung. 
-Tail Sampling ermöglicht es z. B., Traces immer dann aufzuzeichnen, wenn sie einen Fehler enthalten, 
-basierend auf der Gesamtlatenz eines Traces, oder aufgrund bestimmter Attribute in einem oder mehreren Spans. 
-Auch die Verwendung unterschiedlicher Sampling-Raten auf verschiedene Services (Services in einer Architektur) 
-ist möglich\cite{OpenTelemetrySampling}. 
-Für größere Systeme, die ihre Telemetriedaten samplen müssen, ist Tail Sampling fast immer die richtige Option, 
-um ein Gleichgewicht zwischen Datenmenge und dem Nutzen dieser Daten zu erreichen\cite{OpenTelemetrySampling}. 
-Allerdings bringt Tail Sampling auch Nachteile mit sich. Es ist schwieriger zu implementieren und zu betreiben, 
-da die verantwortlichen Komponenten mit Zuständen versehen sein müssen und eventuell eine große Datenmenge puffern. 
-Zudem sind Tail Sampler heute oft als vendorspezifische Technologien implementiert\cite{OpenTelemetrySampling}.
+\emph{Tail Sampling} trifft die Entscheidung erst nach Betrachtung aller oder der meisten Spans eines Traces. Dadurch können komplexe Bedingungen abgebildet werden, z. B. das Aufzeichnen aller fehlerhaften Traces oder solcher mit hoher Latenz. Tail Sampling ist für größere Systeme meist die richtige Wahl, ist aber aufwendiger in der Implementierung und erfordert zustandsbehaftete Komponenten~\cite{OpenTelemetrySampling}.
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/tail_sampling.png}
- \caption{Tail Sampling \cite{OpenTelemetrySampling}}
+ \caption{Tail Sampling~\cite{OpenTelemetrySampling}}
  \label{fig:chapter02:tail_sampling}
 \end{figure}
+Abbildung~\ref{fig:chapter02:tail_sampling} zeigt den Ablauf von Tail Sampling.
 
 \paragraph{Kombination von Strategien}
-In manchen Systemen werden Head- und Tail-Sampling auch kombiniert. 
-So können Services mit sehr hohem Trace-Aufkommen zunächst Head Sampling verwenden, 
-um nur einen kleinen Prozentsatz der Traces im Voraus zu samplen. 
-Später in der Telemetrie-Pipeline kann dann ein Tail Sampler auf diese vorgefilterten Daten angewandt werden, 
-um noch präzisere Sampling-Entscheidungen zu treffen. 
-Das schützt die Telemetrie-Pipeline vor Überlastung\cite{OpenTelemetrySampling}.
+In manchen Systemen werden Head- und Tail-Sampling kombiniert: Zunächst reduziert Head Sampling die Datenmenge, und später wendet ein Tail Sampler weitere Filter an, um die Telemetrie-Pipeline zu entlasten~\cite{OpenTelemetrySampling}.
+
+Für die Messungen in dieser Arbeit wird \textbf{kein Sampling} verwendet, da der maximale Overhead erfasst werden soll. Alle Traces werden vollständig exportiert.
 
 \subsection{AWS Distro for OpenTelemetry (ADOT)}
-Für die Nutzung innerhalb der AWS-Cloud bietet Amazon eine eigene, optimierte Distribution von OpenTelemetry an – 
-die \ac{ADOT}\cite{ADOT}. ADOT ist eine vollständig von AWS unterstützte Version des OpenTelemetry-Projekts, 
-die speziell für die Integration mit AWS-Services wie CloudWatch, X-Ray, OpenSearch und anderen AWS-Services 
-(EC2, ECS, EKS, Lambda) ausgelegt ist\cite{ADOT}. \ac{ADOT} kann genauso wie das reguläre OpenTelemetry SDK
-mit verschiedenen Export-Backends verwendet werden. Die performanteste Option und gleichzeitig
-eine der Best-Practices ist jedoch der Export direkt an AWS CloudWatch (konkret AWS X-Ray)\cite{ADOT_Lambda}. 
+\label{sec:adot}
+Die \ac{ADOT} ist eine von AWS unterstützte Distribution von OpenTelemetry, die für die Integration mit AWS-Diensten optimiert ist~\cite{ADOT}. Für AWS Lambda werden vorgefertigte \textit{Layer} bereitgestellt, die die OpenTelemetry-Abhängigkeiten enthalten und die Instrumentierung ohne manuelle SDK-Einbindung ermöglichen~\cite{ADOT_Lambda}.  
+In dieser Arbeit wird der ADOT-Layer für Java, Python und Node.js verwendet, um die Funktionen mit OpenTelemetry zu instrumentieren. Als Backend dient AWS X-Ray, da es nativ mit Lambda integriert ist und die gesammelten Traces in CloudWatch verfügbar macht.
+
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/adot.png}
- \caption{AWS Distro for OpenTelemetry \cite{ADOT}}
+ \caption{AWS Distro for OpenTelemetry~\cite{ADOT}}
  \label{fig:chapter02:adot}
 \end{figure}
-Für AWS Lambda stellt die Community vorgefertigte ADOT-Layer bereit, die eine einfache und performante Instrumentierung der 
-Funktionen ermöglichen\cite{ADOT_Lambda}. ADOT ist daher die Grundlage für die in dieser Arbeit durchgeführten Experimente.
+Abbildung~\ref{fig:chapter02:adot} zeigt die Komponenten der AWS Distro for OpenTelemetry.
 
 \section{AWS CloudWatch}
 \label{sec:cloudwatch}
 
-Amazon CloudWatch ist der zentrale Überwachungsdienst (Observability Service) von AWS, der Metriken und Logs aus AWS-Ressourcen sammelt 
-und zugänglich macht\cite{AWSCloudWatchDocs}. Für die vorliegende Arbeit ist CloudWatch die primäre Quelle der Performance-Metriken der 
-instrumentierten Lambda-Funktionen.
+Amazon CloudWatch ist der zentrale Überwachungsdienst von AWS und sammelt Metriken und Logs aus AWS-Ressourcen~\cite{AWSCloudWatchDocs}. Für diese Arbeit ist CloudWatch die primäre Quelle der Performance-Metriken der instrumentierten Lambda-Funktionen.
 
 \subsection{Kernfunktionen für diese Arbeit}
-
-CloudWatch verfolgt einen Metriken-zentrierten Ansatz. Eine Metrik ist eine zeitlich geordnete Menge von Datenpunkten, 
-die von AWS-Diensten oder benutzerdefinierten Quellen an CloudWatch gesendet wird\cite{AWSLambdaMetrics}. 
-Für Lambda-Funktionen stellt CloudWatch automatisch Metriken im Namespace \texttt{AWS/Lambda} bereit. 
-Die für diese Arbeit relevanten Metriken umfassen:
-
+Für jede Lambda-Funktion stellt CloudWatch automatisch Metriken im Namespace \texttt{AWS/Lambda} bereit~\cite{AWSLambdaMetrics}. Die folgenden Metriken werden in dieser Arbeit ausgewertet:
 \begin{itemize}
-    \item \emph{Duration:} Die Ausführungsdauer einer Funktion in Millisekunden, gemessen vom Start des Handlers bis zum Ende der 
-    Ausführung \cite{AWSLambdaMetrics}. Diese Metrik ist die Grundlage für die Berechnung des Runtime-Overheads.
-    \item \emph{Max Memory Used:} Diese Metrik repräsentiert den maximalen Speicherverbrauch während der Ausführung in Megabyte, der für die Ermittlung des 
-    Memory-Overheads essenziell ist\cite{GraylogLambdaMetrics}.
-    \item \emph{Init Duration:} Diese Metrik erfasst die Dauer der Initialisierungsphase bei Kaltstarts, separat von der \texttt{Duration}-Metrik 
-    und sie ist für die Analyse des Cold-Start-Overheads essentiell \cite{GraylogLambdaMetrics}.
-    \item \emph{Invocations:} Das ist die Metrik, die die Anzahl der Funktionsaufrufe repräsentiert und zur Normalisierung der Messwerte verwendet wird\cite{AWSLambdaMetrics}.
-    \item \emph{Errors:} Das ist die Metrik, die die Anzahl der fehlgeschlagenen Aufrufe repräsentiert und zur Validierung der Messdurchführung dient\cite{AWSLambdaMetrics}.
+    \item \textbf{Duration:} Ausführungsdauer in Millisekunden (Grundlage für Runtime-Overhead).
+    \item \textbf{Max Memory Used:} Maximaler Speicherverbrauch in MB (Grundlage für Memory-Overhead).
+    \item \textbf{Init Duration:} Dauer der Initialisierungsphase bei Kaltstarts (Grundlage für Cold-Start-Overhead).
+    \item \textbf{Invocations:} Anzahl der Aufrufe (zur Normalisierung).
+    \item \textbf{Errors:} Anzahl der Fehler (zur Validierung der Messungen).
 \end{itemize}
 
 \subsection{Datenerfassung und -analyse}
-
-CloudWatch empfängt Metriken automatisch von Lambda nach jeder Ausführung\cite{GraylogLambdaMetrics}. 
-Darüber hinaus schreibt Lambda standardmäßig Lognachrichten in CloudWatch Logs, aus denen die Metriken \texttt{Init Duration, Duration und Max Memory Used} 
-extrahiert werden können\cite{GraylogLambdaMetrics}. 
-Für diese Arbeit werden die relevanten Metriken aus den CloudWatch Logs extrahiert und entsprechend in Kapitel 5 analysiert.
+CloudWatch empfängt Metriken automatisch von Lambda nach jeder Ausführung. Darüber hinaus schreibt Lambda standardmäßig Log-Nachrichten in CloudWatch Logs, aus denen die Metriken \texttt{Init Duration}, \texttt{Duration} und \texttt{Max Memory Used} extrahiert werden können~\cite{GraylogLambdaMetrics}. Für diese Arbeit werden die relevanten Metriken aus den CloudWatch Logs extrahiert und in Kapitel 5 analysiert.
 
 \subsection{AWS X-Ray}
 \label{subsec:aws-xray}
 
-AWS X-Ray ist ein Service, der Informationen über Anfragen (requests) sammelt, die von einer Anwendung bearbeitet werden. 
-Er stellt Tools bereit, um diese Daten zu visualisieren, zu filtern und auszuwerten, mit dem Ziel, Probleme zu identifizieren 
-und Optimierungsmöglichkeiten zu erkennen\cite{AWSXRayDocs}. X-Ray empfängt Traces sowohl von der instrumentierten Anwendung selbst als auch 
-von integrierten AWS-Diensten wie AWS Lambda. AWS X-Ray fungiert als Tracing-Backend für die in dieser Arbeit durchgeführten Experimente, 
-da es eine native Integration mit AWS Lambda bietet und die gesammelten Tracedaten direkt in CloudWatch verfügbar macht\cite{ADOT_Lambda}.
+AWS X-Ray ist der Tracing-Dienst von AWS. Er empfängt Traces von instrumentierten Anwendungen und integrierten AWS-Diensten wie Lambda~\cite{AWSXRayDocs}.  
+In dieser Arbeit fungiert X-Ray als Backend für die mit OpenTelemetry erzeugten Traces. Die Verwendung von X-Ray hat den Vorteil, dass es nativ mit Lambda zusammenarbeitet und keine zusätzliche Collector-Infrastruktur erfordert~\cite{ADOT_Lambda}.  
+Die gesammelten Traces werden genutzt, um zu überprüfen, ob die Instrumentierung korrekt funktioniert und ob alle Aufrufe vollständig erfasst werden. Eine detaillierte Trace-Analyse (z. B. mit X-Ray-Queries) wird aufgrund des begrenzten Budgets nicht durchgeführt~\cite{AWSXRayPricing}.
 
 \begin{figure}[H]
  \centering
  \includegraphics[width=1.0\textwidth]{gfx/examples/aws-x-ray.png}
- \caption{AWS X-Ray\cite{AWSXRayDocs}}
+ \caption{AWS X-Ray~\cite{AWSXRayDocs}}
  \label{fig:chapter02:xray}
 \end{figure}
-
-Die Instrumentierung einer Anwendung für X-Ray erfordert oft nur Konfigurationsänderungen und kann über verschiedene SDKs, 
-Agenten und Tools erfolgen. Anstatt Tracedaten direkt an X-Ray zu senden, leiten die SDKs sogenannte Segmentdokumente im 
-JSON-Format an einen Daemon-Prozess weiter. Dieser Daemon puffert die Daten und lädt sie in Batches zu X-Ray hoch. 
-Für AWS Lambda ist der X-Ray-Daemon bereits in der Laufzeitumgebung enthalten, was die Nutzung des X-Ray-SDKs vereinfacht\cite{AWSXRayDocs}. 
-Die gesammelten Daten nutzt X-Ray, um eine detaillierte Trace Map zu erstellen. 
-Diese Karte visualisiert den Pfad einer Anfrage durch die verschiedenen Dienste (z. B. Frontend, Backend, Datenbanken) und 
-hilft dabei, Engpässe, Latenzspitzen und andere Performance-Probleme zu identifizieren. Neben den Trace-Maps bietet X-Ray auch die 
-Möglichkeit, mithilfe von Queries Traces abzufragen, zu filtern und zu analysieren\cite{AWSXRayDocs}. Dies wird jedoch in der vorliegenden 
-Arbeit nicht genutzt, weil das Budget für die Experimente begrenzt ist und die Kosten für die Nutzung von X-Ray-Queries relativ hoch sein können\cite{AWSXRayPricing}. 
-Stattdessen wird die Anzahl der gesammelten Traces mit der Anzahl der Lambda-Aufrufe verglichen, um sicherzustellen, dass die Traces 
-korrekt gesammelt werden und dass sie vollständig sind (d. h. dass sie die gesamte Ausführung der Funktion abdecken). Dies wird 
-durch dedizierte Abfragen in dem CloudShell \ac{CLI} erreicht.
+Abbildung~\ref{fig:chapter02:xray} zeigt die Trace-Ansicht von AWS X-Ray.
 
 \section{Amazon DynamoDB}
 \label{sec:dynamodb}
 
-Amazon DynamoDB ist ein vollständig verwalteter, serverloser \ac{NoSQL}-Datenbankservice, der für konsistente Leistung im einstelligen 
-Millisekundenbereich bei jeder Skalierung ausgelegt ist\cite{AWSDynamoDBDocs}. 
-Für diese Arbeit ist DynamoDB als Datenspeicher in zwei der fünf Microbenchmarks relevant. 
-Nämlich Lese- und Schreiboperationen, die von den Lambda-Funktionen ausgeführt werden.
-
-\subsection{Charakteristika}
-
-Als \ac{NoSQL}-Datenbank unterstützt DynamoDB sowohl Schlüssel-Wert- als auch Dokumentendatenmodelle. 
-Im Gegensatz zu relationalen Datenbanken werden JOIN-Operationen nicht unterstützt, was zu einer effizienteren Abfrageperformance 
-bei skalierbaren Workloads beiträgt\cite{AWSDynamoDBDocs}. Die serverlose Architektur bedeutet, dass keine Server 
-provisioniert oder verwaltet werden müssen – der Dienst skaliert automatisch und es fallen keine Kosten an, wenn eine Tabelle nicht 
-genutzt wird (keine Cold Starts). DynamoDB bietet standardmäßig Verschlüsselung der Daten und integriert sich mit AWS \ac{IAM} 
-für die Zugriffskontrolle\cite{AWSDynamoDBDocs}. Für die Messungen in dieser Arbeit werden Lese- und Schreiboperationen 
-über die AWS \ac{SDK}s aus Lambda-Funktionen heraus ausgeführt.
-
-\subsection{Relevanz für die Arbeit}
-Zwei der fünf Microbenchmarks verwenden DynamoDB. 
-Lesen eines Elements aus einer Tabelle und Schreiben eines Elements in eine Tabelle. 
-Diese Szenarien repräsentieren typische Datenzugriffsmuster in serverlosen Anwendungen und ermöglichen die Messung des durch 
-OpenTelemetry verursachten Overheads bei Datenbankoperationen.
+Amazon DynamoDB ist ein vollständig verwalteter, serverloser \ac{NoSQL}-Datenbankservice, der für konsistente Latenzen im einstelligen Millisekundenbereich ausgelegt ist~\cite{AWSDynamoDBDocs}.  
+In dieser Arbeit wird DynamoDB in zwei der fünf Microbenchmarks verwendet: Lese- und Schreiboperationen. Diese Szenarien repräsentieren typische Datenzugriffsmuster in serverlosen Anwendungen und ermöglichen die Messung des durch OpenTelemetry verursachten Overheads bei Datenbankoperationen.
