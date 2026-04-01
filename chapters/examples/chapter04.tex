@@ -176,20 +176,18 @@ Laufzeit (Runtime), Speicherverbrauch (Memory Usage) und Initialisierungsdauer (
 Dabei werden zwei grundsätzliche Fragestellungen adressiert - der Unterschied zwischen Messungen ohne Tracing und mit Tracing (H1) 
 sowie die Abweichungen zwischen den einzelnen Programmiersprachen (H2).
 
-\paragraph{H1 – Tracing-Overhead:} Der Effizienz-Overhead ohne Einsatz von Tracing ist geringer als bei Verwendung von 
-OpenTelemetry in einer bestimmten Programmiersprache \(s\). Formal:
+\paragraph{H1 – Sprachspezifischer Overhead}
+Der Effizienz-Overhead ohne Einsatz von OpenTelemetry ist geringer als der Overhead bei Verwendung von OpenTelemetry in einer bestimmten Programmiersprache \(s\). Formal ausgedrückt:
 \[
 H_0: \mu_{\text{ohne}} \ge \mu_s \quad \text{vs.} \quad H_1: \mu_{\text{ohne}} < \mu_s,
 \]
-wobei \(\mu_{\text{ohne}}\) den mittleren Wert der Metrik ohne Instrumentierung und \(\mu_s\) den mittleren Wert der 
-Metrik mit Instrumentierung in Sprache \(s\) bezeichnet.
+wobei \(\mu_{\text{ohne}}\) den mittleren Wert der betrachteten Metrik (z.B. Laufzeit, Speicherverbrauch, Kaltstartdauer) ohne Instrumentierung und \(\mu_s\) den entsprechenden Wert mit Instrumentierung in Sprache \(s\) bezeichnet.
 
-\paragraph{H2 – Sprachspezifische Abweichungen:} Es besteht ein signifikanter Unterschied im Effizienz-Overhead zwischen 
-zwei Programmiersprachen \(s_1\) und \(s_2\). Formal:
+\paragraph{H2 – Sprachvergleiche}
+Es besteht ein signifikanter Unterschied im Effizienz-Overhead zwischen zwei verschiedenen Programmiersprachen \(s_1\) und \(s_2\). Formal:
 \[
 H_0: \mu_{s_1} = \mu_{s_2} \quad \text{vs.} \quad H_1: \mu_{s_1} \neq \mu_{s_2}.
 \]
-
 In beiden Fällen wird von unbekannter Varianz ausgegangen. Für das Signifikanzniveau wird \(\alpha = 0{,}05\) festgelegt.
 
 \begin{itemize}
