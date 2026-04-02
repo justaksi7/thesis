@@ -134,14 +134,6 @@ Serverless-Anwendungen reduzieren den operativen Aufwand und ermöglichen eine k
 
 AWS Lambda ist der von Amazon Web Services bereitgestellte FaaS-Dienst und gilt als einer der beliebtesten Vertreter dieser Kategorie~\cite{ServerlessAWSLambda}. Er bildet die Plattform für alle in dieser Arbeit durchgeführten Experimente.
 
-\begin{figure}[H]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/lambda.png}
- \caption{AWS Lambda \href{https://aws.amazon.com/lambda/}{[source]}}
- \label{fig:chapter02:aws_lambda}
-\end{figure}
-Abbildung~\ref{fig:chapter02:aws_lambda} zeigt das AWS-Lambda-Logo; der Dienst ist die zentrale Ausführungsumgebung dieser Arbeit.
-
 \subsection{Grundlegende Funktionsweise}
 
 Eine Lambda-Funktion ist ein Code-Block, der durch ein Ereignis (z. B. eine \ac{HTTP}-Anfrage, ein Datei-Upload) ausgelöst wird. Die Funktion besitzt genau einen \textit{Handler}, der die Ereignisdaten verarbeitet. Bei der Bereitstellung werden Code und Abhängigkeiten als ZIP- oder Container-Image gepackt~\cite{AWSLambdaBasics}.  
