@@ -19,7 +19,7 @@ Cloud Computing zeichnet sich durch fünf wesentliche Merkmale aus, die Huawei T
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=0.5\textwidth]{gfx/examples/Cloud_Computing.png}
+ \includegraphics[width=0.4\textwidth]{gfx/examples/Cloud_Computing.png}
  \caption{Komponenten von Cloud Computing~\cite{Huawei2023CloudComputing}}
  \label{fig:chapter02:cloud_computing}
 \end{figure}
@@ -29,32 +29,12 @@ Abbildung~\ref{fig:chapter02:cloud_computing} veranschaulicht die grundlegenden 
 \label{subsec:service_models}
 
 Cloud-Dienste werden üblicherweise in drei Servicemodelle unterteilt.\\ \ac{IaaS}, \ac{PaaS} und \ac{SaaS}~\cite{Huawei2023CloudComputing}.  
-Da für diese Arbeit nur ein grundlegendes Verständnis von \ac{PaaS} relevant ist, wird das Modell kurz erläutert und alle 3 Servicemodelle 
-werden anhand von Grafiken zur Zwecke der Abgrenzungveranschaulicht. 
+Da für diese Arbeit nur ein grundlegendes Verständnis von \ac{PaaS} relevant ist, wird das Modell kurz erläutert. 
 \emph{Platform as a Service} stellt eine komplette Entwicklungsumgebung bereit, die die technische Infrastruktur abstrahiert. 
 Nutzer entwickeln und betreiben ihre Anwendungen direkt auf dieser Plattform, ohne sich um Betriebssystemen, Skalierung oder Wartung 
 kümmern zu müssen. Prominente Beispiele für diesen Ansatz sind die Google App Engine oder AWS Elastic Beanstalk.
 
-\begin{figure}[H]
- \centering
- \includegraphics[width=0.5\textwidth]{gfx/examples/IaaS.png}
- \caption{IaaS-Struktur~\cite{Huawei2023CloudComputing}}
- \label{fig:chapter02:IaaS}
-\end{figure}
-\begin{figure}[H]
- \centering
- \includegraphics[width=0.5\textwidth]{gfx/examples/PaaS.png}
- \caption{PaaS-Struktur~\cite{Huawei2023CloudComputing}}
- \label{fig:chapter02:PaaS}
-\end{figure}
-\begin{figure}[H]
- \centering
- \includegraphics[width=0.5\textwidth]{gfx/examples/SaaS.png}
- \caption{SaaS-Struktur~\cite{Huawei2023CloudComputing}}
- \label{fig:chapter02:SaaS}
-\end{figure}
-Die Abbildungen~\ref{fig:chapter02:IaaS}, \ref{fig:chapter02:PaaS} und \ref{fig:chapter02:SaaS} zeigen die unterschiedlichen Verantwortungsbereiche bei den drei Servicemodellen.
-Eine besondere Ausprägung von PaaS ist das \acf{FaaS}-Modell, bei dem Entwickler einzelne Funktionen 
+Eine besondere Ausprägung von PaaS ist das \ac{FaaS}-Modell, bei dem Entwickler einzelne Funktionen 
 als Reaktion auf Ereignisse ausführen können, ohne sich um Server oder Laufzeiten zu kümmern (siehe Abschnitt~\ref{sec:serverless}).  
 Die in dieser Arbeit untersuchten AWS-Lambda-Funktionen folgen genau diesem FaaS-Modell.
 
@@ -63,59 +43,70 @@ Die in dieser Arbeit untersuchten AWS-Lambda-Funktionen folgen genau diesem FaaS
 
 Microservices und \ac{EDA} sind zwei eng verbundene Architekturstile moderner Cloud-nativer Systeme~\cite{Fowler2024Microservices,Katzer2024Serverless}.  
 Während Microservices eine Anwendung in kleine, unabhängig bereitstellbare Dienste unterteilen~\cite{Fowler2024Microservices}, definiert \ac{EDA} ein asynchrones Kommunikationsmuster über Ereignisse~\cite{AWSEventDrivenArchitecture}.  
-Für diese Arbeit ist das Zusammenspiel beider Konzepte zentral, weil die zu untersuchenden AWS-Lambda-Funktionen typischerweise als Event-Consumer oder -Producer in einer \ac{EDA}-Umgebung agieren~\cite{AWSLambdaDocs} und die Kommunikation zwischen ihnen (z. B. eine Lambda-Funktion ruft eine andere auf) der fünf Microbenchmarks entspricht.
+Für diese Arbeit ist das Zusammenspiel beider Konzepte zentral, weil die zu untersuchenden AWS-Lambda-Funktionen typischerweise als Event-Consumer oder -Producer in einer ereignisgesteuerten Microservices-Umgebung agieren~\cite{AWSLambdaDocs} 
+und die Kommunikation zwischen ihnen (z. B. eine Lambda-Funktion ruft eine andere auf) asynchron über Events erfolgt.
 
 \subsection{Microservices}
-Microservices sind unabhängige, lose gekoppelte Dienste, die jeweils einen eigenen Geschäftsbereich abdecken. Sie können in unterschiedlichen Programmiersprachen implementiert werden und werden separat skaliert und deployed~\cite{Fowler2024Microservices}. Diese technologische Vielfalt ist für diese Arbeit relevant, da der Performance-Overhead von OpenTelemetry sprachspezifisch ist – die Wahl der Sprache beeinflusst also die Messergebnisse direkt.
+Microservices sind unabhängige, lose gekoppelte Dienste, die jeweils einen eigenen Bereich der Geschäftslogik einer Anwendung abdecken. 
+Die zentralen Merkmale von Microservices sind, dass sie in unterschiedlichen Programmiersprachen implementiert, separat getestet, gewartet, skaliert und deployed werden können, ohne
+dass die anderen Dienste beeinflusst werden~\cite{Fowler2024Microservices}. Dieser Architekturstil ist für diese Arbeit relevant, 
+da die Serverless-Technologien und die FaaS-Platformen spezifisch für die Entwicklung von Microservices konzipiert sind (siehe Abschnitt~\ref{sec:serverless}). 
+Zudem sind die 5 Microbenchmarks typische Beispiele für Microservices - klar abgegrenzte Funktionen, die jeweils eine spezifische Aufgabe erfüllen.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/monolith-vs-microservices.png}
- \caption{Monolith vs Microservices \href{https://vivasoftltd.com/trade-offs-for-monoliths-and-microservices/}{[source]}}
+ \includegraphics[width=0.6\textwidth]{gfx/examples/microservices.jpg}
+ \caption{Microservices}
  \label{fig:chapter02:EDA}
 \end{figure}
-Abbildung~\ref{fig:chapter02:EDA} stellt den strukturellen Unterschied zwischen einem Monolithen und einer Microservices-Architektur dar.
+
+Abbildung~\ref{fig:chapter02:EDA} stellt das obige Konzept der Microservices dar.
 
 \subsection{Event-Driven Architecture}
-In einer \ac{EDA} kommunizieren Dienste nicht synchron über \ac{HTTP}, sondern asynchron über Ereignisse. Ein \textit{Event Producer} sendet ein Ereignis an einen \textit{Event Broker} (z. B. AWS SNS/SQS), von dem es von \textit{Event Consumern} abgeholt wird~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}.  
-Diese Entkopplung erhöht die Ausfallsicherheit und ist die Grundlage für die ereignisgesteuerte Ausführung von AWS-Lambda-Funktionen~\cite{Rocha2021Practical}. Für die Messungen in dieser Arbeit ist die Art der Ereignisverarbeitung (synchron vs. asynchron) nicht primär relevant; wichtig ist, dass die Funktionen durch AWS-eigene Trigger oder direkte Aufrufe angestoßen werden.
+In einer \ac{EDA} kommunizieren Dienste nicht synchron über \ac{HTTP}-Anfragen, sondern asynchron über Ereignisse~\cite{AWSEventDrivenArchitecture}.
+Der Gedanke hinter \ac{EDA} ist dass Dienste lose gekoppelt sind und dass sie auf Ereignisse reagieren, anstatt direkt miteinander zu kommunizieren. 
+Ein \textit{Event Producer} sendet ein Ereignis an einen \textit{Event Broker}. Ein Event Broker ist ein Vermittler, der die Ereignisse 
+empfängt, speichert und an die entsprechenden Event Consumer weiterleitet. Beispliele für Event Broker sind AWS \ac{SNS}, \ac{SQS} usw. oder 
+auch platforminterne Event-Puffer, die Events nur kurzfristig speichern bis sie von den \textit{Event Consumern} abgeholt werden~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}.
+\textit{Event Consumern} abgeholt wird~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}. 
+Event Consumer sind Dienste, die auf bestimmte Ereignisse reagieren, indem sie eine Aktion ausführen (z. B. eine Lambda-Funktion ausführen, eine Datenbank aktualisieren).
+Den Prozess, bei dem ein Event Producer ein Ereignis an einen Event Broker sendet und der Event Broker dieses Ereignis an die entsprechenden Event Consumer weiterleitet, bezeichnet man
+als \textit{Event Ingestion} oder auch \textit{Event Processing}.
+Diese Entkopplung erhöht die Ausfallsicherheit und ist die Grundlage für die ereignisgesteuerte Ausführung von 
+AWS-Lambda-Funktionen~\cite{Rocha2021Practical}.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/EDA.png}
+ \includegraphics[width=0.9\textwidth]{gfx/examples/EDA.png}
  \caption{EDA-Struktur~\cite{AzureEventDrivenArchitecture}}
  \label{fig:chapter02:monolith-vs-microservices}
 \end{figure}
-Abbildung~\ref{fig:chapter02:monolith-vs-microservices} zeigt die typischen Komponenten einer Event-Driven Architecture.
+Abbildung~\ref{fig:chapter02:monolith-vs-microservices} stellt das oben beschriebene Konzept der Event-Driven Architecture visuell dar.
 
 \subsection{Zusammenspiel von Microservices und EDA}
-Die Kombination von Microservices und \ac{EDA} adressiert zentrale Herausforderungen verteilter Systeme. Durch lose Kopplung müssen Dienste keine Kenntnis voneinander haben: Ein Producer publiziert ein Event, ohne die Consumer zu kennen. Fällt ein Consumer aus, bleibt der Producer funktionsfähig, was die Ausfallsicherheit erhöht~\cite{Rocha2021Practical}.  
-Für diese Arbeit ist dieses Zusammenspiel fundamental, da die AWS-Lambda-Funktionen sowohl Events konsumieren als auch produzieren können~\cite{AWSLambdaDocs} und damit das Herzstück serverloser Anwendungen bilden~\cite{Katzer2024Serverless}.
+Die Kombination von Microservices und \ac{EDA} adressiert zentrale Herausforderungen verteilter Systeme. 
+Durch lose Kopplung müssen Dienste keine Kenntnis voneinander haben. Ein Producer publiziert ein Event, ohne die Consumer zu kennen. 
+Fällt ein Consumer aus, bleibt der Producer funktionsfähig, was die Ausfallsicherheit erhöht~\cite{Rocha2021Practical}.  
+Für diese Arbeit ist dieses Zusammenspiel fundamental, da die AWS-Lambda-Funktionen sowohl Events konsumieren als auch produzieren 
+können~\cite{AWSLambdaDocs} und damit in ihrem Kern ereignisgesteuert sind.
 
 \section{Serverless-Computing und Function as a Service}
 \label{sec:serverless}
 
 Serverless-Computing ist ein Cloud-Ausführungsmodell, bei dem der Anbieter die gesamte Serverinfrastruktur verwaltet und der Entwickler sich nur auf die Anwendungslogik konzentriert. Der Begriff „serverless“ ist irreführend, da weiterhin Server im Hintergrund laufen, diese aber vollständig abstrahiert sind~\cite{IBMFaaS}.  
-Für diese Arbeit ist das \acf{FaaS}-Modell zentral, weil es die Ausführung einzelner Funktionen in AWS Lambda definiert.
-
-\begin{figure}[H]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/serverless.png}
- \caption{Serverless Computing \href{https://www.xenonstack.com/blog/aws-serverless-computing/}{[source]}}
- \label{fig:chapter02:serverless}
-\end{figure}
-Abbildung~\ref{fig:chapter02:serverless} verdeutlicht die Abstraktion der Infrastruktur beim Serverless-Modell.
+Für diese Arbeit ist das \ac{FaaS}-Modell zentral, weil es als die am weitesten verbreitete Form von Serverless gilt und die AWS-Lambda-Funktionen genau diesem Modell folgen~\cite{ServerlessAWSLambda}.
 
 \subsection{FaaS als zentrale Ausprägung}
-
-Bei FaaS wird die Geschäftslogik in kleine, zustandslose Funktionen unterteilt, die durch Ereignisse (z. B. \ac{HTTP}-Anfragen, Datenbankänderungen) ausgelöst werden~\cite{IBMFaaS}.  
-Die wichtigsten Eigenschaften für diese Arbeit sind:
+Im Zentrum von Serverless-Computing steht das \ac{FaaS}-Modell.
+Dabei wird die Geschäftslogik einer Anwendung in kleine, unabhängige und zustandslose Funktionen unterteilt, die durch Ereignisse (z. B. \ac{HTTP}-Anfragen, Datenbankänderungen, Datei-Uploads usw.) ausgelöst werden~\cite{IBMFaaS}. 
+Jede Funktion ist eine eigenständige Einheit (\ac{FaaS}-Instanz).
+Die wichtigsten Eigenschaften von \ac{FaaS}, die für die Messung relevant sind, sind:
 \begin{itemize}
-    \item \textbf{Ereignisgesteuerte Ausführung:} Funktionen werden nur bei Bedarf aktiviert und verbrauchen im Leerlauf keine Ressourcen. Das beeinflusst die Messung von Kaltstarts und Speicherverbrauch.
-    \item \textbf{Automatische Skalierung:} Die Plattform skaliert die Anzahl der Instanzen dynamisch, was die Messung bei steigender Last relevant macht.
+    \item \textbf{Ereignisgesteuerte Ausführung:} Funktionen werden nur bei Bedarf aktiviert und verbrauchen im Leerlauf keine Ressourcen. Das beeinflusst die Messung von sowohl Warmstarts als auch Kaltstarts für alle  zu messenden Metriken (siehe Kapitel 4).
+    \item \textbf{Automatische Skalierung:} Die Plattform skaliert die Anzahl der Instanzen dynamisch, was die Messung bei steigender Last relevant macht und eine Präzise Dokumentation erfordert.
     \item \textbf{Pay-per-Use-Abrechnung:} Abgerechnet wird nach Ausführungszeit und Speicherzuweisung. Dadurch wirkt sich jeder durch Tracing verursachte Overhead direkt auf die Kosten aus.
 \end{itemize}
-FaaS-Plattformen setzen intern auf Container-Technologie: Bei einem Aufruf wird die Funktion in einen vorkonfigurierten Container geladen und ausgeführt. Nach Abschluss bleibt der Container kurz erhalten (Warmstart) oder wird freigegeben (Kaltstart)~\cite{ServerlessAWSLambda}.
+FaaS-Plattformen setzen intern auf Container-Technologie. Bei einem Aufruf wird die Funktion in einen vorkonfigurierten Container geladen und ausgeführt. Nach Abschluss bleibt der Container kurz erhalten (Warmstart) oder wird freigegeben (Kaltstart)~\cite{ServerlessAWSLambda}.
 
 \begin{figure}[H]
  \centering
@@ -123,7 +114,7 @@ FaaS-Plattformen setzen intern auf Container-Technologie: Bei einem Aufruf wird 
  \caption{Function as a Service \href{https://www.wallarm.com/what/what-is-faas-function-as-a-service}{[source]}}
  \label{fig:chapter02:faas}
 \end{figure}
-Abbildung~\ref{fig:chapter02:faas} zeigt das Prinzip von FaaS: Entwickler stellen nur den Code bereit, die Plattform kümmert sich um die Ausführung.
+Abbildung~\ref{fig:chapter02:faas} zeigt das Prinzip von FaaS. Entwickler stellen nur den Code bereit, die Plattform kümmert sich um die Ausführung, Skalierung, Verwaltung usw.
 
 \subsection{Abgrenzung zu anderen Servicemodellen}
 
