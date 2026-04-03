@@ -60,7 +60,7 @@ Zudem sind die 5 Microbenchmarks typische Beispiele für Microservices - klar ab
  \label{fig:chapter02:EDA}
 \end{figure}
 
-Abbildung~\ref{fig:chapter02:EDA} stellt das obige Konzept der Microservices dar.
+Abbildung~\ref{fig:chapter02:EDA} stellt das obige Konzept der Microservices visuell dar.
 
 \subsection{Event-Driven Architecture}
 In einer \ac{EDA} kommunizieren Dienste nicht synchron über \ac{HTTP}-Anfragen, sondern asynchron über Ereignisse~\cite{AWSEventDrivenArchitecture}.
@@ -114,7 +114,7 @@ FaaS-Plattformen setzen intern auf Container-Technologie. Bei einem Aufruf wird 
  \caption{Function as a Service \href{https://www.wallarm.com/what/what-is-faas-function-as-a-service}{[source]}}
  \label{fig:chapter02:faas}
 \end{figure}
-Abbildung~\ref{fig:chapter02:faas} zeigt das Prinzip von FaaS. Entwickler stellen nur den Code bereit, die Plattform kümmert sich um die Ausführung, Skalierung, Verwaltung usw.
+Abbildung~\ref{fig:chapter02:faas} zeigt das Prinzip von FaaS. Entwickler stellen nur den Code bereit, die Plattform kümmert sich um die Ausführung, Skalierung, Verwaltung usw. 
 
 \subsection{Abgrenzung zu anderen Servicemodellen}
 
@@ -124,8 +124,8 @@ Im Gegensatz zu \ac{IaaS}, bei dem der Nutzer virtuelle Maschinen selbst verwalt
 
 Serverless-Anwendungen reduzieren den operativen Aufwand und ermöglichen eine kosteneffiziente Skalierung. Allerdings gibt es spezifische Herausforderungen, die für die Messung relevant sind:
 \begin{itemize}
-    \item \textbf{Cold Starts:} Die Initialisierungsverzögerung beim ersten Aufruf kann mehrere hundert Millisekunden bis Sekunden betragen~\cite{Rodriguez2024Evaluation}. Diese wird in dieser Arbeit als eine der drei Hauptmetriken erfasst.
-    \item \textbf{Technische Beschränkungen:} Die maximale Ausführungsdauer ist auf 15 Minuten begrenzt, was für die kurzen Microbenchmarks in dieser Arbeit unproblematisch ist~\cite{ServerlessAWSLambda}.
+    \item \textbf{Cold Starts:} Die Initialisierungsverzögerung (Init Duration) beim ersten Aufruf kann mehrere hundert Millisekunden bis Sekunden betragen~\cite{Rodriguez2024Evaluation}. Diese wird in der vorliegenden Arbeit als eine der drei Hauptmetriken erfasst.
+    \item \textbf{Technische Beschränkungen:} Die maximale Ausführungsdauer ist auf 15 Minuten begrenzt, was für die kurzen Ausführungsdauern der Microbenchmarks in dieser Arbeit unproblematisch ist~\cite{ServerlessAWSLambda}.
     \item \textbf{Vendor Lock-in:} Durch die Verwendung von AWS-spezifischen Diensten (Lambda, DynamoDB) entsteht eine Bindung an den Anbieter. Da diese Arbeit jedoch ausschließlich auf AWS durchgeführt wird, ist dies für die Aussagekraft der Ergebnisse nicht einschränkend.
 \end{itemize}
 
@@ -138,18 +138,20 @@ AWS Lambda ist der von Amazon Web Services bereitgestellte FaaS-Dienst und gilt 
 
 Eine Lambda-Funktion ist ein Code-Block, der durch ein Ereignis (z. B. eine \ac{HTTP}-Anfrage, ein Datei-Upload) ausgelöst wird. Die Funktion besitzt genau einen \textit{Handler}, der die Ereignisdaten verarbeitet. Bei der Bereitstellung werden Code und Abhängigkeiten als ZIP- oder Container-Image gepackt~\cite{AWSLambdaBasics}.  
 Lambda erstellt bei Bedarf eine isolierte Ausführungsumgebung (\textit{execution environment}), die nach der Ausführung kurz beibehalten wird, um nachfolgende Aufrufe schneller zu bedienen (Warmstart)~\cite{AWSLambdaBasics}. Für diese Arbeit ist diese Umgebung wichtig, da sie die Messung von Kalt- und Warmstarts ermöglicht.  
-Der Aufruf kann direkt über die Konsole, CLI oder SDKs erfolgen oder – im produktiven Einsatz typisch – durch andere AWS-Dienste (Trigger). Lambda-Funktionen können von vielen AWS-Diensten wie S3, DynamoDB, API Gateway oder SQS ausgelöst werden~\cite{AWSLambdaServices}.
+Der Aufruf kann direkt über die Konsole, CLI oder SDKs erfolgen oder im produktiven Einsatz typisch durch andere AWS-Dienste (Trigger). Lambda-Funktionen können von vielen AWS-Diensten wie S3, DynamoDB, API Gateway oder SQS ausgelöst werden~\cite{AWSLambdaServices}.
 
 \subsection{Grenzen und Besonderheiten für die Messung}
 
-Für die experimentelle Evaluation sind folgende Grenzen relevant:
+Für die experimentelle Evaluation sind folgende Grenzen und Besonderheiten relevant:
 \begin{itemize}
-    \item \textbf{Cold Starts:} Die Initialisierungsdauer wird über die CloudWatch-Metrik \textit{Init Duration} erfasst~\cite{Rodriguez2024Evaluation}.
-    \item \textbf{Speicher und CPU:} Der Arbeitsspeicher kann von 128 MB bis 10.240 MB konfiguriert werden; die CPU-Leistung skaliert proportional dazu~\cite{AWSLambdaMemory}. Diese Arbeit verwendet eine feste Speichergröße (1024 MB), um die Vergleichbarkeit zu gewährleisten.
-    \item \textbf{Ephemeral Storage:} Lambda stellt einen flüchtigen lokalen Speicher im \texttt{/tmp}-Verzeichnis bereit, der von 512 MB bis 10.240 MB konfigurierbar ist~\cite{AWSLambdaEphemeralStorage}. Für die Benchmarks wird dieser Speicher nicht genutzt.
-    \item \textbf{Concurrency:} Standardmäßig sind 1000 parallele Ausführungen pro Konto erlaubt~\cite{AWSLambdaConcurrency}. Da die Experimente sequenziell durchgeführt werden, spielt diese Grenze keine Rolle.
+    \item \textbf{Cold Starts:} Die Initialisierungsdauer wird über die CloudWatch-Metrik \textit{Init Duration} erfasst~\cite{Rodriguez2024Evaluation}. Es ist wichtig, diese Metrik separat von der Gesamtdauer und den Wamstarts zu betrachten, da sie den spezifischen Overhead der Instrumentierung bei Kaltstarts widerspiegelt.
+    \item \textbf{Speicher und CPU:} Der Arbeitsspeicher kann von 128 MB bis 10.240 MB konfiguriert werden; die CPU-Leistung skaliert proportional dazu~\cite{AWSLambdaMemory}.
+    \item \textbf{Ephemeral Storage:} Lambda stellt einen flüchtigen lokalen Speicher im \texttt{/tmp}-Verzeichnis bereit, der von 512 MB bis 10.240 MB konfigurierbar ist~\cite{AWSLambdaEphemeralStorage}. Für die Benchmarks wird dieser Speicher nicht genutzt, jedoch ist er weiterhin für die Messergebnisse relevant.
+    \item \textbf{Concurrency:} Standardmäßig sind 1000 parallele Ausführungen pro Konto erlaubt~\cite{AWSLambdaConcurrency} das kann aber auf Anfrage durch AWS angepasst werden. Das ist besonders relevant, da AWS-Lambda-Funktionen automatisch skalieren. Dadurch werden alle Messungen beeinflusst und eine präzise Dokumentation ist notwendig.
 \end{itemize}
-Die nutzungsbasierte Abrechnung pro GB-Sekunde unterstreicht die wirtschaftliche Relevanz des durch Tracing verursachten Overheads.
+All das sind wichtige Einflussfaktoren, die bei der Messung des Overheads durch OpenTelemetry berücksichtigt werden müssen und präzise Dokumentation erfordern. 
+Die Dokumentation ist entscheidend, um die Reproduzierbarkeit der Messungen zu gewährleisten und gegebenenfalls zukünftige Arbeiten zu ermöglichen, die auf diesen Ergebnissen aufbauen möchten (siehe Kapitel~\ref{ch:related-work}).
+Neben diesen technischen Besonderheiten ist auch die Pay-Per-Use-Abrechnung (in GB-Sekunden) von AWS Lambda relevant, da jeder durch die Instrumentierung verursachte Overhead direkt zu höheren Kosten führt. 
 
 \subsection{Lambda Layers}
 \label{subsec:lambda-layers}
@@ -158,18 +160,19 @@ Ein \textit{Layer} ist ein ZIP-Archiv, das Bibliotheken oder Konfigurationen kap
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=0.75\textwidth]{gfx/examples/lambda-layers-diagram.png}
+ \includegraphics[width=1.0\textwidth]{gfx/examples/lambda-layers-diagram.png}
  \caption{AWS Lambda Layers~\cite{AWSLambdaLayers}}
  \label{fig:chapter02:aws_lambda_layers}
 \end{figure}
-Abbildung~\ref{fig:chapter02:aws_lambda_layers} zeigt schematisch, wie Layer in die Ausführungsumgebung eingebunden werden.
+Abbildung~\ref{fig:chapter02:aws_lambda_layers} zeigt schematisch die Funktionsweise und die konkreten Vorteile von Lambda Layers.
+
 
 \subsection{Häufigste Anwendungsfälle von AWS Lambda}
 \label{subsec:lambda-benchmarks}
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=0.75\textwidth]{gfx/examples/Microbenchmarks.png}
+ \includegraphics[width=0.6\textwidth]{gfx/examples/Microbenchmarks.png}
  \caption{Häufigste Anwendungsfälle von AWS Lambda~\cite{10254754}}
  \label{fig:chapter02:aws_lambda_use_cases}
 \end{figure}
@@ -181,20 +184,27 @@ Die in Abbildung~\ref{fig:chapter02:aws_lambda_use_cases} dargestellten fünf Mi
     \item Leseoperation aus einer DynamoDB-Tabelle
     \item Schreiboperation in eine DynamoDB-Tabelle
 \end{enumerate}
-Diese fünf Szenarien bilden die Grundlage für die experimentelle Evaluation in Kapitel 4 dieser Arbeit. Für jedes Szenario wird jeweils eine instrumentierte und eine nicht-instrumentierte Version der Funktion in den drei Sprachen Java, Python und Node.js implementiert.
+Diese fünf Szenarien bilden die Grundlage für die experimentelle Evaluation in Kapitel~\ref{ch:methodik} und Kapitel~\ref{ch:results}. Für jedes Szenario wird jeweils eine instrumentierte und eine nicht-instrumentierte Version der Funktion in den drei Sprachen Java, Python und Node.js implementiert.
 
 \section{Observability in verteilten Systemen}
 \label{sec:observability}
 
-Observability beschreibt die Fähigkeit, den internen Zustand eines Systems allein durch seine externen Ausgaben (Logs, Metriken, Traces) zu verstehen~\cite{Hausenblas2024Cloud}. In verteilten, Cloud-nativen Umgebungen ist dies eine Grundvoraussetzung für Fehlerdiagnose und Performance-Optimierung.
+Observability beschreibt die Fähigkeit, den internen Zustand eines Systems allein durch seine externen Ausgaben 
+(Logs, Metriken, Traces) zu verstehen. In verteilten, Cloud-nativen Umgebungen ist dies eine Grundvoraussetzung für 
+Fehlerdiagnose und Performance-Optimierung~\cite{Hausenblas2024Cloud}.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/observability_struktur.png}
+ \includegraphics[width=0.9\textwidth]{gfx/examples/observability_struktur.png}
  \caption{Zentrale Konzepte der Observability~\cite{Hausenblas2024Cloud}}
  \label{fig:chapter02:observability}
 \end{figure}
-Abbildung~\ref{fig:chapter02:observability} stellt die zentralen Komponenten der Observability dar: System under Observation, Signale, Agenten und Ziele.
+Abbildung~\ref{fig:chapter02:observability} stellt die zentralen Komponenten der Observability dar. 
+Das beobachtete \textit{System} (System under Observation) umfasst die gesamte cloud-native Plattform samt Anwendungen, 
+von deren \textit{Sources} also Quellen (wie Mikroservices oder Datenbanken) durch Instrumentierung beobachtbare \textit{Signals} 
+(Signale) wie Logs, Metriken und Traces ausgehen. Diese Daten werden von \textit{Agents} (Agenten) gesammelt, verarbeitet 
+und an verschiedene \textit{Destinations} (Ziele) weitergeleitet, um sie für Dashboards, Alarme oder Analysen zu nutzen. 
+Dieser gesamte Kreislauf vom Erfassen über das Routing bis zum Speichern der Daten wird als \textit{Telemetry} (Telemetrie) bezeichnet.
 
 \subsection{Die drei Säulen der Observability}
 Die drei zentralen Signaltypen sind:
@@ -203,7 +213,8 @@ Die drei zentralen Signaltypen sind:
     \item \textbf{Metriken:} numerische Messwerte (z. B. CPU-Auslastung, Fehlerrate), die sich für Dashboards und Alerts eignen.
     \item \textbf{Traces:} Nachverfolgung einer Anfrage durch verschiedene Dienste hinweg.
 \end{itemize}
-Erst die Kombination aller drei Säulen ermöglicht ein vollständiges Bild des Systemverhaltens~\cite{Hausenblas2024Cloud}. Für diese Arbeit sind \textit{Metriken} (Laufzeit, Speicher, Kaltstartdauer) und \textit{Traces} (zur Sicherstellung der korrekten Instrumentierung) die relevanten Signaltypen.
+Erst die Kombination aller drei Säulen ermöglicht ein vollständiges Bild des Systemverhaltens~\cite{Hausenblas2024Cloud}. 
+Für diese Arbeit sind \textit{Metriken} (Laufzeit, Speicher, Kaltstartdauer), \textit{Logs} (zur Extraktion von Metriken und Fehleranalyse) und \textit{Traces} (zur Validierung der Instrumentierung) relevant.
 
 \subsection{OpenTelemetry und Portabilität}
 Ein wichtiges Prinzip moderner Observability ist die Vermeidung von Vendor-Lock-in durch offene Standards. OpenTelemetry hat sich als herstellerneutraler Standard für die Erfassung und den Export von Telemetriedaten etabliert~\cite{OpenTelemetryInstrumentation,OpenTelemetryWhatIs,OpenTelemetryDocs}.  
