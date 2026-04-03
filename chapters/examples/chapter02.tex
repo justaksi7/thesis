@@ -17,17 +17,6 @@ Cloud Computing zeichnet sich durch fünf wesentliche Merkmale aus, die Huawei T
     \item \textbf{Messbare Nutzung (Measurable Services):} Die Nutzung wird erfasst, überwacht und abgerechnet – Grundlage für Pay‑per‑Use-Modelle.
 \end{itemize}
 
-\begin{figure}[H]
- \centering
- \includegraphics[width=0.4\textwidth]{gfx/examples/Cloud_Computing.png}
- \caption{Komponenten von Cloud Computing~\cite{Huawei2023CloudComputing}}
- \label{fig:chapter02:cloud_computing}
-\end{figure}
-Abbildung~\ref{fig:chapter02:cloud_computing} veranschaulicht die grundlegenden Komponenten des Cloud Computing.
-
-\subsection{Servicemodelle des Cloud Computing}
-\label{subsec:service_models}
-
 Cloud-Dienste werden üblicherweise in drei Servicemodelle unterteilt.\\ \ac{IaaS}, \ac{PaaS} und \ac{SaaS}~\cite{Huawei2023CloudComputing}.  
 Da für diese Arbeit nur ein grundlegendes Verständnis von \ac{PaaS} relevant ist, wird das Modell kurz erläutert. 
 \emph{Platform as a Service} stellt eine komplette Entwicklungsumgebung bereit, die die technische Infrastruktur abstrahiert. 
@@ -77,7 +66,7 @@ AWS-Lambda-Funktionen~\cite{Rocha2021Practical}.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=0.9\textwidth]{gfx/examples/EDA.png}
+ \includegraphics[width=0.9\textwidth]{gfx/examples/eda-azure.pdf}
  \caption{EDA-Struktur~\cite{AzureEventDrivenArchitecture}}
  \label{fig:chapter02:monolith-vs-microservices}
 \end{figure}
@@ -196,7 +185,7 @@ Fehlerdiagnose und Performance-Optimierung~\cite{Hausenblas2024Cloud}.
 \begin{figure}[H]
  \centering
  \includegraphics[width=0.9\textwidth]{gfx/examples/observability_struktur.png}
- \caption{Zentrale Konzepte der Observability~\cite{Hausenblas2024Cloud}}
+ \caption{Zentrale Komponenten von Observability~\cite{Hausenblas2024Cloud}}
  \label{fig:chapter02:observability}
 \end{figure}
 Abbildung~\ref{fig:chapter02:observability} stellt die zentralen Komponenten der Observability dar. 
@@ -226,7 +215,7 @@ Instrumentiert man Anwendungen mit OpenTelemetry, kann man später zwischen vers
 OpenTelemetry ist ein herstellerneutraler Open-Source-Standard für die Erfassung von Telemetriedaten (Traces, Metriken, Logs). Es entstand aus der Zusammenführung der Projekte OpenTracing und OpenCensus und wird von der \ac{CNCF} betreut~\cite{OpenTelemetryWhatIs}.  
 Für diese Arbeit wird OpenTelemetry genutzt, um die AWS-Lambda-Funktionen zu instrumentieren und den daraus resultierenden Performance-Overhead zu messen.
 
-\subsection{Entstehung und Zielsetzung}
+\subsection{Zielsetzung von OpenTelemetry}
 OpenTelemetry vereinheitlicht die Erfassung von Telemetriedaten und stellt eine gemeinsame API bereit, sodass Anwendungen nicht für jedes Backend neu instrumentiert werden müssen. Ziel ist es, eine einheitliche Bibliothek für Logs, Metriken und Traces zu schaffen und Vendor-Lock-in zu vermeiden~\cite{OpenTelemetryInstrumentation,OpenTelemetryWhatIs}.
 
 \subsection{Kernkomponenten und Architektur}
@@ -234,79 +223,60 @@ Die OpenTelemetry-Architektur besteht aus mehreren modularen Komponenten~\cite{O
 \begin{itemize}
     \item \textbf{API und SDK:} Die \ac{API} definiert, wie Telemetriedaten erzeugt werden; das \ac{SDK} bietet konkrete Implementierungen und Konfigurationsmöglichkeiten (z. B. Sampling, Export). Entwickler können zwischen manueller (codebasierter) und automatischer (Zero-Code-)Instrumentierung wählen.
     \item \textbf{Instrumentierungsbibliotheken:} Vorgefertigte Bibliotheken für gängige Frameworks (HTTP, Datenbanken), die automatisch Telemetriedaten erzeugen. Langfristig sollen alle wichtigen Bibliotheken standardmäßig beobachtbar sein.
-    \item \textbf{Collector:} Eine optionale Komponente, die Telemetriedaten empfängt, verarbeitet (filtern, anreichern, bündeln) und an ein oder mehrere Backends weiterleitet. Der Einsatz eines Collectors entkoppelt die Instrumentierung vom Backend und bietet zentrale Kontrollmöglichkeiten. In dieser Arbeit wird jedoch kein separater Collector eingesetzt; die Daten werden direkt über den AWS-spezifischen ADOT-Layer exportiert.
+    \item \textbf{Collector:} Eine Komponente, die Telemetriedaten empfängt, verarbeitet (filtern, anreichern, bündeln) und an ein oder mehrere Backends weiterleitet. Der Einsatz eines Collectors entkoppelt die Instrumentierung vom Backend und bietet zentrale Kontrollmöglichkeiten. In dieser Arbeit wird jedoch kein separater Collector eingesetzt. Die Daten werden direkt über den AWS-spezifischen ADOT-Layer an AWS-X-Ray exportiert.
     \item \textbf{Exporter und Propagators:} Exporter senden die Daten an ein Backend (hier AWS X-Ray), Propagators übertragen Kontextinformationen (z. B. Trace-IDs) zwischen Diensten, z. B. über \ac{HTTP}-Header.
 \end{itemize}
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/otel_collector.png}
- \caption{OpenTelemetry Collector~\cite{OpenTelemetryCollector}}
- \label{fig:chapter02:otel_collector}
-\end{figure}
-Abbildung~\ref{fig:chapter02:otel_collector} zeigt die Rolle des Collectors in der Telemetrie-Pipeline.
-
-\begin{figure}[H]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/otel_structure.png}
+ \includegraphics[width=1.0\textwidth]{gfx/examples/otel-diagram.pdf}
  \caption{OpenTelemetry~\cite{OpenTelemetryDocs}}
  \label{fig:chapter02:otel}
 \end{figure}
-Abbildung~\ref{fig:chapter02:otel} gibt einen Überblick über die OpenTelemetry-Komponenten und deren Zusammenspiel.
+Abbildung~\ref{fig:chapter02:otel} zeigt alle Anschlussmöglichkeiten, wie Tracing-Daten an OpenTelemetry und von OpenTelemetry 
+weitergegeben werden können.
+
 
 \subsection{Sampling-Strategien}
 \label{subsec:sampling}
-Um das Datenvolumen zu reduzieren, können Sampling-Strategien angewendet werden~\cite{OpenTelemetrySampling}. 
+Um das Volumen der Tracing-Daten zu reduzieren, können Sampling-Strategien angewendet werden~\cite{OpenTelemetrySampling}. 
+Dies entlastet die Telemetrie-Pipeline und senkt die Kosten, da weniger Daten exportiert und gespeichert werden müssen.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/otel_sampling.png}
+ \includegraphics[width=1.0\textwidth]{gfx/examples/traces-venn-diagram.pdf}
  \caption{Samplingkriterien~\cite{OpenTelemetrySampling}}
  \label{fig:chapter02:sampling}
 \end{figure}
-Abbildung~\ref{fig:chapter02:sampling} veranschaulicht, nach welchen Kriterien Sampling-Entscheidungen getroffen werden können.
+Abbildung~\ref{fig:chapter02:sampling} veranschaulicht, nach welchen Kriterien, Entscheidungen über das Sampling getroffen werden können.
 
 \paragraph{Terminologie und Grundprinzip}
 Ein Trace oder Span gilt als \emph{gesampelt (sampled)}, wenn er vom Sampler ausgewählt, verarbeitet und exportiert wird; andernfalls als \emph{nicht gesampelt (not sampled)}. Sampling ist eine effektive Methode, um Observability-Kosten zu senken, insbesondere bei hohem Durchsatz~\cite{OpenTelemetrySampling}. Ob Sampling sinnvoll ist, hängt von Datenmenge, Workload und Ressourcen ab.
 
 \paragraph{Head Sampling}
-\emph{Head Sampling} entscheidet bereits zu Beginn eines Traces, ob er aufgezeichnet wird. Die gängigste Form ist das \emph{Consistent Probability Sampling} (deterministisches Sampling), bei dem anhand der Trace-ID und einer konstanten Rate (z. B. 5\%) entschieden wird. Vorteile sind Einfachheit und Effizienz; Nachteil ist, dass die Entscheidung nicht auf dem gesamten Trace basieren kann, sodass beispielsweise Fehler-Traces nicht gezielt erfasst werden können~\cite{OpenTelemetrySampling}.
+\emph{Head Sampling} entscheidet bereits zu Beginn eines Traces, ob er aufgezeichnet wird. Die gängigste Form ist das \emph{Consistent Probability Sampling} (deterministisches Sampling), bei dem anhand der Trace-ID und einer konstanten Rate (z. B. 5\%) entschieden wird. Vorteile sind Einfachheit und Effizienz. Nachteil ist, dass die Entscheidung nicht auf dem gesamten Trace basieren kann, sodass beispielsweise Fehler-Traces nicht gezielt erfasst werden können~\cite{OpenTelemetrySampling}.
 
 \paragraph{Tail Sampling}
 \emph{Tail Sampling} trifft die Entscheidung erst nach Betrachtung aller oder der meisten Spans eines Traces. Dadurch können komplexe Bedingungen abgebildet werden, z. B. das Aufzeichnen aller fehlerhaften Traces oder solcher mit hoher Latenz. Tail Sampling ist für größere Systeme meist die richtige Wahl, ist aber aufwendiger in der Implementierung und erfordert zustandsbehaftete Komponenten~\cite{OpenTelemetrySampling}.
 
-\begin{figure}[H]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/tail_sampling.png}
- \caption{Tail Sampling~\cite{OpenTelemetrySampling}}
- \label{fig:chapter02:tail_sampling}
-\end{figure}
-Abbildung~\ref{fig:chapter02:tail_sampling} zeigt den Ablauf von Tail Sampling.
-
 \paragraph{Kombination von Strategien}
-In manchen Systemen werden Head- und Tail-Sampling kombiniert: Zunächst reduziert Head Sampling die Datenmenge, und später wendet ein Tail Sampler weitere Filter an, um die Telemetrie-Pipeline zu entlasten~\cite{OpenTelemetrySampling}.
+In manchen Systemen werden Head- und Tail-Sampling kombiniert um das Volumen der Tracing-Daten zu reduzieren, die Kosten zu senken und die Telemetrie-Pipeline zu entlasten~\cite{OpenTelemetrySampling}.
 
-Für die Messungen in dieser Arbeit wird \textbf{kein Sampling} verwendet, da der maximale Overhead erfasst werden soll. Alle Traces werden vollständig exportiert.
+Für die Messungen in dieser Arbeit wird Head Sampling mit einer Erfassungsrate von 100\% verwendet. Die vorliegende 
+Arbeit hat das Ziel, möglichst viel Daten zu erfassen um den Overhead möglichst genau zu messen. Eine Effizienzoptimierung ist nicht Teil der Evaluierung. 
 
 \subsection{AWS Distro for OpenTelemetry (ADOT)}
 \label{sec:adot}
 Die \ac{ADOT} ist eine von AWS unterstützte Distribution von OpenTelemetry, die für die Integration mit AWS-Diensten optimiert ist~\cite{ADOT}. Für AWS Lambda werden vorgefertigte \textit{Layer} bereitgestellt, die die OpenTelemetry-Abhängigkeiten enthalten und die Instrumentierung ohne manuelle SDK-Einbindung ermöglichen~\cite{ADOT_Lambda}.  
-In dieser Arbeit wird der ADOT-Layer für Java, Python und Node.js verwendet, um die Funktionen mit OpenTelemetry zu instrumentieren. Als Backend dient AWS X-Ray, da es nativ mit Lambda integriert ist und die gesammelten Traces in CloudWatch verfügbar macht.
+In dieser Arbeit wird der ADOT-Layer für Java, Python und Node.js verwendet, um die Funktionen mit zu instrumentieren. Als Backend dient AWS X-Ray, da es nativ mit Lambda integriert ist und die gesammelten Traces in CloudWatch verfügbar macht.
 
-\begin{figure}[H]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/adot.png}
- \caption{AWS Distro for OpenTelemetry~\cite{ADOT}}
- \label{fig:chapter02:adot}
-\end{figure}
-Abbildung~\ref{fig:chapter02:adot} zeigt die Komponenten der AWS Distro for OpenTelemetry.
 
 \section{AWS CloudWatch}
 \label{sec:cloudwatch}
 
 Amazon CloudWatch ist der zentrale Überwachungsdienst von AWS und sammelt Metriken und Logs aus AWS-Ressourcen~\cite{AWSCloudWatchDocs}. Für diese Arbeit ist CloudWatch die primäre Quelle der Performance-Metriken der instrumentierten Lambda-Funktionen.
 
-\subsection{Kernfunktionen für diese Arbeit}
+\subsection{Relevante Kernfunktionen}
 Für jede Lambda-Funktion stellt CloudWatch automatisch Metriken im Namespace \texttt{AWS/Lambda} bereit~\cite{AWSLambdaMetrics}. Die folgenden Metriken werden in dieser Arbeit ausgewertet:
 \begin{itemize}
     \item \textbf{Duration:} Ausführungsdauer in Millisekunden (Grundlage für Runtime-Overhead).
@@ -326,16 +296,8 @@ AWS X-Ray ist der Tracing-Dienst von AWS. Er empfängt Traces von instrumentiert
 In dieser Arbeit fungiert X-Ray als Backend für die mit OpenTelemetry erzeugten Traces. Die Verwendung von X-Ray hat den Vorteil, dass es nativ mit Lambda zusammenarbeitet und keine zusätzliche Collector-Infrastruktur erfordert~\cite{ADOT_Lambda}.  
 Die gesammelten Traces werden genutzt, um zu überprüfen, ob die Instrumentierung korrekt funktioniert und ob alle Aufrufe vollständig erfasst werden. Eine detaillierte Trace-Analyse (z. B. mit X-Ray-Queries) wird aufgrund des begrenzten Budgets nicht durchgeführt~\cite{AWSXRayPricing}.
 
-\begin{figure}[H]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/aws-x-ray.png}
- \caption{AWS X-Ray~\cite{AWSXRayDocs}}
- \label{fig:chapter02:xray}
-\end{figure}
-Abbildung~\ref{fig:chapter02:xray} zeigt die Trace-Ansicht von AWS X-Ray.
-
 \section{Amazon DynamoDB}
 \label{sec:dynamodb}
 
 Amazon DynamoDB ist ein vollständig verwalteter, serverloser \ac{NoSQL}-Datenbankservice, der für konsistente Latenzen im einstelligen Millisekundenbereich ausgelegt ist~\cite{AWSDynamoDBDocs}.  
-In dieser Arbeit wird DynamoDB in zwei der fünf Microbenchmarks verwendet: Lese- und Schreiboperationen. Diese Szenarien repräsentieren typische Datenzugriffsmuster in serverlosen Anwendungen und ermöglichen die Messung des durch OpenTelemetry verursachten Overheads bei Datenbankoperationen.
+In dieser Arbeit wird DynamoDB in zwei der fünf Microbenchmarks verwendet -  Lese- und Schreiboperationen. Diese Szenarien repräsentieren typische Datenzugriffsmuster in serverlosen Anwendungen und ermöglichen die Messung des durch OpenTelemetry verursachten Overheads bei Datenbankoperationen.
