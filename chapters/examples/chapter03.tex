@@ -12,10 +12,10 @@ Während verschiedene Studien isolierte Aspekte wie Sprachperformance~\cite{Rodr
 untersuchen, fehlt bislang eine vergleichende Analyse, die beide Dimensionen gemeinsam betrachtet.
 
 Dieses Kapitel stellt zwei zentrale Arbeiten vor, die für die vorliegende Untersuchung 
-von besonderer Relevanz sind. Die erste Arbeit \emph{\glqq A Comparison of Distributed Tracing Tools in Serverless Applications\grqq }\cite{10254754} 
+von besonderer Relevanz sind. Die erste Arbeit \emph{\glqq A Comparison of Distributed Tracing Tools in Serverless Applications\grqq }~\cite{10254754} 
 vergleicht den Overhead verschiedener Distributed-Tracing-Tools in AWS-Lambda-Funktionen. 
 Die zweite Arbeit \emph{\glqq Evaluation of Programming Languages for Memory Usage, Scalability, and Cold Start, 
-on AWS Lambda Serverless Platform as a Case Study\grqq }\cite{Rodriguez2024Evaluation} evaluiert die Performance 
+on AWS Lambda Serverless Platform as a Case Study\grqq }~\cite{Rodriguez2024Evaluation} evaluiert die Performance 
 unterschiedlicher Programmiersprachen auf derselben Plattform. 
 Beide Studien werden hinsichtlich ihrer Motivation, Methodik, Ergebnisse und Limitationen analysiert, 
 um darauf aufbauend die Forschungslücke für die eigene Arbeit zu adressieren. Das zentrale Erkenntnisinteresse 
@@ -34,7 +34,7 @@ ist Distributed Tracing ein zentrales Werkzeug zur Nachverfolgung von Anfragen.
 Gleichzeitig folgt Serverless Computing einem nutzungsbasierten Abrechnungsmodell, 
 sodass der durch Tracing verursachte Overhead direkte Auswirkungen auf die Kosten haben kann. 
 Die Autoren motivieren ihre Arbeit mit dem Fehlen eines detaillierten Vergleichs verschiedener Tracing-Tools 
-speziell in serverlosen Umgebungen\cite{10254754}.
+speziell in serverlosen Umgebungen~\cite{10254754}.
 
 \subsection{Untersuchungsgegenstand und Methodik}
 \label{subsec:eder-methodology}
@@ -129,7 +129,7 @@ zentrale Motivation für die vorliegende Arbeit.
 \subsection{Motivation}
 \label{subsec:rodriguez-motivation}
 
-Diese Studie von Rodriguez et al.\cite{Rodriguez2024Evaluation} adressiert die Frage, wie
+Diese Studie von Rodriguez et al.~\cite{Rodriguez2024Evaluation} adressiert die Frage, wie
  sich verschiedene Programmiersprachen in serverlosen Umgebungen 
  hinsichtlich Initialisierung, Kaltstarts, Speichernutzung und Skalierbarkeit verhalten. 
  Die Autoren stellen fest, dass viele wissenschaftliche Arbeiten die Analyse dieser Faktoren in Bezug auf die Sprachwahl vernachlässigen. 
@@ -280,14 +280,14 @@ Zweitens wird nicht spezifiziert, ob und welche reservierte Konkurrenz (reserved
 – ein Faktor, der das Skalierungsverhalten insbesondere bei parallelen Aufrufen erheblich beeinflussen kann. 
 Drittens berücksichtigt die gewählte Methodik nicht die Optimierungsmechanismen der Laufzeitumgebungen. 
 Sowohl die \ac{JIT}-Compiler von Java und Node.js als auch der CPython-Interpreter benötigen mehrere Durchläufe, 
-um ihren Code zu optimieren\cite{CPythonPEP659,FromWarmToHotStarts}. Mit nur einem einzigen Warmstart pro Funktion werden diese Effekte nicht erfasst, 
+um ihren Code zu optimieren~\cite{CPythonPEP659,FromWarmToHotStarts}. Mit nur einem einzigen Warmstart pro Funktion werden diese Effekte nicht erfasst, 
 was zu irreführenden Ergebnissen führen kann. Dies zeigt sich beispielsweise im Vergleich der initialen Warmstart-Messungen mit 
 den Skalierbarkeitstests. Während Java in den ersten warmen Aufrufen noch relativ hohe Laufzeiten aufweist, 
 erreicht es bei 200 Anfragen pro Sekunde die besten Werte – ein Hinweis darauf, dass die \ac{JIT}-Optimierung erst nach mehreren 
 Aufrufen ihre volle Wirkung entfaltet.
 
 Trotz dieser Einschränkungen liefert die Studie wertvolle Hinweise auf die relativen Stärken und Schwächen der untersuchten Sprachen. 
-Die Studie \emph{\glqq Cold Start Influencing Factors in Function as a Service\grqq } von Manner et al.\cite{FaaSColdStart2018} untersucht den 
+Die Studie \emph{\glqq Cold Start Influencing Factors in Function as a Service\grqq } von Manner et al.~\cite{FaaSColdStart2018} untersucht den 
 Kaltstart‑Overhead auf AWS Lambda und Azure Functions für Java und JavaScript. Ihre Ergebnisse bestätigen die hier beobachteten Tendenzen. 
 Java verursacht einen deutlich höheren Kaltstart‑Overhead als interpretierte Sprachen (Faktor 2–3) und mehr Speicher reduziert den 
 Overhead messbar. Damit bestätigt die ältere Studie die grundlegenden Zusammenhänge zwischen Sprachwahl, Ressourcenkonfiguration und 
