@@ -1,5 +1,5 @@
 ﻿\chapter{Theoretische Grundlagen}
-\label{ch:background}
+\label{ch:chapter02}
 
 In diesem Kapitel werden die wesentlichen theoretischen Grundlagen vorgestellt, die für das Verständnis dieser Arbeit notwendig sind. Zunächst werden die grundlegenden Konzepte von Cloud Computing und Microservices-Architektur erläutert, um die Ausgangslage verteilter Systeme zu verstehen. Darauffolgend werden Serverless-Computing und \ac{FaaS} erläutert, wobei \ac{AWS} als konkrete Plattform und \ac{AWS} Lambda als konkrete \ac{FaaS}-Implementierung im Mittelpunkt stehen. Anschließend werden Observability, Distributed Tracing, OpenTelemetry und die \ac{ADOT} vorgestellt. Abschließend werden Cloud-Ressourcen und -Dienste von \ac{AWS} wie z. B. \ac{AWS} CloudWatch, \ac{AWS} X‑Ray beschrieben, die für die Implementierung und Evaluierung der in dieser Arbeit vorgeschlagenen Lösung relevant sind.
 
@@ -79,6 +79,13 @@ Fällt ein Consumer aus, bleibt der Producer funktionsfähig, was die Ausfallsic
 Für diese Arbeit ist dieses Zusammenspiel fundamental, da die AWS-Lambda-Funktionen sowohl Events konsumieren als auch produzieren 
 können~\cite{AWSLambdaDocs} und damit in ihrem Kern ereignisgesteuert sind.
 
+In dieser Arbeit werden die AWS-Lambda-Funktionen für alle fünf Benchmarks, asynchron über Events 
+aufgerufen. In diesem Fall werden die eingehenden Events in einer internen asnychronen 
+Warteschlange (Event Buffer) gespeichert, bis sie von der Funktion abgeholt 
+und verarbeitet werden~\cite{AWSLambdaAsyncDelays}. Dabei sind alle 3 Komponenten der 
+\ac{EDA} vertreten. Der Aufrufer fungiert als Event Producer, die Warteschlange als 
+Event Broker (Event Ingestion) und die Lambda-Funktion als Event Consumer.
+
 \section{Serverless-Computing und Function as a Service}
 \label{sec:serverless}
 
@@ -91,7 +98,7 @@ Dabei wird die Geschäftslogik einer Anwendung in kleine, unabhängige und zusta
 Jede Funktion ist eine eigenständige Einheit (\ac{FaaS}-Instanz).
 Die wichtigsten Eigenschaften von \ac{FaaS}, die für die Messung relevant sind, sind:
 \begin{itemize}
-    \item \textbf{Ereignisgesteuerte Ausführung:} Funktionen werden nur bei Bedarf aktiviert und verbrauchen im Leerlauf keine Ressourcen. Das beeinflusst die Messung von sowohl Warmstarts als auch Kaltstarts für alle  zu messenden Metriken (siehe Kapitel 4).
+    \item \textbf{Ereignisgesteuerte Ausführung:} Funktionen werden nur bei Bedarf aktiviert und verbrauchen im Leerlauf keine Ressourcen. Das beeinflusst die Messung von sowohl Warmstarts als auch Kaltstarts für alle  zu messenden Metriken (siehe Kapitel \ref{ch:chapter04}).
     \item \textbf{Automatische Skalierung:} Die Plattform skaliert die Anzahl der Instanzen dynamisch, was die Messung bei steigender Last relevant macht und eine Präzise Dokumentation erfordert.
     \item \textbf{Pay-per-Use-Abrechnung:} Abgerechnet wird nach Ausführungszeit und Speicherzuweisung. Dadurch wirkt sich jeder durch Tracing verursachte Overhead direkt auf die Kosten aus.
 \end{itemize}
@@ -161,19 +168,19 @@ Abbildung~\ref{fig:chapter02:aws_lambda_layers} zeigt schematisch die Funktionsw
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=0.6\textwidth]{gfx/examples/Microbenchmarks.png}
- \caption{Häufigste Anwendungsfälle von AWS Lambda~\cite{10254754}}
+ \includegraphics[width=0.6\textwidth]{gfx/examples/Microbenchmarks.pdf}
+ \caption{Häufigste Anwendungsfälle von AWS Lambda.}
  \label{fig:chapter02:aws_lambda_use_cases}
 \end{figure}
 Die in Abbildung~\ref{fig:chapter02:aws_lambda_use_cases} dargestellten fünf Microbenchmarks repräsentieren die häufigsten Interaktionsmuster von AWS-Lambda-Funktionen~\cite{Winzinger2021DataFlow}:
 \begin{enumerate}
-    \item Aufruf einer weiteren Lambda-Funktion (Lambdaverkettung)
-    \item HTTP-GET-Anfrage an eine externe API
-    \item HTTP-POST-Anfrage an eine externe API
-    \item Leseoperation aus einer DynamoDB-Tabelle
-    \item Schreiboperation in eine DynamoDB-Tabelle
+    \item Eine Lambda-Funktion ruft eine weitere Lambda-Funktion auf (Lambdaverkettung).
+    \item Eine Lambda-Funktion sendet eine HTTP-GET-Anfrage an eine externe API.
+    \item Eine Lambda-Funktion sendet eine HTTP-POST-Anfrage an eine externe API.
+    \item Eine Lambda-Funktion führt eine Leseoperation aus einer DynamoDB-Tabelle durch.
+    \item Eine Lambda-Funktion führt eine Schreiboperation in eine DynamoDB-Tabelle durch.
 \end{enumerate}
-Diese fünf Szenarien bilden die Grundlage für die experimentelle Evaluation in Kapitel~\ref{ch:methodik} und Kapitel~\ref{ch:results}. Für jedes Szenario wird jeweils eine instrumentierte und eine nicht-instrumentierte Version der Funktion in den drei Sprachen Java, Python und Node.js implementiert.
+Diese fünf Szenarien basieren auf einer umfassenden Analyse (siehe~\cite{Winzinger2021DataFlow}) und bilden die Grundlage für die experimentelle Evaluation in Kapitel~\ref{ch:methodik} und Kapitel~\ref{ch:results}. Für jedes Szenario wird jeweils eine instrumentierte und eine nicht-instrumentierte Version der Funktion in den drei Sprachen Java, Python und Node.js implementiert.
 
 \section{Observability in verteilten Systemen}
 \label{sec:observability}
@@ -264,6 +271,10 @@ In manchen Systemen werden Head- und Tail-Sampling kombiniert um das Volumen der
 
 Für die Messungen in dieser Arbeit wird Head Sampling mit einer Erfassungsrate von 100\% verwendet. Die vorliegende 
 Arbeit hat das Ziel, möglichst viel Daten zu erfassen um den Overhead möglichst genau zu messen. Eine Effizienzoptimierung ist nicht Teil der Evaluierung. 
+Die zuvor beschriebenen Aspekte – Kriterien für die Entscheidung, 
+ob Sampling zum Einsatz kommt, verschiedene Sampling-Strategien sowie deren Kombination 
+– verdeutlichen, dass der durch Tracing verursachte Overhead ein zentrales Thema darstellt, 
+das mitunter erhebliche wirtschaftliche Konsequenzen haben kann.
 
 \subsection{AWS Distro for OpenTelemetry (ADOT)}
 \label{sec:adot}
@@ -287,7 +298,7 @@ Für jede Lambda-Funktion stellt CloudWatch automatisch Metriken im Namespace \t
 \end{itemize}
 
 \subsection{Datenerfassung und -analyse}
-CloudWatch empfängt Metriken automatisch von Lambda nach jeder Ausführung. Darüber hinaus schreibt Lambda standardmäßig Log-Nachrichten in CloudWatch Logs, aus denen die Metriken \texttt{Init Duration}, \texttt{Duration} und \texttt{Max Memory Used} extrahiert werden können~\cite{GraylogLambdaMetrics}. Für diese Arbeit werden die relevanten Metriken aus den CloudWatch Logs extrahiert und in Kapitel 5 analysiert.
+CloudWatch empfängt Metriken automatisch von Lambda nach jeder Ausführung. Darüber hinaus schreibt Lambda standardmäßig Log-Nachrichten in CloudWatch Logs, aus denen die Metriken \texttt{Init Duration}, \texttt{Duration} und \texttt{Max Memory Used} extrahiert werden können~\cite{GraylogLambdaMetrics}. Für diese Arbeit werden die relevanten Metriken aus den CloudWatch Logs extrahiert und in Kapitel \ref{ch:chapter05} analysiert.
 
 \subsection{AWS X-Ray}
 \label{subsec:aws-xray}
