@@ -1,16 +1,5 @@
 \chapter{Stand der Forschung}
 \label{ch:chapter03}
-
-\section{Einleitung}
-\label{sec:related-intro}
-
-Die zunehmende Verbreitung serverloser Architekturen in den vergangenen Jahren hat die Notwendigkeit für die Durchführung 
-von Forschungsarbeiten geschaffen, die sich mit der Performance und Observability solcher Systeme beschäftigen. 
-Insbesondere die Wahl der Programmiersprache und der Einsatz von Distributed-Tracing-Tools stehen im Fokus, 
-da beide Faktoren signifikanten Einfluss auf die Effizienz und Betriebskosten serverloser Anwendungen haben können. 
-Während verschiedene Studien isolierte Aspekte wie Sprachperformance~\cite{Rodriguez2024Evaluation} oder Tracing-Overhead~\cite{10254754} 
-untersuchen, fehlt bislang eine vergleichende Analyse, die beide Dimensionen gemeinsam betrachtet.
-
 Dieses Kapitel stellt zwei zentrale Arbeiten vor, die für die vorliegende Untersuchung 
 von besonderer Relevanz sind. Die erste Arbeit \emph{\glqq A Comparison of Distributed Tracing Tools in Serverless Applications\grqq }~\cite{10254754} 
 vergleicht den Overhead verschiedener Distributed-Tracing-Tools in AWS-Lambda-Funktionen. 
@@ -42,15 +31,7 @@ speziell in serverlosen Umgebungen~\cite{10254754}.
 Die Studie untersucht drei Open-Source-Distributed-Tracing-Tools – Zipkin, OpenTelemetry (mittels AWS Distro for OpenTelemetry, ADOT) 
 und Apache SkyWalking. Alle Tools wurden in AWS-Lambda-Funktionen integriert, wobei Node.js 16.x als konkrete Laufzeitumgebung 
 gewählt wurde. Die Evaluation erfolgte anhand von fünf Microbenchmarks, die typische Interaktionsmuster serverloser Anwendungen abbilden 
-(siehe Abbildung~\ref{fig:chapter02:aws_lambda_use_cases}):
-
-\begin{enumerate}
-    \item \textbf{Function Invocation}: Eine Lambda-Funktion ruft eine weitere Lambda-Funktion auf.
-    \item \textbf{HTTP GET}: Die Funktion sendet eine GET-Anfrage an einen externen HTTP-Endpunkt.
-    \item \textbf{HTTP POST}: Die Funktion sendet eine POST-Anfrage an einen externen HTTP-Endpunkt.
-    \item \textbf{DynamoDB Read}: Die Funktion liest einen Datensatz aus einer DynamoDB-Tabelle.
-    \item \textbf{DynamoDB Write}: Die Funktion schreibt einen Datensatz in eine DynamoDB-Tabelle.
-\end{enumerate}
+(siehe Unterabschnitt~\ref{subsec:lambda-benchmarks}).
 
 Für jede Kombination aus Benchmark und Tracing-Tool wurden 100 warme Funktionsaufrufe 
 (hot starts) durchgeführt und die Metriken Laufzeit (Runtime) und Speicherverbrauch (Max Memory Used) erfasst.
@@ -62,7 +43,7 @@ Jede Variante wurde 100 Mal aufgerufen (100 Kaltstarts), um die Metrik Init Dura
 Die Tracing-Backends wurden auf einer AWS-EC2-Instanz gehostet.
 
 Für alle Metriken wurden statistische Tests (einseitige Welch's t-Tests) durchgeführt, um zu bestimmen, ob die Unterschiede 
-zwischen den Tracing-Tools und der Baseline statistischsignifikant sind.
+zwischen den Tracing-Tools und der Baseline statistisch signifikant sind.
 \subsection{Ergebnisse}
 \label{subsec:overhead-results}
 
@@ -71,7 +52,7 @@ zwischen den Tracing-Tools und der Baseline statistischsignifikant sind.
 
 \begin{table}[H]
 \centering
-\caption{Effizienz-Overhead Vergleich zwischen Zipkin, OTel und SkyWalking. Resultate entnommen aus~\cite{10254754}}
+\caption{Effizienz-Overhead Vergleich zwischen Zipkin, OTel und SkyWalking. Resultate entnommen aus~\cite{10254754}.}
 \label{efficiency-overhead}
 \begin{tabular}{llccc}
 \toprule
@@ -118,7 +99,8 @@ verursachen. Besonders auffällig ist der hohe Speicher- und Kaltstart-Overhead 
 der von den Autoren auf den zusätzlichen Collector zurückgeführt wird.
 
 Allerdings beschränkt sich die Untersuchung auf Node.js als Laufzeitumgebung. 
-Zudem wurden nur synchrone Aufrufe betrachtet. Die Autoren selbst regen an, 
+Zudem wurden bei den Kaltstarts leere Funktionen verwendet, was den 5 Microbenchmarks nicht entspricht. 
+Die Autoren selbst regen an, 
 weitere Sprachen und Plattformen in zukünftige Vergleiche einzubeziehen – eine 
 zentrale Motivation für die vorliegende Arbeit.
 
@@ -157,6 +139,7 @@ Die Experimente umfassen:
 
 \subsection{Ergebnisse}
 \label{subsec:rodriguez-results}
+\footnotetext{Alle Ergebnisse aus den Tabellen~\ref{tab:rodriguez-init} bis~\ref{tab:rodriguez-scalability} wurden aus~\cite{Rodriguez2024Evaluation} entnommen.}
 
 \paragraph{Initialisierungszeiten}
 Tabelle~\ref{tab:rodriguez-init} zeigt die durchschnittlichen Initialisierungszeiten pro CRUD-Operation. Java weist mit Abstand 
@@ -180,8 +163,7 @@ Java    & 1623,53 & 1630,52 & 1526,12 & 1577,30 \\
 \paragraph{Laufzeiten (Kalt vs. Warm)}
 Die Tabellen~\ref{tab:rodriguez-nodejs} bis~\ref{tab:rodriguez-java} zeigen die durchschnittlichen Ausführungszeiten für 
 Kalt- und Warmstarts pro Sprache und Operation. Java verbessert sich am stärksten bei warmen Ausführungen – 
-die Laufzeit sinkt um durchschnittlich 84\,\%, während Node.js und Python Verbesserungen um etwa 45–48\,\% erzielen. 
-Besonders interessant ist die Delete-Operation in Java, deren Laufzeit von 581 ms (kalt) auf 85 ms (warm) fällt.
+die Laufzeit sinkt um durchschnittlich 84\,\%, während Node.js und Python Verbesserungen um etwa 45–48\,\% erzielen.
 
 \begin{table}[H]
 \centering
@@ -229,12 +211,11 @@ Verbesserung & 83,4\,\% & 85,2\,\% & 81,9\,\% & 85,4\,\% \\
 \end{table}
 
 \paragraph{Skalierbarkeit}
-Tabelle~\ref{tab:rodriguez-scalability} zeigt die Laufzeiten der Leseoperation (Read) bei steigender Anzahl der Anfragen pro Sekunde. 
-Java startet mit einer hohen Latenz (52 ms) aufgrund von Kaltstarts, verbessert sich aber bei 10 Aufrufen pro Sekunde auf 20 ms und 
-unterbietet damit Node.js (30 ms) und Python (31 ms). Bei 25 Aufrufen treten in Java erneut Kaltstarts auf (158 ms), 
-während Node.js und Python stabil bleiben. Ab 50 Aufrufen stabilisieren sich alle Sprachen; bei 200 Aufrufen erreicht Java mit 14 ms 
-den besten Wert, gefolgt von Python (15 ms) und Node.js (27 ms). Die Autoren führen dies auf die effizientere Nutzung der 
-Infrastruktur bei warmen Containern zurück.
+Tabelle~\ref{tab:rodriguez-scalability} zeigt die Laufzeiten der Leseoperation (Read) bei steigender Anzahl paralleler Aufrufe.
+Java startet mit einer hohen Latenz (52 ms) aufgrund von Kaltstarts, verbessert sich aber bei 10 Aufrufen  und 
+unterbietet damit Node.js und Python. Bei 25 Aufrufen treten in Java erneut Kaltstarts auf, 
+während Node.js und Python stabil bleiben. Ab 50 Aufrufen stabilisieren sich alle Sprachen. Bei 200 Aufrufen erreicht 
+den besten Wert, gefolgt von Python und Node.js.
 
 \begin{table}[H]
 \centering
@@ -242,7 +223,7 @@ Infrastruktur bei warmen Containern zurück.
 \label{tab:rodriguez-scalability}
 \begin{tabular}{lcccccc}
 \hline
-\textbf{Sprache} & \textbf{1} & \textbf{10} & \textbf{25} & \textbf{50} & \textbf{100} & \textbf{200} \\
+\textbf{Sprache - Parallelität} & \textbf{1} & \textbf{10} & \textbf{25} & \textbf{50} & \textbf{100} & \textbf{200} \\
 \hline
 Node.js & 70,3 & 30,3 & 39,9 & 29,7 & 26,2 & 26,6 \\
 Python  & 58,1 & 31,6 & 16,0 & 16,5 & 15,0 & 15,4 \\
@@ -252,36 +233,26 @@ Java    & 52,7 & 20,0 & 158,3 & 24,3 & 19,7 & 13,9 \\
 \end{table}
 
 \paragraph{Einfluss des Speichers auf die Laufzeit}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{gfx/examples/memory_usage.png}
-    \caption{Ausführungszeiten der Create-Operation in Abhängigkeit von der konfigurierten 
-    Speichermenge~\cite{Rodriguez2024Evaluation} (auf der x-Achse ist GB gemeint)}
-    \label{fig:rodriguez-memory}
-\end{figure}
-Abbildung~\ref{fig:rodriguez-memory} zeigt die Ausführungszeiten der Create-Operation in 
-Abhängigkeit von dem konfigurierten Speicher (512 MB bis 10 GB). Geringerer Speicher führt bei allen Sprachen zu längeren Laufzeiten, 
+
+Geringerer Speicher führt bei allen Sprachen zu längeren Laufzeiten, 
 jedoch ist der Effekt bei Java besonders ausgeprägt. Unter 1024 MB steigen die Laufzeiten drastisch an, während Node.js und Python auch 
-bei geringerem Speicher akzeptable Werte liefern. Bei 4096 MB gleichen sich die Laufzeiten aller Sprachen an 
-(Node.js 42 ms, Python 50 ms, Java 48 ms). Java zeigt zudem stark schwankende Initialisierungszeiten bei Speicher unter 
-6 GB; bei 512 MB erreicht die Initialisierung fast 4000 ms.
+bei geringerem Speicher akzeptable Werte liefern. Bei 4096 MB gleichen sich die Laufzeiten aller Sprachen an (für mehr Details siehe~\cite{Rodriguez2024Evaluation}).
 
 \subsection{Einordnung}
 \label{subsec:rodriguez-discussion}
-Die Arbeit bestätigt, dass Python und Node.js für typische serverlose CRUD-Anwendungen besser geeignet sind als Java, 
-wenn Kaltstartzeiten hochpriorisiert sind. Java zeigt jedoch bei hoher Auslastung und warmen Umgebungen eine konkurrenzfähige 
-Performance und kann bei großen Speicherkonfigurationen sogar die besten Laufzeiten erzielen. Die Studie unterstreicht 
-die Notwendigkeit, die Sprachwahl anhand des erwarteten Lastprofils und der verfügbaren Speicherressourcen zu treffen.
+Die Arbeit bestätigt, dass verschiedene Programmiersprachen unterschiedliche Stärken und Schwächen im Bezug auf 
+die Performance aufweisen. Die Studie unterstreicht 
+die Notwendigkeit, die Sprachwahl anhand des erwarteten Lastprofils und der verfügbaren Ressourcen zu treffen.
 
 Allerdings sind bei der Interpretation der Ergebnisse einige methodische Einschränkungen und Mängel zu beachten. 
 Erstens basieren die Messungen auf lediglich fünf Kalt- und fünf Warmstarts pro Konfiguration, was aus statistischer Sicht eine zu 
-geringe Stichprobengröße darstellt und die Aussagekraft der Mittelwerte erheblich reduziert. 
-Zweitens wird nicht spezifiziert, ob und welche reservierte Konkurrenz (reserved concurrency) für die Funktionen konfiguriert war 
+geringe Stichprobengröße darstellt und die Aussagekraft der Messwerte erheblich reduziert. 
+Zweitens wird nicht dokumentiert, ob und welche reservierte Konkurrenz (reserved concurrency) für die Funktionen konfiguriert war 
 – ein Faktor, der das Skalierungsverhalten insbesondere bei parallelen Aufrufen erheblich beeinflussen kann. 
 Drittens berücksichtigt die gewählte Methodik nicht die Optimierungsmechanismen der Laufzeitumgebungen. 
 Sowohl die \ac{JIT}-Compiler von Java und Node.js als auch der CPython-Interpreter benötigen mehrere Durchläufe, 
 um ihren Code zu optimieren~\cite{CPythonPEP659,FromWarmToHotStarts}. Mit nur einem einzigen Warmstart pro Funktion werden diese Effekte nicht erfasst, 
-was zu irreführenden Ergebnissen führen kann. Dies zeigt sich beispielsweise im Vergleich der initialen Warmstart-Messungen mit 
+was zu irreführenden Ergebnissen führt. Dies zeigt sich beispielsweise im Vergleich der initialen Warmstart-Messungen mit 
 den Skalierbarkeitstests. Während Java in den ersten warmen Aufrufen noch relativ hohe Laufzeiten aufweist, 
 erreicht es bei 200 Anfragen pro Sekunde die besten Werte – ein Hinweis darauf, dass die \ac{JIT}-Optimierung erst nach mehreren 
 Aufrufen ihre volle Wirkung entfaltet.
@@ -290,8 +261,8 @@ Trotz dieser Einschränkungen liefert die Studie wertvolle Hinweise auf die rela
 Die Studie \emph{\glqq Cold Start Influencing Factors in Function as a Service\grqq } von Manner et al.~\cite{FaaSColdStart2018} untersucht den 
 Kaltstart‑Overhead auf AWS Lambda und Azure Functions für Java und JavaScript. Ihre Ergebnisse bestätigen die hier beobachteten Tendenzen. 
 Java verursacht einen deutlich höheren Kaltstart‑Overhead als interpretierte Sprachen (Faktor 2–3) und mehr Speicher reduziert den 
-Overhead messbar. Damit bestätigt die ältere Studie die grundlegenden Zusammenhänge zwischen Sprachwahl, Ressourcenkonfiguration und 
-Kaltstartverhalten, die auch für die Arbeit von Rodriguez et al. prägend sind.
+Overhead messbar. Damit bestätigt diese Studie die grundlegenden Zusammenhänge zwischen Sprachwahl, Ressourcenkonfiguration und 
+Kaltstartverhalten, die auch in der Arbeit von Rodriguez et al. prägend sind.
 Die genannten methodischen Mängel unterstreichen jedoch die Notwendigkeit weiterführender Untersuchungen mit größeren Stichproben 
 und realistischeren Ausführungsprofilen.
 
@@ -301,28 +272,18 @@ und realistischeren Ausführungsprofilen.
 Beide vorgestellten Studien liefern wertvolle Erkenntnisse für die serverlose Entwicklung, weisen jedoch spezifische Einschränkungen auf, 
 die die Notwendigkeit weiterer Forschung begründen.
 
-\paragraph{Eingeschränkte Sprachvielfalt}
+\paragraph{Eingeschränkte Untersuchungsvielfalt}
 Die Untersuchung von Eder et al.~\cite{10254754} beschränkt sich auf Node.js, während Rodriguez et al.~\cite{Rodriguez2024Evaluation} 
-immerhin drei Sprachen vergleichen, aber ohne Berücksichtigung von Tracing-Overhead.
-
-\paragraph{Fehlende Kombination von Sprach- und Tracing-Aspekten}
-Keine der Arbeiten untersucht den \textbf{sprachspezifischen Overhead von Tracing-Tools}. Gerade dieser ist jedoch entscheidend für die Praxis, da Entwickler sowohl die Programmiersprache als auch die Observability-Strategie wählen müssen.
-
-\paragraph{Fokus auf einzelne Metriken}
-Während Eder et al. Runtime, Speicher und Initialisierung betrachten, konzentrieren sich Rodriguez et al. primär auf Laufzeit und Skalierung. 
-Ein umfassendes Bild, das alle relevanten Performance-Aspekte vereint, fehlt.
-
-\paragraph{Plattformabhängigkeit}
-Beide Studien wurden ausschließlich auf AWS durchgeführt. Ergebnisse lassen sich nicht ohne weiteres auf andere Cloud-Anbieter übertragen.
+immerhin drei Sprachen vergleichen, aber ohne Berücksichtigung von Tracing-Overhead. Dabei fehlt die Kombination beider Aspekte.
 
 \paragraph{Statistische Aussagekraft}
-Die Stichprobengrößen sind teils gering (100 Invocations pro Benchmark bei Eder et al., fünf Kaltstarts bei Rodriguez et al.), 
-was die Verallgemeinerbarkeit einschränkt.
+Die Stichprobengrößen sind teils gering (100 Aufrufe pro Benchmark bei Eder et al. und 5 bei Aufrufe bei Rodriguez et al.), 
+was die Verallgemeinerbarkeit einschränkt und die statistische Signifikanz der Ergebnisse beeinträchtigt.
 
 \section{Fazit}
 \label{sec:conclusion-related}
 
 Die betrachteten Vergleichsstudien belegen, dass sowohl die Wahl der Programmiersprache als auch der Einsatz von Distributed-Tracing-Tools 
-erheblichen Einfluss auf die Performance serverloser Anwendungen haben. Während Python und Node.js geringere Kaltstartzeiten aufweisen, 
-kann Java bei hoher Last und warmen Umgebungen punkten. Beim Tracing-Overhead erweist sich Zipkin als leichtgewichtig, während OpenTelemetry 
-und SkyWalking teils deutlichen Overhead verursachen.
+erheblichen Einfluss auf die Performance serverloser Anwendungen haben. Dabei sind alle 3 Performance-Metriken (Laufzeit, Speicherverbrauch und Initialisierungszeit) betroffen. 
+Die Ergebnisse unterstreichen die Notwendigkeit, diese Faktoren bei der Entwicklung und Wartung von serverlosen Anwendungen sorgfältig abzuwägen. 
+Jedoch ist dies ohne eine umfassende Analyse der Wechselwirkungen zwischen diesen Faktoren nicht möglich.

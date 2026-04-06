@@ -203,12 +203,14 @@ und an verschiedene \textit{Destinations} (Ziele) weitergeleitet, um sie für Da
 Dieser gesamte Kreislauf vom Erfassen über das Routing bis zum Speichern der Daten wird als \textit{Telemetry} (Telemetrie) bezeichnet.
 
 \subsection{Die drei Säulen der Observability}
-Die drei zentralen Signaltypen sind:
-\begin{itemize}
-    \item \textbf{Logs:} detaillierte, zeitgestempelte Ereignisaufzeichnungen.
-    \item \textbf{Metriken:} numerische Messwerte (z. B. CPU-Auslastung, Fehlerrate), die sich für Dashboards und Alerts eignen.
-    \item \textbf{Traces:} Nachverfolgung einer Anfrage durch verschiedene Dienste hinweg.
-\end{itemize}
+Die drei zentralen Signaltypen, die auch als \glqq \emph{die drei Säulen der Observability}\grqq{} bezeichnet werden, sind 
+\emph{Logs}, \emph{Metriken} und \emph{Traces}. 
+
+\emph{Logs} sind detaillierte, zeitgestempelte Aufzeichnungen von Ereignissen. 
+
+\emph{Metriken} sind numerische Messwerte eines Systems, die sich für visuelle Dashboards und Alarme eignen. 
+
+\emph{Traces} ermöglichen die Nachverfolgung einer Anfrage mittels context-propagation durch verschiedene Dienste hinweg.
 Erst die Kombination aller drei Säulen ermöglicht ein vollständiges Bild des Systemverhaltens~\cite{Hausenblas2024Cloud}. 
 Für diese Arbeit sind \textit{Metriken} (Laufzeit, Speicher, Kaltstartdauer), \textit{Logs} (zur Extraktion von Metriken und Fehleranalyse) und \textit{Traces} (zur Validierung der Instrumentierung) relevant.
 
@@ -240,7 +242,7 @@ Die OpenTelemetry-Architektur besteht aus mehreren modularen Komponenten~\cite{O
  \caption{OpenTelemetry~\cite{OpenTelemetryDocs}}
  \label{fig:chapter02:otel}
 \end{figure}
-Abbildung~\ref{fig:chapter02:otel} zeigt alle Anschlussmöglichkeiten, wie Tracing-Daten an OpenTelemetry und von OpenTelemetry 
+Abbildung~\ref{fig:chapter02:otel} zeigt alle Anschlussmöglichkeiten, wie Observability-Daten an OpenTelemetry und von OpenTelemetry 
 weitergegeben werden können.
 
 
