@@ -3,7 +3,8 @@
 
 In diesem Kapitel wird die methodische Vorgehensweise der Arbeit detailliert beschrieben. 
 Ziel ist es, eine reproduzierbare und nachvollziehbare Grundlage für die experimentelle Evaluation des 
-sprachspezifischen Overheads von OpenTelemetry in serverlosen Umgebungen zu schaffen.
+sprachspezifischen Overheads von OpenTelemetry in serverlosen Umgebungen zu schaffen, die in 
+Zukunft verwendet werden kann.
 \section{Auswahl der Microbenchmarks}
 
 \label{sec:auswahl-microbenchmarks}
@@ -11,7 +12,7 @@ sprachspezifischen Overheads von OpenTelemetry in serverlosen Umgebungen zu scha
 Die Auswahl geeigneter Microbenchmarks ist entscheidend für die Aussagekraft der Ergebnisse. 
 Sie müssen typische Interaktionsmuster von \ac{FaaS}-Instanzen repräsentieren. 
 In Anlehnung an die Arbeit von Eder et al.~\cite{10254754} werden fünf Szenarien verwendet (siehe Abbildung~\ref{fig:chapter02:aws_lambda_use_cases}), 
-die auf einer umfassenden Analyse der häufigsten Anwendungsfälle von AWS Lambda durch Winzinger und Wirtz~\cite{Winzinger2021DataFlow} 
+die auf einer umfassenden Analyse der häufigsten Anwendungsfälle von AWS Lambda durch Winzinger et al.~\cite{Winzinger2021DataFlow} 
 basieren.
 
 
@@ -20,55 +21,21 @@ Die Funktionalität ist dabei jeweils identisch. Der Kern der Funktion besteht a
 entsprechenden AWS-SDK-Methode, um den Overhead der Geschäftslogik minimal zu halten und den Instrumentierungsoverhead 
 möglichst gut zu isolieren.
 
-\section{Entwicklung der Testfunktionen}
-\label{sec:entwicklung-testfunktionen}
-
+\section{Konfiguration und Entwicklung der Funktionen}
+\label{sec:entwicklung-funktionen}
+\paragraph{Entwicklung der Funktionen}
 Für jede der drei Sprachen und jeden der fünf Microbenchmarks wurde eine eigene Lambda-Funktion erstellt. 
-Alle Funktionen nutzen die offiziellen AWS SDKs.
-
-\begin{itemize}
-    \item \emph{Java:} Verwendung des AWS SDK for Java 2.x (anpassen). Die Funktionen sind als Handler-Klassen implementiert, 
-	die das \texttt{RequestHandler}-Interface implementieren. Die Abhängigkeiten werden mit Maven verwaltet und in die \emph{pom.xml} gepackt.
-    \item \emph{Python:} Einsatz von \texttt{boto3} (AWS SDK for Python). Die Funktionen sind als einfache Python-Module mit einer 
-	\texttt{lambda\_handler}-Funktion realisiert. Da Abhängigkeiten minimal sind und von AWS-Lambda-Runtimes bereitgestellt werden, 
-	werden diese in der Funktion durch einfache \emph{import-Befehle} initialisiert.
-    \item \emph{Node.js:} Nutzung des AWS SDK for JavaScript. Die Funktionen sind als Node.js-Module (.mjs-Dateien) mit einer 
-	\texttt{exports.handler}-Funktion umgesetzt. Die Abhängigkeiten sind hier ebenfalls minimal, weswegen sie in der Funktion durch 
-	einfache \emph{import-Befehle} initialisiert werden.
-\end{itemize}
-
-Die deployten Funktionen basieren auf der Arbeit von Eder et al \cite{10254754} und wurden für Zwecke der Konsistenz weitgehend repliziert. 
-Alle Funktionen verwenden dieselbe, minimal notwendige Logik. Entgegennahme eines Events (sofern erforderlich, z.~B. bei HTTP-Anfragen), 
-Ausführen der Zieloperation (Aufruf der zweiten Funktion, HTTP-Request, DynamoDB-Zugriff) und Rückgabe einer einfachen Bestätigung. 
-Für die DynamoDB-Operationen wird eine bereits vorhandene Tabelle mit einem simplen Schema (Primärschlüssel \texttt{id} (String), 
-Attribut \texttt{value} (String)) genutzt. Die HTTP-Endpunkte werden durch eine einfache REST-API realisiert, die lediglich eine 
-200 OK-Antwort zurückgibt. \\
+Alle Funktionen nutzen die offiziellen AWS SDKs. 
+Die Funktionen basieren auf der Arbeit von Eder et al \cite{10254754} und wurden für Zwecke der Konsistenz weitgehend repliziert. 
+Alle Funktionen verwenden dieselbe, minimal notwendige Logik. Entgegennahme eines Events, Ausführen der Zieloperation und Rückgabe einer 
+einfachen Bestätigung. 
 Um den ökologischen Fußabdruck dieser Arbeit zu reduzieren und Ressourcen zu schonen, wurde ähnlich wie bei der Arbeit von Eder et al \cite{10254754} 
 auf den Abdruck von Quellcode, Konfigurationsdateien und weiterführenden technischen Materialien im Anhang verzichtet. 
-Alle relevanten Implementierungen sowie die vollständige Dokumentation sind öffentlich in einem GitHub-Repository verfügbar und 
+Alle relevanten Implementierungen sowie deren vollständige Dokumentation sind öffentlich in einem GitHub-Repository verfügbar und 
 können unter folgender Adresse eingesehen werden: [www.github.com/justaksi7/kommt-noch]. Dies gewährleistet nicht nur Nachhaltigkeit, 
 sondern auch Transparenz und Reproduzierbarkeit der erzielten Ergebnisse.
 
-\section{Instrumentierung mit OpenTelemetry (ADOT)}
-\label{sec:instrumentierung}
-
-Um den Tracing-Overhead zu messen, werden die Lambda-Funktionen mit OpenTelemetry instrumentiert. Hierfür kommt die AWS Distro for 
-OpenTelemetry \ac{ADOT} zum Einsatz. ADOT bietet vorgefertigte Lambda-Layer für jede unterstützte Sprache, die alle notwendigen 
-Abhängigkeiten (SDK, Collector, Exporters) enthalten. Für die Instrumentierung wird der entsprechende Layer in 
-der Lambda-Konfiguration referenziert. Um im Rahmen der Zeit- und Ressourcenbeschränkungen dieser Arbeit zu bleiben, 
-wird auf eine manuelle, Code-basierte Instrumentierung verzichtet. Stattdessen erfolgt die Instrumentierung, wie in der Arbeit von
-Eder. et al \cite{10254754}, ausschließlich über die automatische Erfassung von Traces durch \ac{ADOT}.
-Als Sampling-Strategie wird \emph{Head Sampling} mit einer Rate von 100\,\% verwendet, d.~h. jeder Trace wird vollständig aufgezeichnet. 
-Dies dient dazu, vergleichbare Bedingungen zu allen vorherigen Studien (insb.~\cite{10254754}) zu schaffen.
-
-Die so instrumentierten Funktionen exportieren die Trace-Daten über den ADOT-Collector an \emph{AWS X-Ray}. 
-X-Ray dient als Tracing-Backend und ermöglicht die spätere Überprüfung der Vollständigkeit der Traces. 
-Die Integration ist über die Umgebungsvariable \texttt{AWS\_LAMBDA\_EXEC\_WRAPPER} bzw. durch entsprechende Konfiguration in 
-der \texttt{function.properties} der Lambda-Funktionen realisiert.
-
-\section{Konfiguration der AWS Lambda-Umgebung}
-\label{sec:konfiguration}
-
+\paragraph{Konfiguration der AWS Lambda-Umgebung}
 Um eine hohe Vergleichbarkeit der Messungen zu gewährleisten, werden alle Funktionen mit identischen, kontrollierten 
 Parametern betrieben. Die Konfiguration orientiert sich an typischen Produktionseinstellungen und wird über die AWS Management Console 
 sowie Infrastructure-as-Code (AWS SAM) festgelegt.
@@ -96,7 +63,7 @@ Reservierte Konkurrenz & 200 & Begrenzung der parallelen Ausführungen, um kontr
 Laufzeit (Runtime Environment) & Java 21, Python 3.13, Node.js 22.x & Aktuelle, von \ac{ADOT}-Lambda-Layers unterstützte Versionen der Sprachen. \\
 \hline
 IAM-Rolle &  Rolle mit minimalen Berechtigungen & Erlaubt nur die notwendigen Aktionen: \texttt{lambda:InvokeFunction} für Benchmark 1 
-und \texttt{dynamodb:GetItem} / \texttt{PutItem} für Benchmarks 4/5, sowie das Schreiben von Logs auf CloudWatch. \\
+und \texttt{dynamodb:GetItem} / \texttt{PutItem} für Benchmarks 4 / 5, sowie das Schreiben von Logs auf CloudWatch. \\
 \hline
 \end{tabular}
 \end{table}
@@ -104,6 +71,28 @@ und \texttt{dynamodb:GetItem} / \texttt{PutItem} für Benchmarks 4/5, sowie das 
 Die reservierte Konkurrenz von 200 wurde gewählt, um eine definierte maximale Parallelität zu haben. Dies verhindert, 
 dass AWS Lambda unbegrenzt skaliert und möglicherweise die Messergebnisse durch unterschiedliches Skalierungsverhalten bei den 
 verschiedenen Funktionen verfälscht.
+
+Für die Implementierung wurden ausschließlich die offiziellen AWS SDKs und Standardbibliotheken für HTTP-Requests für alle 3 
+Sprachen verwendet. Für jeden AWS-Dienst (Lambda, DynamoDB usw.) gibt es ein separates SDK-Modul in den jeweiligen Sprachen 
+und für jede Sprache und Region gibt es eine dedizierte ADOT-Lambda-Layer, die über den \ac{ARN} referenziert wird. 
+
+
+\section{Instrumentierung mit OpenTelemetry (ADOT)}
+\label{sec:instrumentierung}
+
+Um den Tracing-Overhead zu messen, werden die Lambda-Funktionen mit OpenTelemetry instrumentiert. Hierfür kommt die AWS Distro for 
+OpenTelemetry \ac{ADOT} zum Einsatz. ADOT bietet vorgefertigte Lambda-Layer für jede unterstützte Sprache, die alle notwendigen 
+Abhängigkeiten (SDK, Collector, Exporters) enthalten. Für die Instrumentierung wird der entsprechende Layer in 
+der Lambda-Konfiguration referenziert. Um im Rahmen der Zeit- und Ressourcenbeschränkungen dieser Arbeit zu bleiben, 
+wird auf eine manuelle, Code-basierte Instrumentierung verzichtet. Stattdessen erfolgt die Instrumentierung, wie in der Arbeit von
+Eder. et al \cite{10254754}, ausschließlich über die automatische Erfassung von Traces durch \ac{ADOT}.
+Als Sampling-Strategie wird \emph{Head Sampling} mit einer Rate von 100\,\% verwendet, d.~h. jeder Trace wird vollständig aufgezeichnet. 
+Dies dient dazu, vergleichbare Bedingungen zu allen vorherigen Studien (insb.~\cite{10254754}) zu schaffen.
+
+Die so instrumentierten Funktionen exportieren die Trace-Daten über den ADOT-Collector an \emph{AWS X-Ray}. 
+X-Ray dient als Tracing-Backend und ermöglicht die spätere Überprüfung der Vollständigkeit der Traces. 
+Die Integration ist über die Umgebungsvariable \texttt{AWS\_LAMBDA\_EXEC\_WRAPPER} bzw. durch entsprechende Konfiguration in 
+der \texttt{function.properties} der Lambda-Funktionen realisiert.
 
 \section{Messgrößen und Berechnung des Overheads}
 \label{sec:messgroessen}
@@ -171,7 +160,7 @@ Um diesen Effekt zu berücksichtigen, wird bei der Auswertung der Daten, neben d
 \section{Statistische Auswertung}
 \label{sec:auswertung}
 
-Um die in Kapitel~\ref{ch:intro} formulierten Forschungsfragen zu beantworten, wurden für jedes der drei Effizienzkriterien – 
+Um die in Kapitel~\ref{ch:chapter01} formulierten Forschungsfragen zu beantworten, wurden für jedes der drei Effizienzkriterien – 
 Laufzeit (Runtime), Speicherverbrauch (Memory Usage) und Initialisierungsdauer (Init Duration) – die folgenden Hypothesen aufgestellt. 
 Dabei werden zwei grundsätzliche Fragestellungen adressiert - der Unterschied zwischen Messungen ohne Tracing und mit Tracing (H1) 
 sowie die Abweichungen zwischen den einzelnen Programmiersprachen (H2).
