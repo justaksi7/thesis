@@ -145,6 +145,40 @@ Tabellen~\ref{tab:java-libraries}, \ref{tab:python-libraries} und \ref{tab:nodej
 
 Eine detaillierte Dokumentation der verwendeten Bibliotheken und SDKs ist besonders wichtig, da sie die Performance der Funktionen 
 bei Java signifikant beeinflussen kann. Diese Beobachtung basiert auf der Erfahrung aus der vorliegenden Arbeit.
+
+\section{Konfiguration der Infrastruktur für die Benchmarks}
+\paragraph{Benchmark 1 - Aufgerufene Lambda-Funktion}
+Die aufgerufene Lambda Funktion für Benchmark 1 wurde mit einer minimalen Konfiguration erstellt. Sie wurde asynchron mithilfe von Events 
+aufgerufen, wobei die InvocationType auf \texttt{Event} gesetzt wurde. Das bedeutet, dass die aufrufende Funktion nicht auf die Antwort der 
+aufgerufenen Funktion wartet, sondern sofort fortfährt. Die vollständige Konfiguration der aufgerufenen Lambda-Funktion ist in Tabelle~\ref{tab:aufgerufene-lambda-config} dargestellt.
+\begin{table}[H]
+\centering
+\caption{Konfigurationsparameter der aufgerufenen Lambda-Funktion (Benchmark 1)}
+\label{tab:aufgerufene-lambda-config}
+\begin{tabular}{|p{4cm}|p{4.5cm}|}
+\hline
+\textbf{Parameter} & \textbf{Wert} \\
+\hline
+Region & Frankfurt (eu-central-1) \\
+\hline
+Speicher (Memory) & 128 MB \\
+\hline
+Ephemeraler Speicher & 512 MB \\
+\hline
+Timeout & Standard (3 Sekunden) \\
+\hline
+Reservierte Konkurrenz (Reserved Concurrency) & 200 \\
+\hline
+Laufzeit (Runtime Environment) & Node.js 22.x \\
+\hline
+IAM-Rolle & Standard-Lambda-Rolle (Standardausführung) \\
+\hline
+\end{tabular}
+\end{table}
+Die aufgerufene Lambda Funktion für Benchmark 1 wurde mit einer minimalen Konfiguration erstellt. Sie wurde asynchron mithilfe von Events 
+aufgerufen, wobei die InvocationType auf \texttt{Event} gesetzt wurde. Das bedeutet, dass die aufrufende Funktion nicht auf die Antwort der 
+aufgerufenen Funktion wartet, sondern sofort fortfährt. Das isoliert die Performance der aufrufenden Funktion.
+
 \section{Instrumentierung mit OpenTelemetry (ADOT)}
 \label{sec:instrumentierung}
 
