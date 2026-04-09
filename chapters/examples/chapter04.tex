@@ -82,7 +82,7 @@ Tabellen~\ref{tab:java-libraries}, \ref{tab:python-libraries} und \ref{tab:nodej
 
 \begin{table}[H]
 \centering
-\caption{Verwendete Bibliotheken und SDKs für Java}
+\caption{Verwendete Bibliotheken und Module für Java}
 \label{tab:java-libraries}
 \begin{tabular}{|p{3.5cm}|p{9cm}|}
 \hline
@@ -143,13 +143,18 @@ Tabellen~\ref{tab:java-libraries}, \ref{tab:python-libraries} und \ref{tab:nodej
 \end{tabular}
 \end{table}
 
-Eine detaillierte Dokumentation der verwendeten Bibliotheken und SDKs ist besonders wichtig, da sie die Performance der Funktionen 
-bei Java signifikant beeinflussen kann. Diese Beobachtung basiert auf der Erfahrung aus der vorliegenden Arbeit.
+Eine detaillierte Dokumentation der verwendeten Bibliotheken und SDKs ist notwendig, da sie die Performance der Funktionen 
+insbesondere bei Java signifikant beeinflussen kann. Diese Beobachtung basiert auf der Erfahrung aus der vorliegenden Arbeit.
 
 \section{Konfiguration der Infrastruktur für die Benchmarks}
+Im folgenden Abschnitt wird die spezifische Infrastrukturkonfiguration für die Durchführung der Benchmarktests beschrieben. 
+Jeder Aspekt der Infrastruktur, von der Auswahl der AWS-Region bis hin zu den spezifischen Ressourceneinstellungen, ist ein direkter 
+Faktor, der die Messergebnisse beeinflussen kann. Daher ist es wichtig, diese Konfigurationen möglichst detailliert zu dokumentieren, 
+um die Reproduzierbarkeit der Ergebnisse zu gewährleisten.
+
 \paragraph{Benchmark 1 - Aufgerufene Lambda-Funktion}
 Die aufgerufene Lambda Funktion für Benchmark 1 wurde mit einer minimalen Konfiguration erstellt. Sie wurde asynchron mithilfe von Events 
-aufgerufen, wobei die InvocationType auf \texttt{Event} gesetzt wurde. Das bedeutet, dass die aufrufende Funktion nicht auf die Antwort der 
+aufgerufen. Das bedeutet, dass die aufrufende Funktion nicht auf die Antwort der 
 aufgerufenen Funktion wartet, sondern sofort fortfährt. Die vollständige Konfiguration der aufgerufenen Lambda-Funktion ist in Tabelle~\ref{tab:aufgerufene-lambda-config} dargestellt.
 \begin{table}[H]
 \centering
@@ -175,9 +180,75 @@ IAM-Rolle & Standard-Lambda-Rolle (Standardausführung) \\
 \hline
 \end{tabular}
 \end{table}
-Die aufgerufene Lambda Funktion für Benchmark 1 wurde mit einer minimalen Konfiguration erstellt. Sie wurde asynchron mithilfe von Events 
-aufgerufen, wobei die InvocationType auf \texttt{Event} gesetzt wurde. Das bedeutet, dass die aufrufende Funktion nicht auf die Antwort der 
-aufgerufenen Funktion wartet, sondern sofort fortfährt. Das isoliert die Performance der aufrufenden Funktion.
+
+\paragraph{Benchmark 2 und 3 - HTTP-GET- und HTTP-POST-Anfrage}
+Für die Durchführung der HTTP-GET- und HTTP-POST-Benchmarktests wurde ein minimalistischer HTTP-Server in NodeJS v25 implementiert, der auf 
+einer AWS-EC2-Instanz bereitgestellt wurde. Der Server hatte 2 Endpunkte für die GET- und POST-Anfragen. Als Package-Manager für NodeJS wurde 
+\textit{npm} verwendet und der Server wurde mit dem Produktionsmanager \textit{PM2} betrieben. Zum Starten des Servers wurde der Befehl 
+\begin{verbatim}
+pm2 start "servername" -i max
+\end{verbatim}
+verwendet, um alle CPU-Kerne der EC2-Instanz zu nutzen. Die detaillierte Konfiguration der EC2-Instanz ist in Tabelle~\ref{tab:ec2-instance} dargestellt.
+
+\begin{table}[H]
+\centering
+\caption{Konfiguration der EC2-Instanz für die HTTP-Benchmarks 2 und 3}
+\label{tab:ec2-instance}
+\begin{tabular}{|p{4.5cm}|p{4cm}|}
+\hline
+\textbf{Parameter} & \textbf{Wert} \\
+\hline
+Instance-Typ & m7i-flex.large \\
+\hline
+Architektur & x86\_64 \\
+\hline
+vCPUs & 2 \\
+\hline
+Speicher (RAM) & 8 GiB \\
+\hline
+Taktrate & 3,2 GHz (dauerhaft) \\
+\hline
+Betriebssystem & Amazon Linux 2 \\
+\hline
+Region & eu-central-1 (Frankfurt) \\
+\hline
+Verfügbarkeitszonen & eu-central-1a, 1b, 1c \\
+\hline
+Netzwerkleistung & Bis zu 12,5 Gigabit \\
+\hline
+EBS-Bandbreite (Baseline) & 312 Mbps \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Benchmark 4 und 5 DynamoDB-Lese- und DynamoDB-Schreibeoperation}
+Für die DynamoDB-Benchmarktests wurde eine DynamoDB-Tabelle nur mit Partition Key, mit automatischem Skalierungsmodus (On-Demand) erstellt. 
+Die detallierte Konfiguration der DynamoDB-Tabelle ist in Tabelle~\ref{tab:dynamodb-config} dargestellt.
+
+\begin{table}[H]
+\centering
+\caption{Konfiguration der DynamoDB-Tabelle für die Benchmarks 4 und 5}
+\label{tab:dynamodb-config}
+\begin{tabular}{|p{4.5cm}|p{4cm}|}
+\hline
+\textbf{Parameter} & \textbf{Wert} \\
+\hline
+Tabellenname & EvaluationTable \\
+\hline
+Primärschlüssel & Partition Key: \texttt{id} (String-UUID)\\
+\hline
+Read Capacity (automatisch) & Standard (On-Demand) \\
+\hline
+Write Capacity (automatisch) & Standard (On-Demand) \\
+\hline
+Datenverschlüsselung & AWS Owned Key (Standard) \\
+\hline
+Point-in-Time Recovery & Deaktiviert (Standard) \\
+\hline
+Region & eu-central-1 (Frankfurt) \\
+\hline
+\end{tabular}
+\end{table}
 
 \section{Instrumentierung mit OpenTelemetry (ADOT)}
 \label{sec:instrumentierung}
