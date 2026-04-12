@@ -1,2 +1,29 @@
-\chapter{Resultate}
-\label{ch:chapter05}
+\chapter{Ergebnisse}
+\label{ch:results}
+
+\section{Einleitung und Datenaufbereitung}
+In diesem Kapitel werden die Ergebnisse der Performance-Messungen präsentiert. Da sehr viele Daten vorliegen, werden die wichtigsten 
+Erkentnisse in zusammengefasster Form dargestellt. Alle Rohdaten und detaillierten Analysen sind im Anhang zu finden und werden an den 
+entsprechenden Stellen in diesem Kapitel referenziert.
+
+\section{Statistische Signifikanz}
+Die durchgeführten Welch's t-Tests belegen, dass alle Unterschiede zwischen den Messwerten mit und ohne OpenTelemetry, statistisch 
+signifikant sind (p < 0,00067). Dies gilt sowohl für alle Sprachen, Microbenchmarks und Metriken. Die vollständigen Teststatistiken 
+sind im Anhang \ref{appendix:stats} dokumentiert. Die Bootstrap-Tests bestätigen, dass die Unterschiede zwischen allen Sprachen und Metriken 
+ebenfalls paarweise signifikant sind (p < 0,00067). Die einzige Ausnahme bildet der Unterschied zwischen Python und NodeJS bei der 
+Duration-Metrik für warme Ausführungen bei Benchmark 2 (HTTP-GET-Request) auf Mittelwert-Basis, der mit einem p-Wert von 0,13009 nicht signifikant ist. 
+Alle anderen Unterschiede sind statistisch signifikant. 
+Die vollständigen Bootstrap-Testergebnisse sind ebenfalls im Anhang \ref{appendix:stats} dokumentiert.
+
+\section{Absolute Messwerte und relativer Overhead (Median)}
+
+Die große Tabelle mit Duration, Init Duration, Memory – einmal ohne/mit OTel und Overhead in.
+
+\section{Rangfolge der Sprachen mit OpenTelemetry (absolute Werte)}
+Die beiden Ranglisten-Tabellen – nur für instrumentierte Funktionen.
+
+\section{Kostenabschätzung für instrumentierte Funktionen}
+Darstellung der Duration in ms als Proxy für Kosten, z. B. als Balkendiagramm oder Tabelle.
+
+\section{Zusammenfassung der wichtigsten Messwerte}
+Optional: Ein kurzer Absatz, der die auffälligsten Zahlen noch einmal nennt – aber ohne Interpretation.

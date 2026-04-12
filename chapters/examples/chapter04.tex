@@ -340,23 +340,17 @@ In beiden Fällen wurde von unbekannter Varianz ausgegangen. Für das Signifikan
 
 \subsection{Durchführung der statistischen Tests}
 
-Zur Überprüfung der beiden Hypothesen wurden unterschiedliche statistische Verfahren eingesetzt, die den jeweiligen Datenstrukturen und Fragestellungen Rechnung tragen.
+Zur Überprüfung der beiden Hypothesen wurden Bootstrap-Verfahren eingesetzt, die keine Normalverteilungsannahme voraussetzen und robust gegenüber Ausreißern sind. Alle Tests wurden auf einem Signifikanzniveau von \(\alpha = 0{,}05\) durchgeführt. Aufgrund der Vielzahl der Vergleiche wurde eine Bonferroni-Korrektur angewendet (siehe Anhang).
 
 \paragraph{H1 – Vergleich mit und ohne Instrumentierung}
-Für jede Programmiersprache \(s\) wurden die Messwerte der instrumentierten und der nicht-instrumentierten Funktion gegenüberstellt. 
-Da es sich um gepaarte Messungen handelt (jeder Aufruf der instrumentierten Funktion entspricht einem Aufruf derselben Funktion 
-ohne Instrumentierung unter identischen Bedingungen), wurde ein \emph{einseitiger Welch's t-Test}~\cite{WelchsTTest} durchgeführt.  
-Das Signifikanzniveau wurde auf \(\alpha = 0{,}05\) festgelegt.
+Für jede Kombination aus Sprache, Benchmark und Metrik wurden die Mediane der instrumentierten und nicht-instrumentierten Funktionen gegenübergestellt. Mittels Perzentil-Bootstrap (\(R = 10.000\) Resamples) wurde ein Konfidenzintervall für den relativen Median-Overhead 
+\[
+\frac{\text{Median}_{\text{mit}} - \text{Median}_{\text{ohne}}}{\text{Median}_{\text{ohne}}}
+\]
+auf dem Bonferroni-korrigierten Niveau berechnet. Enthält das Intervall nicht den Wert 0, wird die Nullhypothese (kein Unterschied) abgelehnt.
 
 \paragraph{H2 – Vergleich zwischen verschiedenen Programmiersprachen}
-Für den paarweisen Vergleich der Sprachen (Java vs. Python, Java vs. NodeJS, Python vs. NodeJS) lagen unabhängige Stichproben vor. 
-Da die Stichprobenumfänge begrenzt sind (jeweils nur 1 Mittelwert pro Messung), kam ein nichtparametrisches 
-\emph{Bootstrap-Hypothesentest}~\cite{Bootstrapping} zum Einsatz. Konkret wurde ein 
-\emph{Perzentil-Bootstrap} mit \(R = 100.000\) Resamples durchgeführt. D. h. es wurden 100.000 Stichproben mit Zurücklegen 
-für jede originale Stichprobe gezogen (100.000 Mal die Differenz der Mittelwerte zwischen der instrumentierten und 
-nicht-instrumentierten Funktion für jede Sprache \(s\)). Anschließend wurden paarweise die p-Werte mittels Bootstrap-Hypothesentest 
-berechnet. Dabei wurde verglichen, wie oft der Overhead der einen Sprache größer oder kleiner als der der anderen Sprache ist. Das 
-Signifikanzniveau wurde ebenfalls auf \(\alpha = 0{,}05\) festgelegt.
+Für den paarweisen Vergleich der Sprachen (Java vs. Python, Java vs. Node.js, Python vs. Node.js) wurde ein Bootstrap-Hypothesentest auf Basis der Mediane durchgeführt. Dabei wurde für jeden Benchmark und jede Metrik die Differenz der Mediane (mit OpenTelemetry) zwischen zwei Sprachen betrachtet. Durch wiederholtes Resampling (\(R = 100.000\)) wurde die Verteilung dieser Differenz unter der Nullhypothese (kein Unterschied) approximiert. Der p-Wert ergibt sich aus dem Anteil der Resample-Differenzen, die betragsmäßig größer oder gleich der beobachteten Differenz sind. Ein p-Wert kleiner als das korrigierte Signifikanzniveau führt zur Ablehnung der Nullhypothese.
 
 \begin{itemize}
     \item \textbf{Visuelle Aufbereitung:} Die Ergebnisse werden mittels Boxplots visualisiert, um die Verteilung und Ausreißer 
