@@ -8,14 +8,14 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/invoke-cold-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/invoke-cold-otel-comparison.pdf}
     \caption{Verteilung der Kaltstartergebnisse für die Lambdaverkettung.}
     \label{fig:invoke-cold-otel-comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/invoke-hot-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/invoke-hot-otel-comparison.pdf}
     \caption{Verteilung der Warmstartergebnisse für die Lambdaverkettung.}
     \label{fig:invoke-warm-otel-comparison} 
 \end{figure}
@@ -23,13 +23,13 @@
 \subsection{Microbenchmark 2 - HTTP-GET-Anfrage}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/get-request-cold-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/get-request-cold-otel-comparison.pdf}
     \caption{Verteilung der Kaltstartergebnisse für die HTTP-GET-Anfrage.}
     \label{fig:http-get-cold-otel-comparison}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/get-request-hot-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/get-request-hot-otel-comparison.pdf}
     \caption{Verteilung der Warmstartergebnisse für die HTTP-GET-Anfrage.}
     \label{fig:http-get-hot-otel-comparison}
 \end{figure}
@@ -38,14 +38,14 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/post-request-cold-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/post-request-cold-otel-comparison.pdf}
     \caption{Verteilung der Kaltstartergebnisse für die HTTP-POST-Anfrage.}
     \label{fig:http-post-cold-otel-comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/post-request-hot-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/post-request-hot-otel-comparison.pdf}
     \caption{Verteilung der Warmstartergebnisse für die HTTP-POST-Anfrage.}
     \label{fig:http-post-hot-otel-comparison}
 \end{figure}
@@ -54,14 +54,14 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-read-cold-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-read-cold-otel-comparison.pdf}
     \caption{Verteilung der Kaltstartergebnisse für die DynamoDB-Leseoperation.}
     \label{fig:dynamodb-read-cold-otel-comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-read-hot-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-read-hot-otel-comparison.pdf}
     \caption{Verteilung der Warmstartergebnisse für die DynamoDB-Leseoperation.}
     \label{fig:dynamodb-read-hot-otel-comparison}
 \end{figure}
@@ -70,14 +70,14 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-write-cold-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-write-cold-otel-comparison.pdf}
     \caption{Verteilung der Kaltstartergebnisse für die DynamoDB-Schreibeoperation.}
     \label{fig:dynamodb-write-cold-otel-comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-write-hot-otel-comparison.png}
+    \includegraphics[width=1\textwidth]{./gfx/examples/dynamodb-write-hot-otel-comparison.pdf}
     \caption{Verteilung der Warmstartergebnisse für die DynamoDB-Schreibeoperation.}
     \label{fig:dynamodb-write-hot-otel-comparison}
 \end{figure}
@@ -1349,25 +1349,37 @@ Python  & 24 & 0 & 1 \\
 
 \begin{figure}
 \centering
-\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_invoke_bar.png}
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_invoke_bar.pdf}
 \caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, Invoke-Benchmark)}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_get-request_bar.png}
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_get-request_bar.pdf}
 \caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, Get-Request-Benchmark)}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_post-request_bar.png}
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_post-request_bar.pdf}
 \caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, Post-Request-Benchmark)}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_dynamodb-read_bar.png}
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_dynamodb-read_bar.pdf}
 \caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, DynamoDB-Read-Benchmark)}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_dynamodb-write_bar.pdf}
+\caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, DynamoDB-Write-Benchmark)}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_all_functions_bar.pdf}
+\caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, All Functions-Benchmark)}
 \end{figure}
 
