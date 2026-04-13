@@ -82,29 +82,208 @@
     \label{fig:dynamodb-write-hot-otel-comparison}
 \end{figure}
 
-\section {Messergebnisse und Hypothesentests im Detail}
-\label{sec:messwerte-im-detail}
+\section{Rohdaten – Messwerte und Overhead (Cold Starts)}
 
-\subsection{Rohe Messergebnisse}
+\subsection*{Duration (ms)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Mediane der Originaldaten für Duration (Cold Starts) und prozentualer Overhead}
+\label{app:raw-duration-cold}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead (Median)} \\
+\hline
+dynamodb-read   & Java    & 1296,15 & 1840,74 & 42,02\% \\
+                & Node.js &  104,98 &  206,35 & 96,55\% \\
+                & Python  &   37,80 &   45,51 & 20,41\% \\
+\hline
+dynamodb-write  & Java    & 1302,57 & 1849,57 & 41,99\% \\
+                & Node.js &  108,74 &  208,50 & 91,75\% \\
+                & Python  &   41,65 &   48,78 & 17,12\% \\
+\hline
+get-request     & Java    &  227,12 &  728,44 & 220,74\% \\
+                & Node.js &  173,59 &  130,50 & -24,82\% \\
+                & Python  &    8,41 &    7,49 & -10,94\% \\
+\hline
+invoke          & Java    & 1177,85 & 1728,22 & 46,73\% \\
+                & Node.js &  104,20 &  206,22 & 97,91\% \\
+                & Python  &   36,67 &   43,59 & 18,86\% \\
+\hline
+post-request    & Java    &  267,25 &  751,27 & 181,12\% \\
+                & Node.js &  179,65 &  139,31 & -22,45\% \\
+                & Python  &    8,44 &    7,49 & -11,26\% \\
+\hline
+\end{tabular}
+\end{table}
 
-\section{Bootstrap-Ergebnisse für Cold Starts}
+\subsection*{Init Duration (ms)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Mediane der Originaldaten für Init Duration (Cold Starts) und prozentualer Overhead}
+\label{app:raw-init-cold}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead (Median)} \\
+\hline
+dynamodb-read   & Java    & 1644,62 & 4331,64 & 163,38\% \\
+                & Node.js &  419,62 & 1722,46 & 310,48\% \\
+                & Python  &  499,42 & 1221,04 & 144,49\% \\
+\hline
+dynamodb-write  & Java    & 1654,55 & 4350,58 & 162,95\% \\
+                & Node.js &  423,20 & 1722,29 & 306,97\% \\
+                & Python  &  499,06 & 1221,20 & 144,70\% \\
+\hline
+get-request     & Java    &  838,33 & 3334,48 & 297,75\% \\
+                & Node.js &  148,45 & 1268,26 & 754,31\% \\
+                & Python  &  169,76 & 1022,64 & 502,40\% \\
+\hline
+invoke          & Java    & 1623,17 & 4281,86 & 163,80\% \\
+                & Node.js &  436,50 & 1739,77 & 298,58\% \\
+                & Python  &  469,01 & 1189,14 & 153,54\% \\
+\hline
+post-request    & Java    &  877,13 & 3372,64 & 284,51\% \\
+                & Node.js &  139,51 & 1262,88 & 805,23\% \\
+                & Python  &  169,06 & 1007,19 & 495,78\% \\
+\hline
+\end{tabular}
+\end{table}
 
-\subsection*{H1: Relativer Median-Overhead mit 99,93\,\%-Konfidenzintervallen}
+\subsection*{Max Memory Used (MB)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Mediane der Originaldaten für Max Memory (Cold Starts) und prozentualer Overhead}
+\label{app:raw-memory-cold}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead (Median)} \\
+\hline
+dynamodb-read   & Java    & 162,00 & 249,00 & 53,70\% \\
+                & Node.js & 103,00 & 171,00 & 66,02\% \\
+                & Python  &  89,00 & 110,00 & 23,60\% \\
+\hline
+dynamodb-write  & Java    & 162,00 & 249,00 & 53,70\% \\
+                & Node.js & 103,00 & 172,00 & 66,99\% \\
+                & Python  &  89,00 & 110,00 & 23,60\% \\
+\hline
+get-request     & Java    & 129,00 & 218,00 & 68,99\% \\
+                & Node.js &  83,00 & 157,00 & 89,16\% \\
+                & Python  &  49,00 &  86,00 & 75,51\% \\
+\hline
+invoke          & Java    & 162,00 & 250,00 & 54,32\% \\
+                & Node.js & 104,00 & 171,00 & 64,42\% \\
+                & Python  &  87,00 & 108,00 & 24,14\% \\
+\hline
+post-request    & Java    & 131,00 & 220,00 & 67,94\% \\
+                & Node.js &  84,00 & 158,00 & 88,10\% \\
+                & Python  &  49,00 &  86,00 & 75,51\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Rohdaten – Messwerte und Overhead (Hot Starts)}
+
+\subsection*{Duration (ms)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Mediane der Originaldaten für Duration (Hot Starts) und prozentualer Overhead}
+\label{app:raw-duration-hot}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead (Median)} \\
+\hline
+dynamodb-read   & Java    &   6,86 &   8,41 & 22,59\% \\
+                & Node.js &   5,43 &   7,61 & 40,15\% \\
+                & Python  &   5,39 &   7,08 & 31,35\% \\
+\hline
+dynamodb-write  & Java    &   8,66 &  10,01 & 15,59\% \\
+                & Node.js &   7,59 &   9,37 & 23,45\% \\
+                & Python  &   7,42 &   8,94 & 20,49\% \\
+\hline
+get-request     & Java    &   4,89 &   6,38 & 30,47\% \\
+                & Node.js &   5,12 &   6,03 & 17,77\% \\
+                & Python  &   3,47 &   5,03 & 44,96\% \\
+\hline
+invoke          & Java    &  14,77 &  16,51 & 11,78\% \\
+                & Node.js &  14,01 &  16,71 & 19,27\% \\
+                & Python  &  27,37 &  31,24 & 14,14\% \\
+\hline
+post-request    & Java    &   4,95 &   6,38 & 28,89\% \\
+                & Node.js &   5,23 &   6,47 & 23,71\% \\
+                & Python  &   3,58 &   5,05 & 41,06\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection*{Max Memory Used (MB)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Mediane der Originaldaten für Max Memory (Hot Starts) und prozentualer Overhead}
+\label{app:raw-memory-hot}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead (Median)} \\
+\hline
+dynamodb-read   & Java    & 162,00 & 250,00 & 54,32\% \\
+                & Node.js & 106,00 & 171,00 & 61,32\% \\
+                & Python  &  89,00 & 110,00 & 23,60\% \\
+\hline
+dynamodb-write  & Java    & 162,00 & 250,00 & 54,32\% \\
+                & Node.js & 106,00 & 172,00 & 62,26\% \\
+                & Python  &  89,00 & 110,00 & 23,60\% \\
+\hline
+get-request     & Java    & 129,00 & 219,00 & 69,77\% \\
+                & Node.js &  95,00 & 165,00 & 73,68\% \\
+                & Python  &  49,00 &  86,00 & 75,51\% \\
+\hline
+invoke          & Java    & 162,00 & 250,00 & 54,32\% \\
+                & Node.js & 107,00 & 171,00 & 59,81\% \\
+                & Python  &  87,00 & 109,00 & 25,29\% \\
+\hline
+post-request    & Java    & 131,00 & 220,00 & 67,94\% \\
+                & Node.js &  99,00 & 164,00 & 65,66\% \\
+                & Python  &  49,00 &  86,00 & 75,51\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Bootstrap-Mediane der Messwerte (absolut) mit Overhead und KI}
+
+\subsection*{Cold Starts}
 
 \subsubsection*{Duration (ms)}
 \begin{table}[H]
 \centering
-\caption{Median-Overhead (OH) und Konfidenzintervall (KI) für Duration bei Cold Starts}
-\label{app:boot-h1-duration}
-\begin{tabular}{|l|c|c|c|}
+\footnotesize
+\caption{Mediane ohne/mit OTel, Overhead und 99,93\,\%-KI für Duration (Cold Starts)}
+\label{app:boot-abs-duration-cold}
+\begin{tabular}{|l|l|c|c|c|}
 \hline
-\textbf{Benchmark} & \textbf{Java} & \textbf{Node.js} & \textbf{Python} \\
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead [KI]} \\
 \hline
-dynamodb-read   & 41,99\% [41,34; 42,61] &  96,56\% [94,61; 98,23] & 20,42\% [18,07; 22,64] \\
-dynamodb-write  & 42,01\% [41,38; 42,62] &  91,67\% [90,08; 93,20] & 17,06\% [14,83; 19,00] \\
-get-request     & 220,70\% [219,10; 222,35] & -24,84\% [-25,29; -24,35] & -10,96\% [-12,15; -9,78] \\
-invoke          & 46,73\% [46,18; 47,33] &  97,98\% [96,82; 99,27] & 18,88\% [16,97; 20,90] \\
-post-request    & 181,18\% [179,62; 183,02] & -22,48\% [-22,96; -21,99] & -11,23\% [-12,50; -10,07] \\
+dynamodb-read   & Java    & 1296,15 & 1840,74 & 41,99\% [41,34;42,61] \\
+                & Node.js &  104,98 &  206,35 & 96,56\% [94,61;98,23] \\
+                & Python  &   37,80 &   45,51 & 20,42\% [18,07;22,64] \\
+\hline
+dynamodb-write  & Java    & 1302,57 & 1849,57 & 42,01\% [41,38;42,62] \\
+                & Node.js &  108,74 &  208,50 & 91,67\% [90,08;93,20] \\
+                & Python  &   41,65 &   48,78 & 17,06\% [14,83;19,00] \\
+\hline
+get-request     & Java    &  227,12 &  728,44 & 220,70\% [219,10;222,35] \\
+                & Node.js &  173,59 &  130,50 & -24,84\% [-25,29;-24,35] \\
+                & Python  &    8,41 &    7,49 & -10,96\% [-12,15;-9,78] \\
+\hline
+invoke          & Java    & 1177,85 & 1728,22 & 46,73\% [46,18;47,33] \\
+                & Node.js &  104,20 &  206,22 & 97,98\% [96,82;99,27] \\
+                & Python  &   36,67 &   43,59 & 18,88\% [16,97;20,90] \\
+\hline
+post-request    & Java    &  267,25 &  751,27 & 181,18\% [179,62;183,02] \\
+                & Node.js &  179,65 &  139,31 & -22,48\% [-22,96;-21,99] \\
+                & Python  &    8,44 &    7,49 & -11,23\% [-12,50;-10,07] \\
 \hline
 \end{tabular}
 \end{table}
@@ -112,17 +291,32 @@ post-request    & 181,18\% [179,62; 183,02] & -22,48\% [-22,96; -21,99] & -11,23
 \subsubsection*{Init Duration (ms)}
 \begin{table}[H]
 \centering
-\caption{Median-Overhead (OH) mit KI für Init Duration (Cold Starts)}
-\label{app:boot-h1-init}
-\begin{tabular}{|l|c|c|c|}
+\footnotesize
+\caption{Mediane ohne/mit OTel, Overhead und KI für Init Duration (Cold Starts)}
+\label{app:boot-abs-init-cold}
+\begin{tabular}{|l|l|c|c|c|}
 \hline
-\textbf{Benchmark} & \textbf{Java} & \textbf{Node.js} & \textbf{Python} \\
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead [KI]} \\
 \hline
-dynamodb-read   & 163,38\% [162,12; 164,64] & 310,46\% [308,03; 312,78] & 144,54\% [142,63; 146,63] \\
-dynamodb-write  & 162,90\% [161,68; 164,14] & 306,86\% [304,38; 309,18] & 144,73\% [142,85; 146,93] \\
-get-request     & 297,77\% [295,73; 299,97] & 754,13\% [744,20; 765,46] & 502,34\% [497,71; 507,06] \\
-invoke          & 163,82\% [162,67; 164,92] & 298,48\% [295,18; 301,23] & 153,56\% [151,95; 155,55] \\
-post-request    & 284,51\% [282,69; 286,05] & 805,21\% [798,92; 812,44] & 495,87\% [490,38; 501,25] \\
+dynamodb-read   & Java    & 1644,62 & 4331,64 & 163,38\% [162,12;164,64] \\
+                & Node.js &  419,62 & 1722,46 & 310,46\% [308,03;312,78] \\
+                & Python  &  499,42 & 1221,04 & 144,54\% [142,63;146,63] \\
+\hline
+dynamodb-write  & Java    & 1654,55 & 4350,58 & 162,90\% [161,68;164,14] \\
+                & Node.js &  423,20 & 1722,29 & 306,86\% [304,38;309,18] \\
+                & Python  &  499,06 & 1221,20 & 144,73\% [142,85;146,93] \\
+\hline
+get-request     & Java    &  838,33 & 3334,48 & 297,77\% [295,73;299,97] \\
+                & Node.js &  148,45 & 1268,26 & 754,13\% [744,20;765,46] \\
+                & Python  &  169,76 & 1022,64 & 502,34\% [497,71;507,06] \\
+\hline
+invoke          & Java    & 1623,17 & 4281,86 & 163,82\% [162,67;164,92] \\
+                & Node.js &  436,50 & 1739,77 & 298,48\% [295,18;301,23] \\
+                & Python  &  469,01 & 1189,14 & 153,56\% [151,95;155,55] \\
+\hline
+post-request    & Java    &  877,13 & 3372,64 & 284,51\% [282,69;286,05] \\
+                & Node.js &  139,51 & 1262,88 & 805,21\% [798,92;812,44] \\
+                & Python  &  169,06 & 1007,19 & 495,87\% [490,38;501,25] \\
 \hline
 \end{tabular}
 \end{table}
@@ -130,27 +324,112 @@ post-request    & 284,51\% [282,69; 286,05] & 805,21\% [798,92; 812,44] & 495,87
 \subsubsection*{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
-\caption{Median-Overhead (OH) mit KI für Max Memory (Cold Starts)}
-\label{app:boot-h1-memory}
-\begin{tabular}{|l|c|c|c|}
+\footnotesize
+\caption{Mediane ohne/mit OTel, Overhead und KI für Max Memory (Cold Starts)}
+\label{app:boot-abs-memory-cold}
+\begin{tabular}{|l|l|c|c|c|}
 \hline
-\textbf{Benchmark} & \textbf{Java} & \textbf{Node.js} & \textbf{Python} \\
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead [KI]} \\
 \hline
-dynamodb-read   & 53,70\% [53,70; 53,70] & 66,02\% [66,02; 66,02] & 23,60\% [23,60; 23,60] \\
-dynamodb-write  & 53,70\% [53,70; 53,70] & 66,99\% [66,99; 66,99] & 23,60\% [23,60; 23,60] \\
-get-request     & 68,99\% [68,99; 68,99] & 89,16\% [89,16; 90,36] & 75,51\% [75,51; 75,51] \\
-invoke          & 54,32\% [53,70; 54,32] & 64,42\% [64,42; 64,42] & 24,14\% [24,14; 24,14] \\
-post-request    & 67,94\% [67,94; 67,94] & 88,10\% [88,10; 88,10] & 75,51\% [75,51; 75,51] \\
+dynamodb-read   & Java    & 162,00 & 249,00 & 53,70\% [53,70;53,70] \\
+                & Node.js & 103,00 & 171,00 & 66,02\% [66,02;66,02] \\
+                & Python  &  89,00 & 110,00 & 23,60\% [23,60;23,60] \\
+\hline
+dynamodb-write  & Java    & 162,00 & 249,00 & 53,70\% [53,70;53,70] \\
+                & Node.js & 103,00 & 172,00 & 66,99\% [66,99;66,99] \\
+                & Python  &  89,00 & 110,00 & 23,60\% [23,60;23,60] \\
+\hline
+get-request     & Java    & 129,00 & 218,00 & 68,99\% [68,99;68,99] \\
+                & Node.js &  83,00 & 157,00 & 89,16\% [89,16;90,36] \\
+                & Python  &  49,00 &  86,00 & 75,51\% [75,51;75,51] \\
+\hline
+invoke          & Java    & 162,00 & 250,00 & 54,32\% [53,70;54,32] \\
+                & Node.js & 104,00 & 171,00 & 64,42\% [64,42;64,42] \\
+                & Python  &  87,00 & 108,00 & 24,14\% [24,14;24,14] \\
+\hline
+post-request    & Java    & 131,00 & 220,00 & 67,94\% [67,94;67,94] \\
+                & Node.js &  84,00 & 158,00 & 88,10\% [88,10;88,10] \\
+                & Python  &  49,00 &  86,00 & 75,51\% [75,51;75,51] \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection*{H2: Paarweise Sprachvergleiche (p-Werte des Bootstrap-Tests)}
-Alle Vergleiche sind bis auf die unten genannten Ausnahmen signifikant (p < 0,000667 nach Bonferroni-Korrektur). Die Tabelle zeigt die p-Werte für jedes Benchmark‑Metrik‑Paar.
+\subsection*{Hot Starts}
 
 \subsubsection*{Duration (ms)}
 \begin{table}[H]
 \centering
+\footnotesize
+\caption{Mediane ohne/mit OTel, Overhead und KI für Duration (Hot Starts)}
+\label{app:boot-abs-duration-hot}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead [KI]} \\
+\hline
+dynamodb-read   & Java    &   6,86 &   8,41 & 22,48\% [21,13;23,87] \\
+                & Node.js &   5,43 &   7,61 & 40,22\% [37,50;42,99] \\
+                & Python  &   5,39 &   7,08 & 31,30\% [30,44;32,05] \\
+\hline
+dynamodb-write  & Java    &   8,66 &  10,01 & 15,55\% [14,48;16,61] \\
+                & Node.js &   7,59 &   9,37 & 23,45\% [21,65;25,15] \\
+                & Python  &   7,42 &   8,94 & 20,49\% [19,76;21,08] \\
+\hline
+get-request     & Java    &   4,89 &   6,38 & 30,47\% [29,07;31,75] \\
+                & Node.js &   5,12 &   6,03 & 17,77\% [14,11;20,98] \\
+                & Python  &   3,47 &   5,03 & 44,96\% [43,84;45,95] \\
+\hline
+invoke          & Java    &  14,77 &  16,51 & 11,80\% [11,00;12,64] \\
+                & Node.js &  14,01 &  16,71 & 19,30\% [18,04;20,60] \\
+                & Python  &  27,37 &  31,24 & 14,13\% [13,34;14,94] \\
+\hline
+post-request    & Java    &   4,95 &   6,38 & 28,95\% [27,71;30,28] \\
+                & Node.js &   5,23 &   6,47 & 23,89\% [20,38;28,09] \\
+                & Python  &   3,58 &   5,05 & 41,34\% [40,28;42,42] \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection*{Max Memory Used (MB)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Mediane ohne/mit OTel, Overhead und KI für Max Memory (Hot Starts)}
+\label{app:boot-abs-memory-hot}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Sprache} & \textbf{Ohne OTel} & \textbf{Mit OTel} & \textbf{Overhead [KI]} \\
+\hline
+dynamodb-read   & Java    & 162,00 & 250,00 & 54,32\% [54,32;54,32] \\
+                & Node.js & 106,00 & 171,00 & 61,32\% [61,32;61,32] \\
+                & Python  &  89,00 & 110,00 & 23,60\% [23,60;23,60] \\
+\hline
+dynamodb-write  & Java    & 162,00 & 250,00 & 54,32\% [54,32;54,32] \\
+                & Node.js & 106,00 & 172,00 & 62,26\% [62,26;62,26] \\
+                & Python  &  89,00 & 110,00 & 23,60\% [23,60;23,60] \\
+\hline
+get-request     & Java    & 129,00 & 219,00 & 69,77\% [69,77;69,77] \\
+                & Node.js &  95,00 & 165,00 & 72,63\% [70,83;74,74] \\
+                & Python  &  49,00 &  86,00 & 75,51\% [75,51;75,51] \\
+\hline
+invoke          & Java    & 162,00 & 250,00 & 54,32\% [54,32;54,32] \\
+                & Node.js & 107,00 & 171,00 & 59,81\% [59,81;59,81] \\
+                & Python  &  87,00 & 109,00 & 25,29\% [25,29;25,29] \\
+\hline
+post-request    & Java    & 131,00 & 220,00 & 67,94\% [67,94;67,94] \\
+                & Node.js &  99,00 & 164,00 & 65,66\% [63,00;67,35] \\
+                & Python  &  49,00 &  86,00 & 75,51\% [75,51;75,51] \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Bootstrap-Ergebnisse für Kaltstarts}
+\subsection*{H2: Paarweise Sprachvergleiche (p-Werte des Bootstrap-Tests)}
+Alle Vergleiche sind signifikant (p < 0,000667 nach Bonferroni-Korrektur). Die folgende Tabelle zeigt die p-Werte für jedes Benchmark‑Metrik‑Paar.
+
+\subsubsection*{Duration (ms)}
+\begin{table}[H]
+\centering
+\footnotesize
 \caption{p-Werte für Sprachvergleiche – Duration Cold Starts}
 \label{app:boot-h2-duration}
 \begin{tabular}{|l|c|c|c|}
@@ -169,6 +448,7 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \subsubsection*{Init Duration (ms)}
 \begin{table}[H]
 \centering
+\footnotesize
 \caption{p-Werte für Sprachvergleiche – Init Duration Cold Starts}
 \label{app:boot-h2-init}
 \begin{tabular}{|l|c|c|c|}
@@ -187,6 +467,7 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \subsubsection*{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
+\footnotesize
 \caption{p-Werte für Sprachvergleiche – Max Memory Cold Starts}
 \label{app:boot-h2-memory}
 \begin{tabular}{|l|c|c|c|}
@@ -204,7 +485,49 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 
 \textit{Hinweis:} Die p-Werte sind auf 5 Dezimalstellen gerundet; ein Wert von 0,00000 bedeutet \(p < 10^{-5}\). Die Bonferroni-korrigierte Signifikanzschwelle liegt bei \(\alpha = 0,000667\). Alle hier gezeigten Vergleiche unterschreiten diese Schwelle deutlich.
 
+\section{Bootstrap-Ergebnisse für Warmstarts}
 
+\subsection*{H2: Paarweise Sprachvergleiche (p-Werte des Bootstrap-Tests)}
+
+\paragraph{Duration (ms)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{p-Werte für Sprachvergleiche – Duration Hot Starts}
+\label{app:boot-h2-hot-duration}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Java vs. Python} & \textbf{Java vs. Node.js} & \textbf{Python vs. Node.js} \\
+\hline
+dynamodb-read   & 0,00000 & 0,00000 & 0,00000 \\
+dynamodb-write  & 0,00000 & 0,00000 & 0,00000 \\
+get-request     & 0,00000 & 0,00000 & 0,00000 \\
+invoke          & 0,00000 & 0,00000 & 0,00000 \\
+post-request    & 0,00000 & 0,00016 & 0,00000 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Max Memory Used (MB)}
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{p-Werte für Sprachvergleiche – Max Memory Hot Starts}
+\label{app:boot-h2-hot-memory}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Java vs. Python} & \textbf{Java vs. Node.js} & \textbf{Python vs. Node.js} \\
+\hline
+dynamodb-read   & 0,00000 & 0,00000 & 0,00000 \\
+dynamodb-write  & 0,00000 & 0,00000 & 0,00000 \\
+get-request     & 0,00000 & 0,00000 & 0,00000 \\
+invoke          & 0,00000 & 0,00000 & 0,00000 \\
+post-request    & 0,00000 & 0,00002 & 0,00000 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textit{Hinweis:} Die p-Werte sind auf 5 Dezimalstellen gerundet; Werte von 0,00000 bedeuten \(p < 10^{-5}\). Die Bonferroni-korrigierte Signifikanzschwelle liegt bei \(\alpha = 0,000667\). Alle hier gezeigten Vergleiche sind signifikant.
 \section{Ranglisten der Sprachen}
 
 \subsection*{1. Ranglisten basierend auf dem prozentualen Overhead (Median)}
@@ -215,6 +538,8 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 % Init Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap (Median) – Init Duration (5 Vergleiche)}
@@ -246,6 +571,8 @@ Python  & 3 & 2 & 0 \\
 % Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Duration (5 Vergleiche)}
@@ -277,6 +604,8 @@ Python  & 3 & 2 & 0 \\
 % Max Memory
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Max Memory (5 Vergleiche)}
@@ -308,6 +637,8 @@ Python  & 5 & 0 & 0 \\
 % Kombiniert Kalt
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Kombiniert Kalt (15 Vergleiche)}
@@ -341,6 +672,8 @@ Python  & 11 & 4 & 0 \\
 % Duration Warm
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Duration (5 Vergleiche)}
@@ -372,6 +705,8 @@ Python  & 0 & 3 & 2 \\
 % Max Memory Warm
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Max Memory (5 Vergleiche)}
@@ -403,6 +738,8 @@ Python  & 5 & 0 & 0 \\
 % Kombiniert Warm
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Kombiniert Warm (10 Vergleiche)}
@@ -434,6 +771,8 @@ Python  & 5 & 3 & 2 \\
 % Combined gesamt (25)
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – gesamt (25 Vergleiche)}
@@ -471,6 +810,8 @@ Python  & 16 & 7 & 2 \\
 % Init Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Init Duration (5 Vergleiche)}
@@ -502,6 +843,8 @@ Python  & 0 & 5 & 0 \\
 % Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Duration (5 Vergleiche)}
@@ -533,6 +876,8 @@ Python  & 5 & 0 & 0 \\
 % Max Memory
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Max Memory (5 Vergleiche)}
@@ -564,6 +909,8 @@ Python  & 5 & 0 & 0 \\
 % Kombiniert Kalt
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Kombiniert Kalt (15 Vergleiche)}
@@ -597,6 +944,8 @@ Python  & 10 & 5 & 0 \\
 % Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Duration (5 Vergleiche)}
@@ -628,6 +977,8 @@ Python  & 4 & 0 & 1 \\
 % Max Memory
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Max Memory (5 Vergleiche)}
@@ -659,6 +1010,8 @@ Python  & 5 & 0 & 0 \\
 % Kombiniert Warm
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Kombiniert Warm (10 Vergleiche)}
@@ -690,6 +1043,8 @@ Python  & 9 & 0 & 1 \\
 % Combined gesamt
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – gesamt (25 Vergleiche)}
@@ -726,6 +1081,8 @@ Python  & 19 & 5 & 1 \\
 % Init Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Init Duration (5 Vergleiche)}
@@ -757,6 +1114,8 @@ Python  & 5 & 0 & 0 \\
 % Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Duration (5 Vergleiche)}
@@ -788,6 +1147,8 @@ Python  & 5 & 0 & 0 \\
 % Max Memory
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Max Memory (5 Vergleiche)}
@@ -819,6 +1180,8 @@ Python  & 5 & 0 & 0 \\
 % Kombiniert Kalt
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Kombiniert Kalt (15 Vergleiche)}
@@ -852,6 +1215,8 @@ Python  & 15 & 0 & 0 \\
 % Duration
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Duration (5 Vergleiche)}
@@ -883,6 +1248,8 @@ Python  & 4 & 0 & 1 \\
 % Max Memory
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Max Memory (5 Vergleiche)}
@@ -914,6 +1281,8 @@ Python  & 5 & 0 & 0 \\
 % Kombiniert Warm
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – Kombiniert Warm (10 Vergleiche)}
@@ -945,6 +1314,8 @@ Python  & 9 & 0 & 1 \\
 % Combined gesamt
 \begin{table}[H]
 \centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
 \begin{minipage}{0.45\textwidth}
 \centering
 \caption{Bootstrap – gesamt (25 Vergleiche)}
@@ -972,3 +1343,31 @@ Python  & 24 & 0 & 1 \\
 \end{tabular}
 \end{minipage}
 \end{table}
+
+\section{Lambda-Kostenvergleich}
+\label{app:cost-comparison}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_invoke_bar.png}
+\caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, Invoke-Benchmark)}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_get-request_bar.png}
+\caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, Get-Request-Benchmark)}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_post-request_bar.png}
+\caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, Post-Request-Benchmark)}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_dynamodb-read_bar.png}
+\caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, DynamoDB-Read-Benchmark)}
+\end{figure}
+
