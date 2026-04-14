@@ -84,7 +84,6 @@
 
 \section{Rohdaten – Messwerte und Overhead (Cold Starts)}
 
-\subsection*{Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -117,7 +116,6 @@ post-request    & Java    &  267,25 &  751,27 & 181,12\% \\
 \end{tabular}
 \end{table}
 
-\subsection*{Init Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -150,7 +148,6 @@ post-request    & Java    &  877,13 & 3372,64 & 284,51\% \\
 \end{tabular}
 \end{table}
 
-\subsection*{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -185,7 +182,6 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% \\
 
 \section{Rohdaten – Messwerte und Overhead (Hot Starts)}
 
-\subsection*{Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -218,7 +214,6 @@ post-request    & Java    &   4,95 &   6,38 & 28,89\% \\
 \end{tabular}
 \end{table}
 
-\subsection*{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -251,11 +246,10 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% \\
 \end{tabular}
 \end{table}
 
-\section{Bootstrap-Mediane der Messwerte (absolut) mit Overhead und KI}
+\section{Bootstrap-Mediane der Messwerte (absolut) mit Overhead }
 
 \subsection*{Cold Starts}
 
-\subsubsection*{Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -288,11 +282,10 @@ post-request    & Java    &  267,25 &  751,27 & 181,18\% [179,62;183,02] \\
 \end{tabular}
 \end{table}
 
-\subsubsection*{Init Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead und KI für Init Duration (Cold Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Init Duration (Cold Starts)}
 \label{app:boot-abs-init-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -321,11 +314,10 @@ post-request    & Java    &  877,13 & 3372,64 & 284,51\% [282,69;286,05] \\
 \end{tabular}
 \end{table}
 
-\subsubsection*{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead und KI für Max Memory (Cold Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Max Memory (Cold Starts)}
 \label{app:boot-abs-memory-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -356,11 +348,10 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% [67,94;67,94] \\
 
 \subsection*{Hot Starts}
 
-\subsubsection*{Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead und KI für Duration (Hot Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Duration (Hot Starts)}
 \label{app:boot-abs-duration-hot}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -389,11 +380,10 @@ post-request    & Java    &   4,95 &   6,38 & 28,95\% [27,71;30,28] \\
 \end{tabular}
 \end{table}
 
-\subsubsection*{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead und KI für Max Memory (Hot Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Max Memory (Hot Starts)}
 \label{app:boot-abs-memory-hot}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -423,10 +413,7 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% [67,94;67,94] \\
 \end{table}
 
 \section{Bootstrap-Ergebnisse für Kaltstarts}
-\subsection*{H2: Paarweise Sprachvergleiche (p-Werte des Bootstrap-Tests)}
-Alle Vergleiche sind signifikant (p < 0,000667 nach Bonferroni-Korrektur). Die folgende Tabelle zeigt die p-Werte für jedes Benchmark‑Metrik‑Paar.
 
-\subsubsection*{Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -445,7 +432,6 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \end{tabular}
 \end{table}
 
-\subsubsection*{Init Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -464,7 +450,6 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \end{tabular}
 \end{table}
 
-\subsubsection*{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -483,13 +468,8 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \end{tabular}
 \end{table}
 
-\textit{Hinweis:} Die p-Werte sind auf 5 Dezimalstellen gerundet; ein Wert von 0,00000 bedeutet \(p < 10^{-5}\). Die Bonferroni-korrigierte Signifikanzschwelle liegt bei \(\alpha = 0,000667\). Alle hier gezeigten Vergleiche unterschreiten diese Schwelle deutlich.
-
 \section{Bootstrap-Ergebnisse für Warmstarts}
 
-\subsection*{H2: Paarweise Sprachvergleiche (p-Werte des Bootstrap-Tests)}
-
-\paragraph{Duration (ms)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -508,7 +488,6 @@ post-request    & 0,00000 & 0,00016 & 0,00000 \\
 \end{tabular}
 \end{table}
 
-\paragraph{Max Memory Used (MB)}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -527,827 +506,153 @@ post-request    & 0,00000 & 0,00002 & 0,00000 \\
 \end{tabular}
 \end{table}
 
-\textit{Hinweis:} Die p-Werte sind auf 5 Dezimalstellen gerundet; Werte von 0,00000 bedeuten \(p < 10^{-5}\). Die Bonferroni-korrigierte Signifikanzschwelle liegt bei \(\alpha = 0,000667\). Alle hier gezeigten Vergleiche sind signifikant.
 \section{Ranglisten der Sprachen}
 
+% === 1. Overhead-Rankings ===
 \subsection*{1. Ranglisten basierend auf dem prozentualen Overhead (Median)}
-\label{app:ranking-overhead}
 
-\subsubsection*{Kaltstarts}
-
-% Init Duration
+% Kaltstarts
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap (Median) – Init Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+\caption{Rangliste prozentualer Overhead – Kaltstarts}
+\label{app:ranking-overhead-cold}
+\begin{tabular}{|l|cc|}
 \hline
-Sprache & 1. & 2. & 3. \\
+\textbf{Metrik} & \textbf{Bootstrap (1./2./3.)} & \textbf{Originaldaten (1./2./3.)} \\
 \hline
-Java    & 2 & 3 & 0 \\
-Node.js & 0 & 0 & 5 \\
-Python  & 3 & 2 & 0 \\
+Init Duration & Java: 2/3/0, Node.js: 0/0/5, Python: 3/2/0 & Java: 0/3/2, Node.js: 2/0/3, Python: 3/2/0 \\
 \hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten (Median) – Init Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+Duration      & Java: 0/3/2, Node.js: 2/0/3, Python: 3/2/0 & Java: 0/3/2, Node.js: 2/0/3, Python: 3/2/0 \\
 \hline
-Sprache & 1. & 2. & 3. \\
+Max Memory    & Java: 2/3/0, Node.js: 0/0/5, Python: 3/2/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Java    & 0 & 3 & 2 \\
-Node.js & 2 & 0 & 3 \\
-Python  & 3 & 2 & 0 \\
+Kombiniert (15) & Java: 4/9/2, Node.js: 2/0/13, Python: 9/6/0 & Java: 0/6/9, Node.js: 4/5/6, Python: 11/4/0 \\
 \hline
 \end{tabular}
-\end{minipage}
 \end{table}
 
-% Duration
+% Warmstarts
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+\caption{Rangliste prozentualer Overhead – Warmstarts}
+\label{app:ranking-overhead-warm}
+\begin{tabular}{|l|cc|}
 \hline
-Sprache & 1. & 2. & 3. \\
+\textbf{Metrik} & \textbf{Bootstrap (1./2./3.)} & \textbf{Originaldaten (1./2./3.)} \\
 \hline
-Java    & 0 & 3 & 2 \\
-Node.js & 2 & 0 & 3 \\
-Python  & 3 & 2 & 0 \\
+Duration      & Java: 3/2/0, Node.js: 2/0/3, Python: 0/3/2 & Java: 3/2/0, Node.js: 2/0/3, Python: 0/3/2 \\
 \hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+Max Memory    & Java: 1/4/0, Node.js: 1/1/3, Python: 3/0/2 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Sprache & 1. & 2. & 3. \\
+Kombiniert (10) & Java: 4/6/0, Node.js: 3/1/6, Python: 3/3/4 & Java: 3/2/5, Node.js: 2/5/3, Python: 5/3/2 \\
 \hline
-Java    & 0 & 3 & 2 \\
-Node.js & 2 & 0 & 3 \\
-Python  & 3 & 2 & 0 \\
+Gesamt (25)   & Java: 8/15/2, Node.js: 5/1/19, Python: 12/9/4 & Java: 3/8/14, Node.js: 6/10/9, Python: 16/7/2 \\
 \hline
 \end{tabular}
-\end{minipage}
 \end{table}
 
-% Max Memory
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 2 & 3 & 0 \\
-Node.js & 0 & 0 & 5 \\
-Python  & 3 & 2 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Kombiniert Kalt
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Kombiniert Kalt (15 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 4 & 9 & 2 \\
-Node.js & 2 & 0 & 13 \\
-Python  & 9 & 6 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Kombiniert Kalt (15 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 6 & 9 \\
-Node.js & 4 & 5 & 6 \\
-Python  & 11 & 4 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-\subsubsection*{Warmstarts}
-
-% Duration Warm
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 3 & 2 & 0 \\
-Node.js & 2 & 0 & 3 \\
-Python  & 0 & 3 & 2 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 3 & 2 & 0 \\
-Node.js & 2 & 0 & 3 \\
-Python  & 0 & 3 & 2 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Max Memory Warm
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 1 & 4 & 0 \\
-Node.js & 1 & 1 & 3 \\
-Python  & 3 & 0 & 2 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Kombiniert Warm
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Kombiniert Warm (10 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 4 & 6 & 0 \\
-Node.js & 3 & 1 & 6 \\
-Python  & 3 & 3 & 4 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Kombiniert Warm (10 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 3 & 2 & 5 \\
-Node.js & 2 & 5 & 3 \\
-Python  & 5 & 3 & 2 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Combined gesamt (25)
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – gesamt (25 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 8 & 15 & 2 \\
-Node.js & 5 & 1 & 19 \\
-Python  & 12 & 9 & 4 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – gesamt (25 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 3 & 8 & 14 \\
-Node.js & 6 & 10 & 9 \\
-Python  & 16 & 7 & 2 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-\newpage
+% === 2. Absolute Werte ohne OpenTelemetry ===
 \subsection*{2. Ranglisten basierend auf absoluten Messwerten ohne OpenTelemetry}
-\label{app:ranking-without-otel}
 
-\subsubsection*{Kaltstarts}
-
-% Init Duration
+% Kaltstarts
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Init Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+\caption{Rangliste absolute Werte ohne OTel – Kaltstarts}
+\label{app:ranking-without-otel-cold}
+\begin{tabular}{|l|cc|}
 \hline
-Sprache & 1. & 2. & 3. \\
+\textbf{Metrik} & \textbf{Bootstrap (1./2./3.)} & \textbf{Originaldaten (1./2./3.)} \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 5 & 0 & 0 \\
-Python  & 0 & 5 & 0 \\
+Init Duration & Java: 0/0/5, Node.js: 5/0/0, Python: 0/5/0 & Java: 0/0/5, Node.js: 5/0/0, Python: 0/5/0 \\
 \hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Init Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+Duration      & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Sprache & 1. & 2. & 3. \\
+Max Memory    & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 5 & 0 & 0 \\
-Python  & 0 & 5 & 0 \\
+Kombiniert (15) & Java: 0/0/15, Node.js: 5/10/0, Python: 10/5/0 & Java: 0/0/15, Node.js: 5/10/0, Python: 10/5/0 \\
 \hline
 \end{tabular}
-\end{minipage}
 \end{table}
 
-% Duration
+% Warmstarts
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+\caption{Rangliste absolute Werte ohne OTel – Warmstarts}
+\label{app:ranking-without-otel-warm}
+\begin{tabular}{|l|cc|}
 \hline
-Sprache & 1. & 2. & 3. \\
+\textbf{Metrik} & \textbf{Bootstrap (1./2./3.)} & \textbf{Originaldaten (1./2./3.)} \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
+Duration      & Java: 0/3/2, Node.js: 1/2/2, Python: 4/0/1 & Java: 0/3/2, Node.js: 1/2/2, Python: 4/0/1 \\
 \hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+Max Memory    & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Sprache & 1. & 2. & 3. \\
+Kombiniert (10) & Java: 0/3/7, Node.js: 1/7/2, Python: 9/0/1 & Java: 0/3/7, Node.js: 1/7/2, Python: 9/0/1 \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
+Gesamt (25)   & Java: 0/3/22, Node.js: 6/17/2, Python: 19/5/1 & Java: 0/3/22, Node.js: 6/17/2, Python: 19/5/1 \\
 \hline
 \end{tabular}
-\end{minipage}
 \end{table}
 
-% Max Memory
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Kombiniert Kalt
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Kombiniert Kalt (15 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 15 \\
-Node.js & 5 & 10 & 0 \\
-Python  & 10 & 5 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Kombiniert Kalt (15 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 15 \\
-Node.js & 5 & 10 & 0 \\
-Python  & 10 & 5 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-\subsubsection*{Warmstarts}
-
-% Duration
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 3 & 2 \\
-Node.js & 1 & 2 & 2 \\
-Python  & 4 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 3 & 2 \\
-Node.js & 1 & 2 & 2 \\
-Python  & 4 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Max Memory
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Kombiniert Warm
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Kombiniert Warm (10 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 3 & 7 \\
-Node.js & 1 & 7 & 2 \\
-Python  & 9 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Kombiniert Warm (10 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 3 & 7 \\
-Node.js & 1 & 7 & 2 \\
-Python  & 9 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Combined gesamt
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – gesamt (25 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 3 & 22 \\
-Node.js & 6 & 17 & 2 \\
-Python  & 19 & 5 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – gesamt (25 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 3 & 22 \\
-Node.js & 6 & 17 & 2 \\
-Python  & 19 & 5 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
+% === 3. Absolute Werte mit OpenTelemetry ===
 \subsection*{3. Ranglisten basierend auf absoluten Messwerten mit OpenTelemetry}
-\label{app:ranking-with-otel}
 
-\subsubsection*{Kaltstarts}
-
-% Init Duration
+% Kaltstarts
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Init Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+\caption{Rangliste absolute Werte mit OTel – Kaltstarts}
+\label{app:ranking-with-otel-cold}
+\begin{tabular}{|l|cc|}
 \hline
-Sprache & 1. & 2. & 3. \\
+\textbf{Metrik} & \textbf{Bootstrap (1./2./3.)} & \textbf{Originaldaten (1./2./3.)} \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
+Init Duration & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Init Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+Duration      & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Sprache & 1. & 2. & 3. \\
+Max Memory    & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
+Kombiniert (15) & Java: 0/0/15, Node.js: 0/15/0, Python: 15/0/0 & Java: 0/0/15, Node.js: 0/15/0, Python: 15/0/0 \\
 \hline
 \end{tabular}
-\end{minipage}
 \end{table}
 
-% Duration
+% Warmstarts
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+\caption{Rangliste absolute Werte mit OTel – Warmstarts}
+\label{app:ranking-with-otel-warm}
+\begin{tabular}{|l|cc|}
 \hline
-Sprache & 1. & 2. & 3. \\
+\textbf{Metrik} & \textbf{Bootstrap (1./2./3.)} & \textbf{Originaldaten (1./2./3.)} \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
+Duration      & Java: 1/1/3, Node.js: 0/4/1, Python: 4/0/1 & Java: 1/1/3, Node.js: 0/4/1, Python: 4/0/1 \\
 \hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
+Max Memory    & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
 \hline
-Sprache & 1. & 2. & 3. \\
+Kombiniert (10) & Java: 1/1/8, Node.js: 0/9/1, Python: 9/0/1 & Java: 1/1/8, Node.js: 0/9/1, Python: 9/0/1 \\
 \hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
+Gesamt (25)   & Java: 1/1/23, Node.js: 0/24/1, Python: 24/0/1 & Java: 1/1/23, Node.js: 0/24/1, Python: 24/0/1 \\
 \hline
 \end{tabular}
-\end{minipage}
-\end{table}
-
-% Max Memory
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Kombiniert Kalt
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Kombiniert Kalt (15 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 15 \\
-Node.js & 0 & 15 & 0 \\
-Python  & 15 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Kombiniert Kalt (15 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 15 \\
-Node.js & 0 & 15 & 0 \\
-Python  & 15 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-\subsubsection*{Warmstarts}
-
-% Duration
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 1 & 1 & 3 \\
-Node.js & 0 & 4 & 1 \\
-Python  & 4 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Duration (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 1 & 1 & 3 \\
-Node.js & 0 & 4 & 1 \\
-Python  & 4 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Max Memory
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Max Memory (5 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 0 & 0 & 5 \\
-Node.js & 0 & 5 & 0 \\
-Python  & 5 & 0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Kombiniert Warm
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – Kombiniert Warm (10 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 1 & 1 & 8 \\
-Node.js & 0 & 9 & 1 \\
-Python  & 9 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – Kombiniert Warm (10 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 1 & 1 & 8 \\
-Node.js & 0 & 9 & 1 \\
-Python  & 9 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}
-\end{table}
-
-% Combined gesamt
-\begin{table}[H]
-\centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Bootstrap – gesamt (25 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 1 & 1 & 23 \\
-Node.js & 0 & 24 & 1 \\
-Python  & 24 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}\hfill
-\begin{minipage}{0.45\textwidth}
-\centering
-\caption{Originaldaten – gesamt (25 Vergleiche)}
-\begin{tabular}{|l|ccc|}
-\hline
-Sprache & 1. & 2. & 3. \\
-\hline
-Java    & 1 & 1 & 23 \\
-Node.js & 0 & 24 & 1 \\
-Python  & 24 & 0 & 1 \\
-\hline
-\end{tabular}
-\end{minipage}
 \end{table}
 
 \section{Lambda-Kostenvergleich}
 \label{app:cost-comparison}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_invoke_bar.pdf}
 \caption{Kostenvergleich für 1 Million Anfragen (mit OpenTelemetry, Invoke-Benchmark)}
