@@ -1,15 +1,11 @@
 \chapter{Stand der Forschung}
 \label{ch:chapter03}
 Dieses Kapitel stellt zwei zentrale Arbeiten vor, die für die vorliegende Untersuchung 
-von besonderer Relevanz sind. Die erste Arbeit \emph{\glqq A Comparison of Distributed Tracing Tools in Serverless Applications\grqq }~\cite{10254754} 
-vergleicht den Overhead verschiedener Distributed-Tracing-Tools in AWS-Lambda-Funktionen. 
-Die zweite Arbeit \emph{\glqq Evaluation of Programming Languages for Memory Usage, Scalability, and Cold Start, 
-on AWS Lambda Serverless Platform as a Case Study\grqq }~\cite{Rodriguez2024Evaluation} evaluiert die Performance 
-unterschiedlicher Programmiersprachen auf derselben Plattform. 
+von besonderer Relevanz sind. Die erste Arbeit vergleicht den Overhead verschiedener Distributed-Tracing-Tools 
+in AWS-Lambda-Funktionen. 
+Die zweite Arbeit evaluiert die Performance unterschiedlicher Programmiersprachen auf derselben Plattform. 
 Beide Studien werden hinsichtlich ihrer Motivation, Methodik, Ergebnisse und Limitationen analysiert, 
-um darauf aufbauend die Forschungslücke für die eigene Arbeit zu adressieren. Das zentrale Erkenntnisinteresse 
-stammt jedoch primär aus der ersten Studie, da die Untersuchung des Sprachfaktors im Hinblick auf Tracing-Overhead  
-im Abschnitt \glqq Future Work\grqq  der Arbeit explizit als Empfehlung für weitere Forschungen erwähnt wird.
+um darauf aufbauend die Forschungslücke für die eigene Arbeit zu adressieren.
 
 \section{Vergleichsstudie 1}
 \label{sec:a-comparison}
@@ -21,7 +17,7 @@ Die Autoren adressieren die wachsende Bedeutung von Observability in serverlosen
 Da diese aufgrund ihrer feingranularen, verteilten Natur komplex und fehleranfällig sein können, 
 ist Distributed Tracing ein zentrales Werkzeug zur Nachverfolgung von Anfragen. 
 Gleichzeitig folgt Serverless Computing einem nutzungsbasierten Abrechnungsmodell, 
-sodass der durch Tracing verursachte Overhead direkte Auswirkungen auf die Kosten haben kann. 
+sodass der durch Tracing verursachte Overhead direkte Auswirkungen auf die Kosten hat. 
 Die Autoren motivieren ihre Arbeit mit dem Fehlen eines detaillierten Vergleichs verschiedener Tracing-Tools 
 speziell in serverlosen Umgebungen~\cite{10254754}.
 
@@ -30,7 +26,7 @@ speziell in serverlosen Umgebungen~\cite{10254754}.
 
 Die Studie untersucht drei Open-Source-Distributed-Tracing-Tools – Zipkin, OpenTelemetry (mittels AWS Distro for OpenTelemetry, ADOT) 
 und Apache SkyWalking. Alle Tools wurden in AWS-Lambda-Funktionen integriert, wobei Node.js 16.x als konkrete Laufzeitumgebung 
-gewählt wurde. Die Evaluation erfolgte anhand von fünf Microbenchmarks, die typische Interaktionsmuster serverloser Anwendungen abbilden 
+gewählt wurde. Die Evaluation erfolgte anhand von fünf Microbenchmark, die typische Interaktionsmuster serverloser Anwendungen abbilden 
 (siehe Unterabschnitt~\ref{subsec:lambda-benchmarks}).
 
 Für jede Kombination aus Benchmark und Tracing-Tool wurden 100 warme Funktionsaufrufe 
@@ -74,34 +70,23 @@ duration & & & & \\
 \end{tabular}
 \end{table}
 
-In der obigen Tabelle~\ref{efficiency-overhead} sind die Effizienz-Overheads der verschiedenen Tracing-Tools dargestellt. 
-Die Ergebnisse für Memory Usage wurden zusammengefasst und in der Tabelle sind nur durchschnittliche Werte für alle Benchmarks angegeben.
-Die graumarkierten Zellen heben die statistisch signifikanten Overheads hervor, alle Zellen ohne Markierung zeigen keinen statistisch signifikanten Overhead im Vergleich zur Baseline. 
-Unter Berücksichtigung aller Mikrobenchmarks verursachte Zipkin den geringsten Laufzeit-Overhead mit durchschnittlich 10,73 %, während SkyWalking den höchsten Overhead mit durchschnittlich 50,67 % aufwies. OTel verursachte zusätzliche Laufzeit von 24,19 %. Allerdings waren nicht alle Overheads statistisch signifikant. Während die Anwendung aller Tools zu einem signifikanten Overhead hinsichtlich der Laufzeit von HTTP-Anfragen führte, ist SkyWalking das einzige Tool, bei dem ein signifikanter Laufzeit-Overhead für alle untersuchten Mikrobenchmarks entstand. SkyWalking verursachte jedoch nicht immer den höchsten Overhead: Im Fall von Mikrobenchmark 3 war der Overhead von OTel statistisch signifikant höher als der von SkyWalking. Neben dem Laufzeit-Overhead wurden bei Verwendung von verteiltem Tracing für alle Mikrobenchmarks ein signifikant höherer Speicherverbrauch und längere Initialisierungszeiten festgestellt. In beiden Fällen verursachte OTel den höchsten Overhead. Zipkin verursachte den geringsten Overhead,
-während der Overhead von SkyWalking als mittel einzustufen ist. Der
-zusätzliche Speicherverbrauch reichte von 7,51 \% bei Zipkin bis
-91,06 \% bei OTel. Im Vergleich dazu lag die Initialisierungsdauer
-zwischen 70,22 \% und 575,35 \%. Insgesamt deuten die Ergebnisse darauf hin, dass der
-frameworkbasierte Ansatz von Zipkin den geringsten Overhead erzeugte,
-während die agentenbasierten Ansätze von OTel und SkyWalking einen höheren Overhead verursachten. 
-Insbesondere hinsichtlich Speicherverbrauch und Initialisierungszeiten führte die verwendete ADOT-Implementierung 
-von OTel zu deutlich höheren Overhead-Werten als die anderen Tools. Dies könnte durch den zusätzlichen OTel-Collector 
-verursacht werden, der gleichzeitig Tracing-Daten nach X-Ray exportiert.
+Tabelle~\ref{efficiency-overhead} zeigt die Effizienz-Overheads der Tracing-Tools. Die graumarkierten Zellen heben statistisch signifikante Overheads hervor.
+
+Zipkin verursachte den geringsten durchschnittlichen Laufzeit-Overhead (10,73\%), SkyWalking den höchsten (50,67\%), OTel lag bei 24,19\%. SkyWalking war das einzige Tool mit signifikantem Laufzeit-Overhead über alle Benchmarks hinweg, allerdings erreichte OTel bei einem Benchmark höhere Werte.
+
+Für Speicherverbrauch und Initialisierungszeiten zeigten sich über alle Benchmarks signifikante Steigerungen. Der Speicherverbrauch reichte von 7,51\% (Zipkin) bis 91,06\% (OTel), die Initialisierungsdauer von 70,22\% (Zipkin) bis 575,35\% (OTel). 
+
+Insgesamt erwies sich der frameworkbasierte Ansatz von Zipkin als am effizientesten, während die agentenbasierten Ansätze von OTel und SkyWalking deutlich höhere Overheads verursachten.
 
 \subsection{Einordnung}
 \label{subsec:eder-discussion}
 
 Die Studie von Eder et al. liefert erstmals einen systematischen Vergleich von Tracing-Tools in einer serverlosen 
-Umgebung. Die Ergebnisse zeigen, dass der Overhead erheblich variieren kann – Zipkin als 
-framework-basiertes Tool erweist sich als leichtgewichtig, während die agent-basierten 
-Ansätze von OpenTelemetry (ADOT) und SkyWalking teilweise einen signifikanten Overhead 
-verursachen. Besonders auffällig ist der hohe Speicher- und Kaltstart-Overhead von ADOT, 
-der von den Autoren auf den zusätzlichen Collector zurückgeführt wird.
-
+Umgebung. Die Ergebnisse zeigen, dass der Overhead erheblich variieren kann. Besonders auffällig ist der hohe 
+Speicher- und Kaltstart-Overhead von ADOT, der von den Autoren auf den zusätzlichen Collector zurückgeführt wird.
 Allerdings beschränkt sich die Untersuchung auf Node.js als Laufzeitumgebung. 
-Zudem wurden bei den Kaltstarts leere Funktionen verwendet, was den 5 Microbenchmarks nicht entspricht. 
-Die Autoren selbst regen an, 
-weitere Sprachen und Plattformen in zukünftige Vergleiche einzubeziehen – eine 
+Zudem wurden bei den Kaltstarts leere Funktionen verwendet, was den 5 Microbenchmark nicht entspricht. 
+Die Autoren selbst regen an, weitere Sprachen und Plattformen in zukünftige Vergleiche einzubeziehen – eine 
 zentrale Motivation für die vorliegende Arbeit.
 
 \section{Vergleichsstudie 2}
@@ -122,20 +107,16 @@ Diese Studie von Rodriguez et al.~\cite{Rodriguez2024Evaluation} adressiert die 
 \label{subsec:rodriguez-methodology}
 
 Die Studie vergleicht drei Programmiersprachen: JavaScript (Node.js), Python und Java. 
-Als Anwendungsfall dient eine REST-API für Create-, Read-, Update- und Delete-Operationen auf DynamoDB, die einen Fragebogen 
-(angelehnt an den argentinischen Zensus 2022) abbildet. 
+Als Anwendungsfall dient eine REST-API für Create-, Read-, Update- und Delete-Operationen auf DynamoDB. 
 Die API wurde in allen drei Sprachen implementiert und mit dem Open-Source-Tool Artillery getestet. 
-Die Experimente umfassen:
 
-\begin{itemize}
-    \item \emph{Initialisierungstests}: Es wurden fünf Kaltstarts pro Sprache und CRUD-Operation bei 10 GB Speicherzuweisung gemessen. 
-    Zusätzlich wurde im Anschluss an jeden Kaltstart jeweils eine warme Ausführung gemessen, um den Unterschied zwischen 
-    Kalt- und Warmstart zu quantifizieren.
-    \item \emph{Skalierbarkeitstests}: Es wurden Anfragen mit steigender Anzahl pro Sekunde (1, 10, 25, 50, 100, 200 gleichzeitige Aufrufe) 
-    zur Beobachtung des Skalierungsverhaltens der Leseoperation (Read) durchgeführt.
-    \item \emph{Speichertests}: Variation des zugewiesenen Speichers (512 MB, 1, 2, 4, 6, 8, 10 GB) 
-    zur Analyse des Einflusses auf Laufzeit und Initialisierung (beispielhaft für die Create-Operation).
-\end{itemize}
+Die Experimente umfassen Initialisierungstests, bei denen fünf Kaltstarts pro Sprache und CRUD-Operation bei 10 GB 
+Speicherzuweisung gemessen wurden. Zusätzlich wurde im Anschluss an jeden Kaltstart jeweils eine warme Ausführung gemessen, 
+um den Unterschied zwischen Kalt- und Warmstart zu quantifizieren. Weiterhin wurden Skalierbarkeitstests durchgeführt, 
+bei denen Anfragen mit steigender Anzahl pro Sekunde (1, 10, 25, 50, 100, 200 gleichzeitige Aufrufe) 
+zur Beobachtung des Skalierungsverhaltens der Leseoperation (Read) eingesetzt wurden. 
+Abschließend erfolgten Speichertests durch Variation des zugewiesenen Speichers (512 MB, 1, 2, 4, 6, 8, 10 GB) 
+zur Analyse des Einflusses auf Laufzeit und Initialisierung, beispielhaft für die Create-Operation.
 
 \subsection{Ergebnisse}
 \label{subsec:rodriguez-results}
@@ -278,7 +259,7 @@ immerhin drei Sprachen vergleichen, aber ohne Berücksichtigung von Tracing-Over
 
 \paragraph{Statistische Aussagekraft}
 Die Stichprobengrößen sind teils gering (100 Aufrufe pro Benchmark bei Eder et al. und 5 bei Aufrufe bei Rodriguez et al.), 
-was die Verallgemeinerbarkeit einschränkt und die statistische Signifikanz der Ergebnisse beeinträchtigt.
+was die Verallgemeinerbarkeit einschränkt und die statistische Aussagekraft der Ergebnisse beeinträchtigt.
 
 \section{Fazit}
 \label{sec:conclusion-related}

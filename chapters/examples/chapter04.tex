@@ -289,9 +289,10 @@ Der relative prozentuale Overhead für eine Metrik \(M\) wurde wie folgt berechn
 \end{equation}
 
 Dabei bezeichnet \(M_{\text{mit OTel}}\) den gemessenen Wert der instrumentierten Version und \(M_{\text{ohne OTel}}\) 
-den Wert der nicht instrumentierten Baseline. Für die Berechnung wurden jeweils die Mittelwerte über alle gültigen Messungen 
-einer Kombination (Sprache, Benchmark, Instrumentierungsstatus) verwendet. Kaltstart- und Warmstartmessungen wurden separat 
-betrachtet.
+den Wert der nicht instrumentierten Baseline. Für die Berechnung wurden jeweils die Mediane über alle gültigen Messungen 
+einer Kombination (Sprache, Benchmark, Instrumentierungsstatus und Metrik) verwendet. Kaltstart- und Warmstartmessungen wurden separat 
+betrachtet. Es wurden ausschließlich Mediane verwendet, da sie robuster gegenüber den vielen Ausreißern in den Messdaten, vor allem 
+bei den Metriken \texttt{Duration} und \texttt{Init Duration}, sind (siehe Anhang \ref{sec:verteilung-rohe-messergebnisse}). 
 
 \section{Durchführung der Messungen}
 \label{sec:durchfuehrung}
@@ -307,15 +308,10 @@ um die reservierte Konkurrenz von 200 zu nutzen und eine realistische Last zu si
 von 200 erreicht, da die Funktionen aufgrund der kurzen Ausführungszeiten schnell freigegeben wurden. Nur in einigen Fällen, 
 insbesondere bei Java, kam es zu kurzzeitigen Spitzen von bis zu 200 parallelen Ausführungen bei den Kaltstarts. Die Parallelität sank 
 unmittelbar nach einigen Aufrufen im Anschluss an die Kaltstarts wieder auf wenige parallele Aufrufe (15 bis 30). Dies gewährleistet, 
-dass die Einschwingphase der Funktionen (\ac{JIT}-Optimierung bei Java und NodeJS und Bytecode-Optimierung bei Python) 
+dass die Einschwingphase der Funktionen (\ac{JIT}-Optimierung~\cite{FromWarmToHotStarts} bei Java und NodeJS und Bytecode-Optimierung~\cite{CPythonPEP659} bei Python) 
 gut abgedeckt wird, da es genug Warmstarts nach den Optimierungen gab und ein stabiler Zustand erreicht wurde. Da mindestens 
 2.000 Kaltstarts pro Kombination angestrebt wurden, wurden die Funktionen ergänzend zu den 10 Messvorgängen solange redeployed und 
 aufgerufen, bis die gewünschte Anzahl an Kaltstarts erreicht wurde.
-
-\paragraph{Berücksichtigung der Einschwingphase}
-Da die Funktionen wegen \ac{JIT}-Compiler bei Java und NodeJS und Bytecode-Optimierung bei Python erst nach mehreren Durchläufen 
-optimierten Code produzieren, wurden bei der Auswertung nicht nur die Mittelwerte, sondern auch die Mediane der Messergebnisse betrachtet. 
-Die Mediane sind weniger anfällig für Ausreißer und geben einen besseren Einblick in die typische Performance nach der Einschwingphase~\cite{MedianVsMean}.
 
 \section{Statistische Auswertung}
 \label{sec:auswertung}
@@ -325,22 +321,25 @@ Dabei werden zwei grundsätzliche Fragestellungen adressiert - der Unterschied z
 sowie die Abweichungen zwischen den einzelnen Programmiersprachen (H2).
 
 \paragraph{H1 – Sprachspezifischer Overhead}
-Der Effizienz-Overhead ohne Einsatz von OpenTelemetry ist geringer als der Overhead bei Verwendung von OpenTelemetry in einer bestimmten Programmiersprache \(s\). Formal ausgedrückt:
+Die Performance ohne Einsatz von OpenTelemetry ist ungleich der Performance bei Verwendung von OpenTelemetry in einer bestimmten Programmiersprache \(s\). Formal ausgedrückt:
 \[
-H_0: \mu_{\text{ohne}} \ge \mu_s \quad \text{vs.} \quad H_1: \mu_{\text{ohne}} < \mu_s,
+H_0: M_{\text{ohne}} \ne M_s \quad \text{vs.} \quad H_1: M_{\text{ohne}} = M_s,
 \]
-wobei \(\mu_{\text{ohne}}\) den mittleren Wert der betrachteten Metrik (z.B. Laufzeit, Speicherverbrauch, Kaltstartdauer) ohne Instrumentierung und \(\mu_s\) den entsprechenden Wert mit Instrumentierung in Sprache \(s\) bezeichnet.
+wobei \(M_{\text{ohne}}\) den Median der betrachteten Metrik (z.B. Laufzeit, Speicherverbrauch, Initialisierungsdauer) ohne Instrumentierung und \(M_s\) den entsprechenden Wert mit Instrumentierung in Sprache \(s\) bezeichnet.
 
 \paragraph{H2 – Sprachvergleiche}
-Es besteht ein signifikanter Unterschied im Effizienz-Overhead zwischen zwei verschiedenen Programmiersprachen \(s_1\) und \(s_2\). Formal:
+Es besteht ein signifikanter Unterschied im Performance-Overhead zwischen zwei verschiedenen Programmiersprachen \(s_1\) und \(s_2\). Formal:
 \[
-H_0: \mu_{s_1} = \mu_{s_2} \quad \text{vs.} \quad H_1: \mu_{s_1} \neq \mu_{s_2}.
+H_0: M_{s_1} = M_{s_2} \quad \text{vs.} \quad H_1: M_{s_1} \neq M_{s_2}.
 \]
-In beiden Fällen wurde von unbekannter Varianz ausgegangen. Für das Signifikanzniveau wurde \(\alpha = 0{,}05\) festgelegt.
-
+Für das Signifikanzniveau wurde (\(\alpha = 0{,}05\)) festgelegt. Aufgrund der Vielzahl der 
+Vergleiche (75 Kombinationen aus 3 Sprachen, 5 Benchmarks und 5 Metriken) wurde eine 
+Bonferroni-Korrektur angewendet, um die Fehlerwahrscheinlichkeit zu kontrollieren. 
+Das korrigierte Signifikanzniveau beträgt somit \(\alpha_{\text{korrekt}} = \frac{0{,}05}{75} \approx 0{,}00067\).
 \subsection{Durchführung der statistischen Tests}
 
-Zur Überprüfung der beiden Hypothesen wurden Bootstrap-Verfahren eingesetzt, die keine Normalverteilungsannahme voraussetzen und robust gegenüber Ausreißern sind. Alle Tests wurden auf einem Signifikanzniveau von \(\alpha = 0{,}05\) durchgeführt. Aufgrund der Vielzahl der Vergleiche wurde eine Bonferroni-Korrektur angewendet (siehe Anhang).
+Zur Überprüfung der beiden Hypothesen wurden das Bootstrap-Verfahren eingesetzt, 
+die robust gegenüber Ausreißern sind. Alle Tests wurden auf einem Signifikanzniveau von \(\alpha = 0{,}05\) durchgeführt. Aufgrund der Vielzahl der Vergleiche wurde eine Bonferroni-Korrektur angewendet (siehe Anhang).
 
 \paragraph{H1 – Vergleich mit und ohne Instrumentierung}
 Für jede Kombination aus Sprache, Benchmark und Metrik wurden die Mediane der instrumentierten und nicht-instrumentierten Funktionen gegenübergestellt. Mittels Perzentil-Bootstrap (\(R = 10.000\) Resamples) wurde ein Konfidenzintervall für den relativen Median-Overhead 
@@ -352,15 +351,4 @@ auf dem Bonferroni-korrigierten Niveau berechnet. Enthält das Intervall nicht d
 \paragraph{H2 – Vergleich zwischen verschiedenen Programmiersprachen}
 Für den paarweisen Vergleich der Sprachen (Java vs. Python, Java vs. Node.js, Python vs. Node.js) wurde ein Bootstrap-Hypothesentest auf Basis der Mediane durchgeführt. Dabei wurde für jeden Benchmark und jede Metrik die Differenz der Mediane (mit OpenTelemetry) zwischen zwei Sprachen betrachtet. Durch wiederholtes Resampling (\(R = 100.000\)) wurde die Verteilung dieser Differenz unter der Nullhypothese (kein Unterschied) approximiert. Der p-Wert ergibt sich aus dem Anteil der Resample-Differenzen, die betragsmäßig größer oder gleich der beobachteten Differenz sind. Ein p-Wert kleiner als das korrigierte Signifikanzniveau führt zur Ablehnung der Nullhypothese.
 
-\begin{itemize}
-    \item \textbf{Visuelle Aufbereitung:} Die Ergebnisse werden mittels Boxplots visualisiert, um die Verteilung und Ausreißer 
-	darzustellen. Zusätzlich werden Balkendiagramme für den direkten Vergleich der prozentualen Overheads verwendet.
-    \item \textbf{Software:} Die statistische Auswertung erfolgt mit der Programmiersprache Python unter Verwendung der Bibliotheken \texttt{pandas}, \texttt{numpy}, \texttt{scipy.stats}, \texttt{statsmodels} und \texttt{matplotlib} / \texttt{seaborn} für die grafische Darstellung.
-\end{itemize}
-
-Die Ergebnisse dieser Auswertung werden in Kapitel~\ref{ch:ergebnisse} präsentiert und in Kapitel~\ref{ch:diskussion} diskutiert.
-
-\begin{figure}[htbp]
- \centering
- \includegraphics[width=1.0\textwidth]{gfx/examples/dynamodb-read-cold-otel-comparison.png}	
-\end{figure}
+Die Ergebnisse dieser Auswertung werden in Kapitel~\ref{ch:chapter05} präsentiert und in Kapitel~\ref{ch:chapter06} diskutiert.

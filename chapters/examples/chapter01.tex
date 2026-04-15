@@ -13,7 +13,8 @@ Telemetriedaten \cite{AWSLambdaBestPractices}.
 %
 \section{Motivation und Problemstellung}
 \label{sec:intro:motivation}
-Die Motivation für diese Arbeit ergibt sich aus drei zentralen Beobachtungen. 
+Die Motivation für diese Arbeit ergibt sich aus drei Beobachtungen und basiert auf die Anregung der Autoren von 
+\emph{\glqq A Comparison of Distributed Tracing Tools in Serverless Applications\grqq}\cite{10254754}. 
 Erstens ist OpenTelemetry der De-facto-Standard für verteiltes Tracing in Cloud-nativen Anwendungen \cite{AWSLambdaBestPractices} und wird von 
 vielen führenden Cloud-Anbietern nativ oder über dedizierte Distributionen unterstützt. Dazu zählen unter anderem 
 \ac{AWS} \cite{AWSDistributedTracing}, Microsoft Azure \cite{AzureOpenTelemetry} und Google Cloud \cite{GoogleCloudOpenTelemetry}. Zweitens ist die Performance von 
@@ -37,7 +38,7 @@ Wie unterscheidet sich der Performance-Overhead der Instrumentierung mit OpenTel
 
 \paragraph{Teilfragen}
 \begin{enumerate}
-    \item Wie hoch ist der prozentuale Performance-Overhead (Laufzeit, Speicherverbrauch, Kaltstartzeit) in Java, Python und Node.js?
+    \item Wie unterscheidet sich der prozentuale Performance-Overhead (Laufzeit, Speicherverbrauch, Kaltstartzeit) zwischen Java, Python und Node.js?
     \item Bei welchen der fünf häufigsten Anwendungsfälle von \ac{FaaS} treten die größten sprachspezifischen Unterschiede auf?
     \item Welche praxisrelevanten Empfehlungen zur Sprach- und Konfigurationswahl lassen sich ableiten?
 \end{enumerate}
@@ -75,7 +76,7 @@ Die Arbeit folgt einem empirisch-quantitativen Ansatz mit experimentellem Design
     
     \item \textbf{Durchführung der Messungen:} 
     Ausführung aller Funktionen auf AWS Lambda unter kontrollierten Bedingungen (identische Speicherkonfiguration, Region, Wiederholungen usw.). 
-    Erfassung der Performance-Metriken Laufzeit (CPU-Zeit), Speicherverbrauch und Kaltstartzeiten über AWS CloudWatch bzw. über AWS X-Ray.
+    Erfassung der Performance-Metriken Laufzeit (CPU-Zeit), Speicherverbrauch und Kaltstartzeiten über AWS CloudWatch.
     
     \item \textbf{Auswertung und Empfehlungen:} 
     Berechnung des relativen prozentualen Overheads pro Sprache und Anwendungsfall. Sprach- und anwendungsfallübergreifender Vergleich, 
@@ -103,26 +104,3 @@ Die Arbeit gliedert sich in acht Kapitel.
 und leitet praxisrelevante Empfehlungen zur Sprachwahl ab.
 
 \paragraph{Kapitel \ref{ch:chapter07}} fasst die Arbeit zusammen, hebt den wissenschaftlichen Beitrag hervor, reflektiert die Limitationen und gibt einen Ausblick auf mögliche Fragestellungen für spätere Arbeiten.
-
-%
-% Section: Abgrenzung
-%
-\section{Abgrenzung der Arbeit}
-\label{sec:intro:abgrenzung}
-
-Die Arbeit konzentriert sich ausschließlich auf:
-
-\begin{itemize}
-    \item Framework: OpenTelemetry als Instrumentierungs-Framework
-    \item Plattform: AWS Lambda als \ac{FaaS}-Plattform
-    \item Metriken: Laufzeit (CPU-Zeit) in ms, maximaler Speicherverbrauch und Kaltstartzeit
-    \item Sprachen: Java, Python und Node.js
-\end{itemize}
-
-Nicht im Fokus dieser Arbeit sind:
-
-\begin{itemize}
-    \item Vergleich verschiedener Tracing-Frameworks (Zipkin, Jaeger usw.)
-    \item Trace-Qualität (Vollständigkeit aller Traces wird jedoch sichergestellt)
-    \item Andere Serverless-Plattformen (Azure Functions, Google Cloud Functions)
-\end{itemize}
