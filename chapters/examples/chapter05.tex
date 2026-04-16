@@ -7,20 +7,74 @@ Erkentnisse in zusammengefasster Form dargestellt. Alle Rohdaten und detailliert
 entsprechenden Stellen in diesem Kapitel referenziert.
 
 \section{Statistische Signifikanz}
-Die durchgeführten Welch's t-Tests belegen, dass alle Unterschiede zwischen den Messwerten mit und ohne OpenTelemetry, statistisch 
-signifikant sind (p < 0,00067). Dies gilt sowohl für alle Sprachen, Microbenchmarks und Metriken. Die vollständigen Teststatistiken 
-sind im Anhang \ref{appendix:stats} dokumentiert. Die Bootstrap-Tests bestätigen, dass die Unterschiede zwischen allen Sprachen und Metriken 
-ebenfalls paarweise signifikant sind (p < 0,00067). Die einzige Ausnahme bildet der Unterschied zwischen Python und NodeJS bei der 
-Duration-Metrik für warme Ausführungen bei Benchmark 2 (HTTP-GET-Request) auf Mittelwert-Basis, der mit einem p-Wert von 0,13009 nicht signifikant ist. 
-Alle anderen Unterschiede sind statistisch signifikant. 
-Die vollständigen Bootstrap-Testergebnisse sind ebenfalls im Anhang \ref{appendix:stats} dokumentiert.
+\paragraph[short]{Hypothesentests H1}
+Die Performance-Veränderungen durch die Instrumentierung der Funktionen mit OpenTelemetry haben sich anhand der 
+Bootstrap-Konfidenzintervalle, für alle Metriken und Benchmarks als statistisch signifikant erwiesen, da keines 
+der der Intervalle die Null einschließt (siehe Anhang~\ref{app:boot:cold}).
+
+\paragraph[short]{Hypothesentests H2}
+Die Unterschiede im Performance-Overhead zwischen allen 3 Sprachen für alle Benchmarks und Metriken wurden ebenfalls als 
+statistisch signifikant bestätigt, da alle p-Werte unter dem korrigierten Signifikanzniveau von 
+\(\alpha_{\text{korrekt}} = 0{,}00067\) liegen (siehe Anhang~\ref{boot:res:cold} und~\ref{boot:res:hot}).
 
 \section{Absolute Messwerte und relativer Overhead (Median)}
+Aufgrund der Vielzahl der Ergebnisse (jeweils 75 Kombinationen aus 
+3 Sprachen, 5 Benchmarks, 3 Metriken und 2 Starttypen), werden die Ergebnisse anhand von Ranglisten präsentiert. Die Ranglisten 
+wurden in Form von Tabellen, separat für mediane absolute Messwerte ohne OTel, mit OTel und Overhead basierend auf sowohl den 
+Originaldaten als auch den Bootstrap-Resamples erstellt. 
+Die Tabellen zeigen, 
+wie häufig jede Sprache bei den fünf Benchmarks den ersten, zweiten oder dritten Platz belegt hat (aufgeschlüsselt nach 
+Metriken) für Kalt- und Warmstarts. Der kleinste mediane absolute Messwert (in MB oder ms) oder Overhead (in \%) erhält den ersten Platz. 
 
-Die große Tabelle mit Duration, Init Duration, Memory – einmal ohne/mit OTel und Overhead in.
+\subsection{Mediane Overheads}
+Die Ranglisten der relativen Overheads sind auf Basis der Originaldaten und der Bootstrap-Resamples nicht identisch 
+(siehe Anhang~\ref{app:rankings}). Das liegt an den unterschiedlichen Mengengrößen der Overhead-Mediane (1 Originalmedian vs. 
+100.000 Bootstrap-Mediane pro Metrik). Daher werden hier nur die Bootstrap-Ranglisten präsentiert, da sie eine bessere statistische 
+Aussagekraft besitzen.
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\caption{Rangliste prozentualer Overhead}
+\label{app:ranking-overhead-cold-bootstrap}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Metrik} & \textbf{Platz (1./2./3.)} \\
+\hline
+& \textbf{Kaltstarts} \\
+\hline
+Init Duration & Java: 2/3/0, Node.js: 0/0/5, Python: 3/2/0 \\
+\hline
+Duration      & Java: 0/3/2, Node.js: 2/0/3, Python: 3/2/0 \\
+\hline
+Max Memory    & Java: 2/3/0, Node.js: 0/0/5, Python: 3/2/0 \\
+\hline
+Kombiniert (15) & Java: 4/9/2, Node.js: 2/0/13, Python: 9/6/0 \\
+\hline
+& \textbf{Warmstarts} \\
+\hline
+Duration      & Java: 3/2/0, Node.js: 2/0/3, Python: 0/3/2 \\
+\hline
+Max Memory    & Java: 1/4/0, Node.js: 1/1/3, Python: 3/0/2 \\
+\hline
+Kombiniert (10) & Java: 4/6/0, Node.js: 3/1/6, Python: 3/3/4 \\
+\hline
+& \textbf{Kalt \& Warm} \\
+\hline
+Gesamt (25)   & Java: 8/15/2, Node.js: 5/1/19, Python: 12/9/4 \\
+\hline
+\end{tabular}
+\end{table}
 
-\section{Rangfolge der Sprachen mit OpenTelemetry (absolute Werte)}
-Die beiden Ranglisten-Tabellen – nur für instrumentierte Funktionen.
+\subsection{Mediane Absolute Messwerte} 
+Die Ranglisten der absoluten Messwerte der instrumentierten und nicht-instrumentierten 
+Funktionen sind identisch auf Basis der Originaldaten und der Bootstrap-Resamples, was die Stabilität der Ergebnisse unterstreicht 
+(siehe Anhang~\ref{app:rankings}). 
+Es werden hier nur die Ranglisten der instrumentierten Funktionen präsentiert, da nur sie praxisrelevant sind.
+\paragraph[short]{Kaltstarts}
+
+\paragraph[short]{Warmstarts}
+
 
 \section{Kostenabschätzung für instrumentierte Funktionen}
 Darstellung der Duration in ms als Proxy für Kosten, z. B. als Balkendiagramm oder Tabelle.
