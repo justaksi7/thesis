@@ -71,13 +71,66 @@ Die Ranglisten der absoluten Messwerte der instrumentierten und nicht-instrument
 Funktionen sind identisch auf Basis der Originaldaten und der Bootstrap-Resamples, was die Stabilität der Ergebnisse unterstreicht 
 (siehe Anhang~\ref{app:rankings}). 
 Es werden hier nur die Ranglisten der instrumentierten Funktionen präsentiert, da nur sie praxisrelevant sind.
-\paragraph[short]{Kaltstarts}
 
-\paragraph[short]{Warmstarts}
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\caption{Rangliste absolute Werte mit OTel}
+\label{app:ranking-with-otel}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Metrik} & \textbf{Platz (1./2./3.)} \\
+\hline
+& \textbf{Kaltstarts} \\
+\hline
+Init Duration & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
+\hline
+Duration & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
+\hline
+Max Memory & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
+\hline
+Kombiniert (15) & Java: 0/0/15, Node.js: 0/15/0, Python: 15/0/0 \\
+\hline
+& \textbf{Warmstarts} \\
+\hline
+Duration & Java: 1/1/3, Node.js: 0/4/1, Python: 4/0/1 \\
+\hline
+Max Memory & Java: 0/0/5, Node.js: 0/5/0, Python: 5/0/0 \\
+\hline
+Kombiniert (10) & Java: 1/1/8, Node.js: 0/9/1, Python: 9/0/1 \\
+\hline
+& \textbf{Kalt \& Warm} \\
+\hline
+Gesamt (25) & Java: 1/1/23, Node.js: 0/24/1, Python: 24/0/1 \\
+\hline
+\end{tabular}
+\end{table}
 
+\section{Sprachspezifische Unterschiede}
+Kaltstarts
 
-\section{Kostenabschätzung für instrumentierte Funktionen}
-Darstellung der Duration in ms als Proxy für Kosten, z. B. als Balkendiagramm oder Tabelle.
+Duration (mit OTel, Median): größter Unterschied bei dynamodb-write, 1800,79 ms (Java 1849,57 vs Python 48,78).
+Duration (Overhead): größter Unterschied bei get-request, 245,54 Prozentpunkte (Java 220,70 \% vs Node.js -24,84 \%).
+Init Duration (mit OTel, Median): größter Unterschied bei dynamodb-write, 3129,38 ms (Java 4350,58 vs Python 1221,20).
+Init Duration (Overhead): größter Unterschied bei post-request, 520,70 Prozentpunkte (Node.js 805,21 \% vs Java 284,51 \%).
+Max Memory Used (mit OTel, Median): größter Unterschied bei invoke, 142,00 MB (Java 250,00 vs Python 108,00).
+Max Memory Used (Overhead): größter Unterschied bei dynamodb-write, 43,39 Prozentpunkte (Node.js 66,99 \% vs Python 23,60 \%).
 
-\section{Zusammenfassung der wichtigsten Messwerte}
-Optional: Ein kurzer Absatz, der die auffälligsten Zahlen noch einmal nennt – aber ohne Interpretation.
+Warmstarts
+
+Duration (mit OTel, Median): größter Unterschied bei invoke, 14,73 ms (Python 31,24 vs Java 16,51).
+Duration (Overhead): größter Unterschied bei get-request, 27,19 Prozentpunkte (Python 44,96 \% vs Node.js 17,77 \%).
+Init Duration (mit OTel, Median): keine Warmstart-Daten vorhanden.
+Init Duration (Overhead): keine Warmstart-Daten vorhanden.
+Max Memory Used (mit OTel, Median): größter Unterschied bei invoke, 141,00 MB (Java 250,00 vs Python 109,00).
+Max Memory Used (Overhead): größter Unterschied bei dynamodb-write, 38,66 Prozentpunkte (Node.js 62,26 \% vs Python 23,60 \%).
+
+\section{Kostenabschätzung für die instrumentierten Funktionen}
+Die Kosten für die instrumentierten Funktionen wurden auf Basis der Bootstrap-Mediane der 
+absoluten Messwerte mithilfe der in~\ref{sec:kostenmodell} beschriebenen Formel berechnet. 
+\begin{figure}[H]
+\centering
+\caption{Günstigste Varianten der 5 Microbenchmarks für 1 Million Anfragen.}
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_cheapest_per_benchmark_bar.pdf}
+\end{figure}
