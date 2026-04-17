@@ -1,5 +1,5 @@
 %************************************************
-\chapter{Rohdaten}
+\chapter{Ergebnisse im Detail}
 \label{ch:appendix01}
 %************************************************
 \section{Verteilung der rohen Messergebnisse.}
@@ -82,12 +82,13 @@
     \label{fig:dynamodb-write-hot-otel-comparison}
 \end{figure}
 
-\section{Rohdaten – Messwerte und Overhead (Cold Starts)}
-
+\section{Originaldaten - Messwerte und Overheads}
+\subsection{Kaltstarts}
+\label{app:raw:cold}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane der Originaldaten für Duration (Cold Starts) und prozentualer Overhead}
+\caption{Mediane der Originaldaten für Duration (Kaltstarts) und prozentualer Overhead}
 \label{app:raw-duration-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -119,7 +120,7 @@ post-request    & Java    &  267,25 &  751,27 & 181,12\% \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane der Originaldaten für Init Duration (Cold Starts) und prozentualer Overhead}
+\caption{Mediane der Originaldaten für Init Duration (Kaltstarts) und prozentualer Overhead}
 \label{app:raw-init-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -151,7 +152,7 @@ post-request    & Java    &  877,13 & 3372,64 & 284,51\% \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane der Originaldaten für Max Memory (Cold Starts) und prozentualer Overhead}
+\caption{Mediane der Originaldaten für Max Memory (Kaltstarts) und prozentualer Overhead}
 \label{app:raw-memory-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -180,12 +181,12 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% \\
 \end{tabular}
 \end{table}
 
-\section{Rohdaten – Messwerte und Overhead (Hot Starts)}
-
+\subsection{Warmstarts}
+\label{app:raw:hot}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane der Originaldaten für Duration (Hot Starts) und prozentualer Overhead}
+\caption{Mediane der Originaldaten für Duration (Warmstarts) und prozentualer Overhead}
 \label{app:raw-duration-hot}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -217,7 +218,7 @@ post-request    & Java    &   4,95 &   6,38 & 28,89\% \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane der Originaldaten für Max Memory (Hot Starts) und prozentualer Overhead}
+\caption{Mediane der Originaldaten für Max Memory (Warmstarts) und prozentualer Overhead}
 \label{app:raw-memory-hot}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -246,14 +247,14 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% \\
 \end{tabular}
 \end{table}
 
-\section{Bootstrap-Mediane der Messwerte (absolut) mit Overhead }
+\section{Bootstrap-Mediane der Messwerte und Overheads mit Konfidenzintervallen}
 
-\subsection*{Cold Starts}
+\subsection{Kaltstarts}
 \label{app:boot:cold}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead und 99,93\,\%-KI für Duration (Cold Starts)}
+\caption{Mediane ohne/mit OTel, Overhead und 99,93\,\%-KI für Duration (Kaltstarts)}
 \label{app:boot-abs-duration-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -285,7 +286,7 @@ post-request    & Java    &  267,25 &  751,27 & 181,18\% [179,62;183,02] \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead  für Init Duration (Cold Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Init Duration (Kaltstarts)}
 \label{app:boot-abs-init-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -317,7 +318,7 @@ post-request    & Java    &  877,13 & 3372,64 & 284,51\% [282,69;286,05] \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead  für Max Memory (Cold Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Max Memory (Kaltstarts)}
 \label{app:boot-abs-memory-cold}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -346,12 +347,12 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% [67,94;67,94] \\
 \end{tabular}
 \end{table}
 
-\subsection*{Hot Starts}
+\subsection{Warmstarts}
 \label{app:boot:hot}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead  für Duration (Hot Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Duration (Warmstarts)}
 \label{app:boot-abs-duration-hot}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -383,7 +384,7 @@ post-request    & Java    &   4,95 &   6,38 & 28,95\% [27,71;30,28] \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Mediane ohne/mit OTel, Overhead  für Max Memory (Hot Starts)}
+\caption{Mediane ohne/mit OTel, Overhead  für Max Memory (Warmstarts)}
 \label{app:boot-abs-memory-hot}
 \begin{tabular}{|l|l|c|c|c|}
 \hline
@@ -412,12 +413,13 @@ post-request    & Java    & 131,00 & 220,00 & 67,94\% [67,94;67,94] \\
 \end{tabular}
 \end{table}
 
-\section{Bootstrap-Ergebnisse für Kaltstarts}
+\section{Bootstrap-Ergebnisse von H2}
+\subsection{H2 Ergebnisse für Kaltstarts}
 \label{boot:res:cold}
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{p-Werte für Sprachvergleiche – Duration Cold Starts}
+\caption{p-Werte für Sprachvergleiche – Duration Kaltstarts}
 \label{app:boot-h2-duration}
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -435,7 +437,7 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{p-Werte für Sprachvergleiche – Init Duration Cold Starts}
+\caption{p-Werte für Sprachvergleiche – Init Duration Kaltstarts}
 \label{app:boot-h2-init}
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -453,7 +455,7 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{p-Werte für Sprachvergleiche – Max Memory Cold Starts}
+\caption{p-Werte für Sprachvergleiche – Max Memory Kaltstarts}
 \label{app:boot-h2-memory}
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -468,13 +470,13 @@ post-request    & 0,00000 & 0,00000 & 0,00000 \\
 \end{tabular}
 \end{table}
 
-\section{Bootstrap-Ergebnisse für Warmstarts}
+\subsection{H2 Ergebnisse für Warmstarts}
 \label{boot:res:hot}
 
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{p-Werte für Sprachvergleiche – Duration Hot Starts}
+\caption{p-Werte für Sprachvergleiche – Duration Warmstarts}
 \label{app:boot-h2-hot-duration}
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -492,7 +494,7 @@ post-request    & 0,00000 & 0,00016 & 0,00000 \\
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{p-Werte für Sprachvergleiche – Max Memory Hot Starts}
+\caption{p-Werte für Sprachvergleiche – Max Memory Warmstarts}
 \label{app:boot-h2-hot-memory}
 \begin{tabular}{|l|c|c|c|}
 \hline
