@@ -33,10 +33,9 @@ den ersten Platz (Bei Benchmark 1 - Lambdaverkettung).
 
 Eine mögliche Erklärung für die insgesamt beste Performance von Python wäre, dass die Standardbibliothek für HTTP-Anfragen urllib3 sehr viele in C 
 implementierte Module auf TLS- / SSL-Ebene verwendet~\cite{Urllib3}. Die AWS-SDKs für Python verwenden stets die urllib3-Bibliothek~\cite{Boto3}. 
-Die schlechteste Duration von Python bei der Lambdaverkettung könnte daran liegen, dass bei asynchronen Lambda-Aufrufen die Anfragen in 
-Warteschlangen gestellt werden, wobei AWS selbst erwähnt, dass es sehr oft zu Fehlern bei der Aufnahme von Anfragen kommen 
-kann~\cite{Boto3LambdaClient}. Dabei könnte Python aufgrund der standardmäßig deaktivierten JIT-Optimierung~\cite{PythonJIT} benachteiligt sein. 
-
+Die schlechteste Duration von Python bei der Lambdaverkettung könnte auf die synchrone Natur von Python 
+zurückzuführen sein. Während Node.js und Java die Lambdaverkettung asynchron implenetieren können, wird 
+bei Python ein Thread-basierter HTTP-Client-Stack verwendet und keine asynchrone Verarbeitung~\cite{Boto3}. 
 \subsection{Negative Overheads – Artefakt oder echte Beschleunigung?}
 
 Bei Kaltstarts der HTTP-Benchmarks wurden für Node.js und Python negative prozentuale Overheads gemessen (Tabelle~\ref{tab:negative-overheads}). Das bedeutet, dass die instrumentierten Funktionen schneller waren als die nicht-instrumentierten. Die Bootstrap-Konfidenzintervalle schließen die Null aus, die Effekte sind also statistisch signifikant.
