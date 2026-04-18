@@ -18,7 +18,7 @@ statistisch signifikant bestätigt, da alle p-Werte unter dem korrigierten Signi
 \(\alpha_{\text{korrekt}} = 0{,}00067\) liegen (siehe Anhang~\ref{boot:res:cold} und~\ref{boot:res:hot}).
 
 \section{Absolute Messwerte und relativer Overhead (Median)}
-Aufgrund der Vielzahl der Ergebnisse \footnote{Die vollständigen absoluten Werte sowie Overheads sind im Anhang zu sehen. Originaldaten~\ref{app:raw:cold} und~\ref{app:raw:hot}, Bootstrap~\ref{app:boot:cold} und~\ref{app:boot:hot}} (jeweils 75 Kombinationen aus 
+Aufgrund der Vielzahl der Ergebnisse \footnote{Die vollständigen absoluten Werte sowie Overheads sind im Anhang zu sehen. Originaldaten~\ref{app:raw:cold} und~\ref{app:raw:hot}, Bootstrap~\ref{app:boot:cold} und~\ref{app:boot:hot}.} (jeweils 75 Kombinationen aus 
 3 Sprachen, 5 Benchmarks, 3 Metriken und 2 Starttypen), werden die Ergebnisse anhand von Ranglisten präsentiert. Die Ranglisten 
 wurden in Form von Tabellen, separat für mediane absolute Messwerte ohne OTel, mit OTel und Overhead basierend auf sowohl den 
 Originaldaten als auch den Bootstrap-Resamples erstellt. 
@@ -26,7 +26,7 @@ Die Tabellen zeigen,
 wie häufig jede Sprache bei den fünf Benchmarks den ersten, zweiten oder dritten Platz belegt hat (aufgeschlüsselt nach 
 Metriken) für Kalt- und Warmstarts. Der kleinste mediane absolute Messwert (in MB oder ms) oder Overhead (in \%) erhält den ersten Platz. 
 
-\subsection{Mediane Overheads}
+\subsection{Relative Overheads}
 Die Ranglisten der relativen Overheads sind auf Basis der Originaldaten und der Bootstrap-Resamples nicht identisch 
 (siehe Anhang~\ref{app:rankings}). Das liegt an den unterschiedlichen Mengengrößen der Overhead-Mediane (1 Originalmedian vs. 
 100.000 Bootstrap-Mediane pro Metrik). Daher werden hier nur die Bootstrap-Ranglisten präsentiert, da sie eine bessere statistische 
@@ -70,7 +70,8 @@ Gesamt (25)   & Java: 8/15/2, Node.js: 5/1/19, Python: 12/9/4 \\
 Die Ranglisten der absoluten Messwerte der instrumentierten und nicht-instrumentierten 
 Funktionen sind identisch auf Basis der Originaldaten und der Bootstrap-Resamples, was die Stabilität der Ergebnisse unterstreicht 
 (siehe Anhang~\ref{app:rankings}). 
-Es werden hier nur die Ranglisten der instrumentierten Funktionen präsentiert, da nur sie praxisrelevant sind.
+Es werden hier nur die Ranglisten der instrumentierten Funktionen präsentiert, da nur sie relevant im Hinblick auf die Overheads sind. 
+Die Ranglisten der nicht-instrumentierten Funktionen sind jedoch ebenfalls im Anhang zu finden (siehe Anhang~\ref{app:rankings}).
 
 \begin{table}[H]
 \centering
@@ -107,8 +108,15 @@ Gesamt (25) & Java: 1/1/23, Node.js: 0/24/1, Python: 24/0/1 \\
 \end{tabular}
 \end{table}
 
+\subsection{Zusammenfassung der wichtigsten Ergebnisse}
+Die beiden Ranglisten zeigen ein klares Muster. Beim relativen Overhead erreicht Python insgesamt die meisten ersten Plätze (12/9/4), 
+Java liegt überwiegend auf dem zweiten Platz (8/15/2), und Node.js hat am häufigsten den dritten Platz 
+(5/1/19). Für die absoluten Messwerte mit OTel ist die Reihenfolge noch deutlicher. Python belegt nahezu durchgängig den ersten Platz 
+(24/0/1), Node.js überwiegend den zweiten (0/24/1) und Java überwiegend den dritten (1/1/23). Die inhaltliche Diskussion dieser 
+Ergebnisse erfolgt in Kapitel~\ref{ch:chapter06}.
+
 \section{Sprachspezifische Unterschiede}
-\subsection{Overhead}
+\subsection{Relative Overheads}
 \begin{table}[H]
 \centering
 \footnotesize
@@ -135,6 +143,8 @@ Max Memory & 38,66 \% (Node.js 62,26 \% vs Python 23,60 \%) & DynamoDB-Write \\
 \hline
 \end{tabular}
 \end{table}
+
+Die größten sprachspezifischen Overhead-Unterschiede treten bei Kaltstarts in der Init Duration (POST-Request) und in der Duration (GET-Request) auf. Bei Warmstarts fallen die Unterschiede insgesamt kleiner aus und konzentrieren sich auf Duration beim GET-Request sowie Max Memory bei DynamoDB-Write. Eine inhaltliche Einordnung dieser Muster erfolgt in Kapitel~\ref{ch:chapter06}.
 
 \subsection{Absolute Messwerte}
 \begin{table}[H]
@@ -164,15 +174,44 @@ Max Memory & 141,00 MB (Java 250,00 vs Python 109,00) & Lambda-Invocation \\
 \end{tabular}
 \end{table}
 
+Für die absoluten Messwerte zeigen die Kaltstarts die größten Abstände in Duration und Init Duration jeweils bei DynamoDB-Write, während die größte Speicher-Differenz bei der Lambdaverkettung auftritt. Bei Warmstarts bleibt die größte Duration-Differenz ebenfalls bei der Lambdaverkettung sichtbar, die größte Speicher-Differenz zeigt sich ebenfalls dort. Die detaillierte Interpretation wird im folgenden Kapitel vorgenommen.
+
 \section{Kostenabschätzung für die instrumentierten Funktionen}
 Die Kosten für die instrumentierten Funktionen wurden auf Basis der Bootstrap-Mediane der 
 absoluten Messwerte mithilfe der in~\ref{sec:kostenmodell} beschriebenen Formel berechnet. 
-Auf Abbildung~\ref{fig:best-prices-main} sind die günstigsten Varianten der 5 Microbenchmarks für 1 Million Anfragen dargestellt.
+Auf Abbildung~\ref{fig:best-prices-main} sind die günstigsten Varianten der 5 Microbenchmarks für 1 Million Anfragen dargestellt. 
+Alle vollständigen Kostenvergleiche pro Benchmarks sind im Anhang zu sehen (siehe Anhang~\ref{app:cost-comparison}).
 \begin{figure}[H]
 \centering
 \caption{Günstigste Varianten der 5 Microbenchmarks für 1 Million Anfragen.}
 \label{fig:best-prices-main}
 \includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_cheapest_per_benchmark_bar.pdf}
 \end{figure}
+Wie man auf der Abbildung sehen kann, ist Python in 4 von 5 Benchmarks die günstigste Variante, während Java in einem Benchmark 
+die günstigste Variante ist (Benchmark 1 - Lambdaverkettung). Node.js ist in keinem Benchmark die günstigste Variante.
 
 \section{Besondere Auffäligkeiten - negative Overheads}
+Bei den Kaltstartmessungen der GET- und POST-Anfragen in Node.js und Python wurden negative Overheads im Bezug auf die Duration-Metrik 
+festgestellt. Das bedeutet, dass die instrumentierten Funktionen schneller ausgeführt wurden als die nicht-instrumentierten. 
+Die Bootstrap-Konfidenzintervalle für diese Overheads schließen die Null nicht ein, was auf statistische Signifikanz hinweist (siehe Anhang~\ref{app:boot:cold}). 
+In Tabelle~\ref{tab:negative-overheads} sind die konkreten Overhead-Werte zu sehen. 
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\caption{Negative Overheads bei Kaltstarts}
+\label{tab:negative-overheads}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Benchmark} & \textbf{Node.js Overhead} & \textbf{Python Overhead} \\
+\hline
+GET-Request & -24,84 \% [-25,29; -24,35] & -10,96 \% [-12,15; -9,78] \\
+\hline
+POST-Request & -22,48 \% [-22,96; -21,99] & -11,23 \% [-12,50; -10,07] \\
+\hline
+\end{tabular}
+\end{table}
+
+Diese Overhead-Werte wurden bei der Erstellung der Ranglisten normal berücksichtigt, da ein kleinerer Wert (auch negativ) einen besseren Platz bedeutet. 
+Dies sollte jedoch nicht als eine allgemeine Verbesserung der Performance durch die Instrumentierung interpretiert werden. Bei der Diskussion 
+der Ergebnisse in Kapitel~\ref{ch:chapter06} wird auf mögliche Ursachen für diese Auffälligkeiten eingegangen.
