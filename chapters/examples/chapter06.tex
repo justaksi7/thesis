@@ -80,7 +80,7 @@ Python den geringsten Overhead hat, gefolgt von Java, während Node.js den höch
 
 \subsection{Vergleich mit Rodriguez et al. (2024)}
 
-Rodriguez et al.~\cite{z20Rodrigue24Evaluation} verglichen die absolute Performance von Java, Python und Node.js auf AWS Lambda ohne 
+Rodriguez et al.~\cite{20Rodrigue24Evaluation} verglichen die absolute Performance von Java, Python und Node.js auf AWS Lambda ohne 
 Tracing. Ihre Rangfolge (Python am schnellsten, gefolgt von Node.js, dann Java) wird durch die vorliegende Arbeit für alle synchronen 
 Szenarien bestätigt. Die einzige Ausnahme ist die asynchrone Lambdaverkettung bei Warmstarts - da hat Java die geringste Duration, 
 gefolgt von Node.js und Python. Dieses Muster ist für die Overheads unterschidlich. Generell hat Python den geringsten Overhead, 
@@ -90,28 +90,45 @@ gefolgt von Java, während Node.js den höchsten Overhead aufweist.
 
 \subsection{Leitfrage: Sprachspezifische Unterschiede des Overheads und Implikationen}
 
-Die Ergebnisse zeigen, dass der Performance-Overhead der OpenTelemetry-Instrumentierung zwischen den drei Sprachen erheblich variiert. Python weist den niedrigsten Overhead auf (insbesondere bei Laufzeit und Speicher), Node.js hat bei Kaltstarts extrem hohe Init-Duration-Overheads, und Java liegt beim relativen Overhead im Mittelfeld. Für die Praxis bedeutet dies, dass Python für die meisten serverlosen Anwendungen die beste Wahl ist, wenn minimale Overheads und niedrige Kosten priorisiert werden. Node.js kann bei warmen, latenzkritischen Szenarien (z.~B. HTTP-APIs) konkurrieren, ist jedoch aufgrund der Kaltstartprobleme weniger robust. Java sollte nur dann eingesetzt werden, wenn andere Gründe (z.~B. bestehende Codebasen oder spezifische Bibliotheken) dies erfordern.
+Die Ergebnisse zeigen, dass der Performance-Overhead der OpenTelemetry-Instrumentierung zwischen den drei Sprachen 
+erheblich variiert. Python weist den niedrigsten Overhead auf, Node.js hat bei Kaltstarts extrem hohe Init Duration-Overheads 
+und Java liegt beim relativen Overhead im Mittelfeld. Es ist zu betonen, dass die niedrigsten Overhead-Werte nicht unbedingt die 
+besten absoluten Performances bedeuten. Python hat bei den Ranglisten der Overheads nur 12 von insgesamt 25 erste Plätze, aber bei 
+den absoluten Performances 24 von 25 erste Plätze. Das zeigt, dass es nicht unbedingt eine Korellation zwischen relativem Overhead 
+und absoluter Performance gibt - zumindest nicht in allen Fällen und nicht proportional.
+Die Implikationen für die Praxis sind, dass die Wahl der Programmiersprache einen erheblichen Einfluss auf die Performance einer 
+AWS-Lambda-Funktion mit Opentelemetry-Instrumentierung hat. Python ist in allen fällen der synchronen Benchmarks die performanteste 
+Option, während bei der asynchronen Lambdaverkettung Java die beste Performance und die niedrigsten Kosten bietet. 
 
 \subsection{Teilfrage 1: Prozentualer Overhead in Java, Python und Node.js}
 
-Die medianen prozentualen Overheads (über alle Benchmarks und Metriken) sind:
+Die durchschnittlichen Overheads für die drei Sprachen sind:
 \begin{itemize}
-    \item \textbf{Python:} 18,6\,\% (Duration Combined), 44,5\,\% (Memory Combined), 282,9\,\% (Init Duration Cold)
-    \item \textbf{Node.js:} 36,3\,\% (Duration Combined), 69,7\,\% (Memory Combined), 495,1\,\% (Init Duration Cold)
-    \item \textbf{Java:} 64,2\,\% (Duration Combined), 59,9\,\% (Memory Combined), 214,5\,\% (Init Duration Cold)
+\item \textbf{Python:} Init Duration 288,21 \%, Duration 6,83 \%, Max Memory Used 44,47 \%
+\item \textbf{Java:} Init Duration 214,48 \%, Duration 106,52 \%, Max Memory Used 59,73 \%
+\item \textbf{Node.js:} Init Duration 495,03 \%, Duration 47,78 \%, Max Memory Used 74,94 \%
 \end{itemize}
-Die vollständige Aufschlüsselung nach Benchmarks und Starttypen findet sich im Anhang (siehe Tabellen~\ref{app:raw:cold} bis~\ref{app:boot:hot}).
+bei Kaltstarts und 
+\begin{itemize}
+\item \textbf{Python:} Duration 30,44 \%, Max Memory Used 44,70 \%
+\item \textbf{Java:} Duration 21,85 \%, Max Memory Used 60,13 \%
+\item \textbf{Node.js:} Duration 24,93 \%, Max Memory Used 64,34 \%
+\end{itemize}
+bei Warmstarts.
+Die vollständige Aufschlüsselung nach Benchmarks und Metriken findet sich im Anhang (siehe Tabellen~\ref{app:raw:cold} bis~\ref{app:boot:hot}).
 
 \subsection{Teilfrage 2: Anwendungsfälle mit den größten sprachspezifischen Unterschieden}
 
-Die größten Unterschiede (basierend auf Tabelle~\ref{res:ranking-largest-differences-overhead} und~\ref{res:ranking-largest-differences-absolute}) treten bei Kaltstarts auf:
+Die größten sprachspezifischen Unterschiede sind:
 \begin{itemize}
-    \item \textbf{Init Duration:} POST-Request – Node.js hat einen 520,7\,\% höheren Overhead als Java.
-    \item \textbf{Duration:} GET-Request – Java hat einen 245,5\,\% höheren Overhead als Node.js.
-    \item \textbf{Max Memory:} DynamoDB-Write – Node.js hat einen 43,4\,\% höheren Overhead als Python.
-    \item \textbf{Absolut (Duration):} DynamoDB-Write – Java ist 1800,8 ms langsamer als Python.
+    \item \textbf{Init Duration:} POST-Request – Node.js hat einen 520,70\,\% höheren Overhead als Java.
+    \item \textbf{Duration:} GET-Request – Java hat einen 245,54\,\% höheren Overhead als Node.js.
+    \item \textbf{Max Memory:} DynamoDB-Write – Node.js hat einen 43,39\,\% höheren Overhead als Python.
 \end{itemize}
-Bei Warmstarts sind die Unterschiede kleiner, aber immer noch signifikant (z.~B. Duration GET-Request: Python 45,0\,\%, Node.js 17,8\,\%).
+bei den Kaltstarts und \begin{itemize}
+    \item \textbf{Duration:} GET-Request – Python hat einen 27,19\,\% höheren Overhead als Node.js.
+    \item \textbf{Max Memory:} DynamoDB-Write – Node.js hat einen 38,26\,\% höheren Overhead als Python.
+\end{itemize}
 
 \subsection{Teilfrage 3: Praxisempfehlungen zur Sprach- und Konfigurationswahl}
 
@@ -138,4 +155,9 @@ Die vorliegende Studie unterliegt mehreren Einschränkungen, die bei der Interpr
 
 \section{Zusammenfassung der Diskussion}
 
-Zusammenfassend zeigt die Studie, dass Python die konsistent beste Wahl für serverlose Anwendungen mit OpenTelemetry ist. Node.js kann in warmen, einfachen HTTP-Szenarien konkurrieren, leidet aber unter extrem hohen Kaltstart-Overheads. Java ist absolut gesehen die langsamste Sprache, hat aber einen moderaten relativen Overhead. Die Ergebnisse erweitern die Erkenntnisse von Eder et al.~\cite{Eder2023Comparison} um die sprachspezifische Dimension und bestätigen die absoluten Performancetrends von Rodriguez et al.~\cite{Rodriguez2024Evaluation}. Die Limitationen der Arbeit bieten Ansatzpunkte für zukünftige Forschungsarbeiten, die in Kapitel~\ref{ch:chapter07} diskutiert werden.
+Zusammenfassend zeigt die Studie, dass Python die konsistent beste Wahl für AWS-Lambda-Anwendungen mit OpenTelemetry ist. 
+Node.js ist stets die zwitbeste Wahl, leidet aber unter extrem hohen Kaltstart-Overheads. Java ist absolut gesehen die Sprache mit 
+der schlechtesten Performance, hat aber einen moderaten relativen Overhead. Die Ergebnisse erweitern die Erkenntnisse von 
+Eder et al.~\cite{Eder2023Comparison} um die sprachspezifische Dimension für OpenTelemetry und bestätigen die absoluten 
+Performancetrends von Rodriguez et al.~\cite{Rodriguez2024Evaluation}. Die Limitationen der Arbeit bieten Ansatzpunkte für 
+zukünftige Forschungsarbeiten, die in Kapitel~\ref{ch:chapter07} diskutiert werden.
