@@ -80,7 +80,7 @@ Python den geringsten Overhead hat, gefolgt von Java, während Node.js den höch
 
 \subsection{Vergleich mit Rodriguez et al. (2024)}
 
-Rodriguez et al.~\cite{20Rodrigue24Evaluation} verglichen die absolute Performance von Java, Python und Node.js auf AWS Lambda ohne 
+Rodriguez et al.~\cite{Rodriguez2024Evaluation} verglichen die absolute Performance von Java, Python und Node.js auf AWS Lambda ohne 
 Tracing. Ihre Rangfolge (Python am schnellsten, gefolgt von Node.js, dann Java) wird durch die vorliegende Arbeit für alle synchronen 
 Szenarien bestätigt. Die einzige Ausnahme ist die asynchrone Lambdaverkettung bei Warmstarts - da hat Java die geringste Duration, 
 gefolgt von Node.js und Python. Dieses Muster ist für die Overheads unterschidlich. Generell hat Python den geringsten Overhead, 
@@ -118,8 +118,7 @@ bei Warmstarts.
 Die vollständige Aufschlüsselung nach Benchmarks und Metriken findet sich im Anhang (siehe Tabellen~\ref{app:raw:cold} bis~\ref{app:boot:hot}).
 
 \subsection{Teilfrage 2: Anwendungsfälle mit den größten sprachspezifischen Unterschieden}
-
-Die größten sprachspezifischen Unterschiede sind:
+Die größten sprachspezifischen Unterschiede in den Overheads sind:
 \begin{itemize}
     \item \textbf{Init Duration:} POST-Request – Node.js hat einen 520,70\,\% höheren Overhead als Java.
     \item \textbf{Duration:} GET-Request – Java hat einen 245,54\,\% höheren Overhead als Node.js.
@@ -129,6 +128,20 @@ bei den Kaltstarts und \begin{itemize}
     \item \textbf{Duration:} GET-Request – Python hat einen 27,19\,\% höheren Overhead als Node.js.
     \item \textbf{Max Memory:} DynamoDB-Write – Node.js hat einen 38,26\,\% höheren Overhead als Python.
 \end{itemize}
+bei den Warmstarts.
+
+Die größten sprachspezifischen Unterschiede in den absoluten Messwerten mit OpenTelemetry sind:
+\begin{itemize}
+\item \textbf{Init Duration:} DynamoDB-Write – Java weist einen um 3129,38,ms höheren Medianwert auf als Python.
+\item \textbf{Duration:} DynamoDB-Write – Java weist einen um 1800,79,ms höheren Medianwert auf als Python.
+\item \textbf{Max Memory:} Lambda-Invocation – Java weist einen um 142,00,MB höheren Medianwert auf als Python.
+\end{itemize}
+bei den Kaltstarts und
+\begin{itemize}
+\item \textbf{Duration:} Lambda-Invocation – Python weist einen um 14,73,ms höheren Medianwert auf als Java.
+\item \textbf{Max Memory:} Lambda-Invocation – Java weist einen um 141,00,MB höheren Medianwert auf als Python.
+\end{itemize}
+bei den Warmstarts.
 
 \subsection{Teilfrage 3: Praxisempfehlungen zur Sprach- und Konfigurationswahl}
 
