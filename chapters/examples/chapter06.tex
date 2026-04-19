@@ -1,7 +1,10 @@
 ﻿\chapter{Diskussion der Ergebnisse}
 \label{ch:chapter06}
 
-In diesem Kapitel werden die in Kapitel~\ref{ch:chapter05} vorgestellten Ergebnisse eingeordnet und interpretiert. Zunächst werden die zentralen Befunde zu den sprachspezifischen Overheads und absoluten Performances diskutiert. Anschließend folgt ein Vergleich mit den verwandten Arbeiten aus Kapitel~\ref{ch:chapter03}. Danach werden die Forschungsfragen beantwortet und die Limitationen der Studie reflektiert. Abschließend werden konkrete Praxisempfehlungen abgeleitet.
+In diesem Kapitel werden die in Kapitel~\ref{ch:chapter05} vorgestellten Ergebnisse eingeordnet und interpretiert. 
+Zunächst werden die zentralen Befunde zu den sprachspezifischen Overheads und absoluten Performances diskutiert. 
+Anschließend folgt ein Vergleich mit den verwandten Arbeiten aus Kapitel~\ref{ch:chapter03}. Danach werden die Forschungsfragen 
+beantwortet und konkrete Praxisempfehlungen abgeleitet.
 
 \section{Interpretation der zentralen Ergebnisse}
 
@@ -28,25 +31,34 @@ Die Rangliste der absoluten Messwerte mit OTel (Tabelle~\ref{res:ranking-with-ot
 Python ist die schnellste und speichereffizienteste Sprache (24 erste Plätze von 25). Node.js folgt auf dem zweiten Platz 
 (24 zweite Plätze), Java ist am langsamsten (23 dritte Plätze). Das ist konsistent mit den Ergebnissen von Rodriguez et 
 al.~\cite{Rodriguez2024Evaluation}, die ebenfalls Python als die Sprache mit der besten Performance auf AWS Lambda identifiziert haben. 
-Interessant ist der einzige Fall, in dem Python nicht den ersten Platz belegt: Bei Warmstarts der Duration erreicht Java einmal 
-den ersten Platz (Bei Benchmark 1 - Lambdaverkettung). 
+Interessant ist der einzige Fall, in dem Python nicht den ersten Platz belegt. Bei Warmstarts der Duration erreicht Java einmal 
+den ersten Platz (Benchmark 1 - Lambdaverkettung). 
 
 Eine mögliche Erklärung für die insgesamt beste Performance von Python wäre, dass die Standardbibliothek für HTTP-Anfragen urllib3 sehr viele in C 
 implementierte Module auf TLS- / SSL-Ebene verwendet~\cite{Urllib3}. Die AWS-SDKs für Python verwenden stets die urllib3-Bibliothek~\cite{Boto3}. 
 Die schlechteste Duration von Python bei der Lambdaverkettung könnte auf die synchrone Natur von Python 
 zurückzuführen sein. Während Node.js und Java die Lambdaverkettung asynchron implenetieren können, wird 
-bei Python ein Thread-basierter HTTP-Client-Stack verwendet und keine asynchrone Verarbeitung~\cite{Boto3}. 
-\subsection{Negative Overheads – Artefakt oder echte Beschleunigung?}
+bei Python ein Thread-basierter HTTP-Client-Stack verwendet und das ist keine asynchrone Verarbeitung~\cite{Boto3}. 
+\subsection{Negative Overheads}
 
-Bei Kaltstarts der HTTP-Benchmarks wurden für Node.js und Python negative prozentuale Overheads gemessen (Tabelle~\ref{tab:negative-overheads}). Das bedeutet, dass die instrumentierten Funktionen schneller waren als die nicht-instrumentierten. Die Bootstrap-Konfidenzintervalle schließen die Null aus, die Effekte sind also statistisch signifikant.
+Bei Kaltstarts der HTTP-Benchmarks wurden für Node.js und Python negative prozentuale Overheads gemessen 
+(Tabelle~\ref{tab:negative-overheads}). Das bedeutet, dass die instrumentierten Funktionen schneller waren als die 
+nicht-instrumentierten. Jede Messung wurde in mindestens 10 Batches durchgeführt und die Bootstrap-Konfidenzintervalle 
+schließen die Null aus, die Effekte sind also statistisch signifikant.
+Eine Beschleunigung durch zusätzliche Instrumentierung erscheint auf den ersten Blick paradox. Es gibt jedoch eine 
+sehr plausible Erklärung für dieses Phänomen.
 
-Eine Beschleunigung durch zusätzliche Instrumentierung erscheint auf den ersten Blick paradox. Mögliche Erklärungen sind:
-\begin{itemize}
-    \item \textbf{Kaltstart-Varianz:} Die Initialisierungszeit einer Lambda-Funktion kann selbst unter identischen Bedingungen schwanken. Es ist möglich, dass die instrumentierten Funktionen in der Stichprobe zufällig geringfügig günstigere CPU-Zuteilungen erhielten.
-    \item \textbf{ADOT-Optimierung:} Der ADOT-Layer beinhaltet eine lokale, abgespeckte Version des OpenTelemetry-Collectors~\cite{AWSADOTLambdaJS}. Dieser Collector kann mit einem \emph{decouple}-Prozessor ausgestattet sein, der den Empfang von Telemetriedaten vom Export an das Backend entkoppelt und mit dem AWS-Lambda-Lebenszyklus synchronisiert~\cite{OTelCollectorExtension}. Dies ermöglicht es der Lambda-Funktion, zu beenden, noch bevor alle Daten exportiert wurden. Beim nächsten Aufruf (warm oder kalt) setzt der Collector den Export fort, was die für das Tracing relevante Latenz reduzieren und möglicherweise die gemessene „Duration“ für die instrumentierte Funktion im Vergleich zur nicht-instrumentierten Baseline verbessern könnte~\cite{ParkerYoung2025OpenTelemetry}.
-    \item \textbf{Messrauschen:} Die absoluten Laufzeiten sind sehr kurz (im Bereich von 5–10 ms). Bereits kleinste Messungenauigkeiten können zu negativen prozentualen Werten führen.
-\end{itemize}
-Für die Praxis sind diese negativen Overheads irrelevant, da sie nur bei sehr kurzen Funktionen auftreten und die absoluten Einsparungen im Sub-Millisekundenbereich liegen.
+OpenTelemetry nutzt das \ac{OTLP}, um Telemetrie-Daten von der Lambda-Funktion an das Backend zu 
+senden~\cite{OTelProtoSpec}. Das Protokoll selbst basiert zum Teil auf HTTP und wärmt bei der 
+Initialisierungsphase (Init Duration) die HTTP-Stacks auf. Da bei den HTTP-Benchmarks keine 
+AWS-SDKs verwendet weden, findet bei der Initialisierung kein Aufwärmen der HTTP-Stacks statt. 
+Das führt zu längeren Durations bei den nicht-instrumentierten Funktionen, da die HTTP-Stacks 
+erst beim ersten Request initialisiert werden müssen. Das kann auch an den Overheads der 
+Init-Duration-Metrik von Node.js und Python erkannt werden, die bei den HTTP-Benchmarks absolut am 
+höchsten sind (siehe Tabelle~\ref{app:boot-abs-init-cold}).
+
+Für die Praxis sind diese negativen Overheads irrelevant, da sie nur bei den ersten Funktionsaufrufen 
+auftreten (Kaltstarts).
 
 \subsection{Kostenanalyse – Python dominiert}
 
