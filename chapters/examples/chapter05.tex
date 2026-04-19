@@ -182,8 +182,10 @@ Für die absoluten Messwerte zeigen die Kaltstarts die größten Abstände in Du
 \section{Kostenabschätzung für die instrumentierten Funktionen}
 Die Kosten für die instrumentierten Funktionen wurden auf Basis der Bootstrap-Mediane der 
 absoluten Messwerte mithilfe der in~\ref{sec:kostenmodell} beschriebenen Formel berechnet. 
+Die Preisberechnungen wurden mit der Annahme von einem durchgehenden Traffic, wie z. B. während 
+der üblichen Geschäftszeiten (8 bis 18 Uhr) durchgeführt.
 Auf Abbildung~\ref{fig:best-prices-main} sind die günstigsten Varianten der 5 Microbenchmarks für 1 Million Anfragen dargestellt. 
-Alle vollständigen Kostenvergleiche pro Benchmarks sind im Anhang zu sehen (siehe Anhang~\ref{app:cost-comparison}).
+Alle vollständigen Kostenvergleiche aufgeschlüsselt nach Benchmarks sind im Anhang zu finden (siehe Anhang~\ref{app:cost-comparison}).
 \begin{figure}[H]
 \centering
 \caption{Günstigste Varianten der 5 Microbenchmarks für 1 Million Anfragen.}
@@ -193,6 +195,15 @@ Alle vollständigen Kostenvergleiche pro Benchmarks sind im Anhang zu sehen (sie
 Wie man auf der Abbildung sehen kann, ist Python in 4 von 5 Benchmarks die günstigste Variante, während Java in einem Benchmark 
 die günstigste Variante ist (Benchmark 1 - Lambdaverkettung). Node.js ist in keinem Benchmark die günstigste Variante.
 
+Auf der unten stehenden Abbildung~\ref{fig:prices-all-main} sind die Kosten aller Varianten der 5 Microbenchmarks für 1 Million Anfragen dargestellt.
+\begin{figure}[H]
+\centering
+\caption{Preisvergleich aller Funktionen für 1 Million Anfragen.}
+\label{fig:prices-all-main}
+\includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_all_functions_bar.pdf}
+\end{figure}
+Wie es auf der Abbildung zu sehen ist, sind die Kosten für 1 Million Anfragen bei einigen Benchmarks nicht weit von einander entfernt, 
+es wird jedoch in Kapitel~\ref{ch:chapter06} eine genauere Analyse der Kostenunterschiede vorgenommen.
 \section{Besondere Auffäligkeiten - negative Overheads}
 Bei den Kaltstartmessungen der GET- und POST-Anfragen in Node.js und Python wurden negative Overheads im Bezug auf die Duration-Metrik 
 festgestellt. Das bedeutet, dass die instrumentierten Funktionen schneller ausgeführt wurden als die nicht-instrumentierten. 

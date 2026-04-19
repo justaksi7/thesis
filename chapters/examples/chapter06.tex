@@ -61,7 +61,7 @@ Für die Praxis sind diese negativen Overheads irrelevant, da sie nur bei den er
 auftreten (Kaltstarts).
 
 \subsection{Kostenanalyse}
-
+\label{subsec:kosten-analyse}
 Die Kostenabschätzung (Abbildung~\ref{fig:best-prices-main}) zeigt, dass Python bei 4 von 5 Benchmarks die günstigste Sprache ist. 
 Java ist nur bei der Lambdaverkettung die günstigste Option. Da die Kosten direkt proportional zur Laufzeit und Speicherzuweisung sind (GB-Sekunden), 
 spiegelt dies die absolute Performance wider. Die konfigurierte Speichergröße dient als Multiplikator für den Preis pro GB-Sekunde - 
@@ -122,55 +122,45 @@ Die größten sprachspezifischen Unterschiede in den Overheads sind:
 \begin{itemize}
     \item \textbf{Init Duration:} POST-Request – Node.js hat einen 520,70\,\% höheren Overhead als Java.
     \item \textbf{Duration:} GET-Request – Java hat einen 245,54\,\% höheren Overhead als Node.js.
-    \item \textbf{Max Memory:} DynamoDB-Write – Node.js hat einen 43,39\,\% höheren Overhead als Python.
+    \item \textbf{Max Memory Used:} DynamoDB-Leseoperation – Node.js hat einen 43,39\,\% höheren Overhead als Python.
 \end{itemize}
 bei den Kaltstarts und \begin{itemize}
     \item \textbf{Duration:} GET-Request – Python hat einen 27,19\,\% höheren Overhead als Node.js.
-    \item \textbf{Max Memory:} DynamoDB-Write – Node.js hat einen 38,26\,\% höheren Overhead als Python.
+    \item \textbf{Max Memory Used:} DynamoDB-Leseoperation – Node.js hat einen 38,26\,\% höheren Overhead als Python.
 \end{itemize}
 bei den Warmstarts.
 
 Die größten sprachspezifischen Unterschiede in den absoluten Messwerten mit OpenTelemetry sind:
 \begin{itemize}
-\item \textbf{Init Duration:} DynamoDB-Write – Java weist einen um 3129,38,ms höheren Medianwert auf als Python.
-\item \textbf{Duration:} DynamoDB-Write – Java weist einen um 1800,79,ms höheren Medianwert auf als Python.
-\item \textbf{Max Memory:} Lambda-Invocation – Java weist einen um 142,00,MB höheren Medianwert auf als Python.
+\item \textbf{Init Duration:} DynamoDB-Leseoperation – Java weist einen um 3129,38,ms höheren Medianwert auf als Python.
+\item \textbf{Duration:} DynamoDB-Leseoperation – Java weist einen um 1800,79,ms höheren Medianwert auf als Python.
+\item \textbf{Max Memory Used:} Lambda-Verkettung – Java weist einen um 142,00,MB höheren Medianwert auf als Python.
 \end{itemize}
 bei den Kaltstarts und
 \begin{itemize}
-\item \textbf{Duration:} Lambda-Invocation – Python weist einen um 14,73,ms höheren Medianwert auf als Java.
-\item \textbf{Max Memory:} Lambda-Invocation – Java weist einen um 141,00,MB höheren Medianwert auf als Python.
+\item \textbf{Duration:} Lambda-Verkettung – Python weist einen um 14,73,ms höheren Medianwert auf als Java.
+\item \textbf{Max Memory Used:} Lambda-Verkettung – Java weist einen um 141,00,MB höheren Medianwert auf als Python.
 \end{itemize}
 bei den Warmstarts.
 
 \subsection{Teilfrage 3: Praxisempfehlungen zur Sprach- und Konfigurationswahl}
+Die Ergebnisse der Arbeit legen nahe, dass die die Duration-Metrik der wichtigste Kostentreiber 
+ist. Wie bereits in Abschnitt~\ref{subsec:kosten-analyse} erwähnt, haben die Funktionen mit der kürzesten Duration auch die 
+niedrigsten Kosten. Daher sind die Empfehlungen für die Praxis eindeutig. Für die synchronen Benchmarks HTTP-GET, HTTP-POST, DynamoDB-Leseoperation und DynamoDB-Schreiboperation
+ist Python die beste Wahl, da es die beste Performance und die niedrigsten Kosten bietet. Für die asynchrone Lambdaverkettung 
+ist Java die beste Option. Außerdem hat Python mit den niedrigsten Initialisierungszeiten die schnellsten Antwortzeiten sowohl bei 
+Kalt- als auch bei Warmstarts. Die Preisunterschiede zwischen den Sprachen sind für eine Million sind bei den meisten Benchmarks 
+relativ gering. Das ändert sich jedoch mit wachsenden Aufrufzahlen. Eine Softwarearchitektur besteht üblicherweise aus mehr als nur 
+einer Lambda-Funktion. Daher können die Kostenunterschiede bei mehreren Funktionen schnell größer werden. Um diesen Effekt zu visualisieren, 
+ist auf der unten stehenden Abbildung~\ref{fig:dynamodb-cost-ch06} beispielhaft die Kostenabschätzung für die DynamoDB-Leseoperation dargestellt. 
 
-\begin{itemize}
-    \item \textbf{Allgemein:} Verwenden Sie Python für die meisten serverlosen Anwendungen mit OpenTelemetry – es bietet den niedrigsten Overhead und die niedrigsten Kosten (siehe Abbildung~\ref{fig:best-prices-main}).
-\item \textbf{Latenzempfindliche, warme HTTP-APIs:} Node.js kann eine Alternative sein, da es bei Warmstarts einen geringeren Overhead als Python haben kann (z.~B. GET-Request: 17,8\,\% vs. 45,0\,\%). Allerdings sind die absoluten Laufzeiten von Python immer noch niedriger.
-    \item \textbf{Kaltstart-kritische Anwendungen:} Vermeiden Sie Node.js, da die Init-Duration-Overheads extrem hoch sind. Python ist auch hier die beste Wahl.
-    \item \textbf{Speicherhungrige Funktionen:} Python hat den geringsten Speicher-Overhead (ca. 44\,\%), gefolgt von Java (60\,\%) und Node.js (70\,\%).
-\item \textbf{Konfiguration:} Die Verwendung des ADOT-Layers mit 100\,\% Sampling ist für Messungen geeignet. In der Produktion kann ein niedrigeres Sampling (z.~B. 5\,\%) die Overheads reduzieren, ohne die Aussagekraft zu stark zu beeinträchtigen.
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{gfx/examples/dynamodb-read_costs_intervals.pdf}
+\caption{Kostenabschätzung für die DynamoDB-Leseoperation.}
+\label{fig:dynamodb-cost-ch06}
+\end{figure}
 
-\section{Limitationen der Arbeit}
-
-Die vorliegende Studie unterliegt mehreren Einschränkungen, die bei der Interpretation berücksichtigt werden müssen:
-
-\begin{itemize}
-    \item \textbf{Plattformbindung:} Alle Experimente wurden ausschließlich auf AWS Lambda durchgeführt. Die Ergebnisse sind nicht ohne Weiteres auf andere FaaS-Plattformen (Azure Functions, Google Cloud Functions) übertragbar.
-    \item \textbf{Speicherkonfiguration:} Es wurde nur eine Speichergröße (1024 MB) verwendet. Der Overhead könnte bei anderen Speicherstufen variieren (siehe Rodriguez et al.~\cite{Rodriguez2024Evaluation}).
-    \item \textbf{Keine Variation des Samplings:} Es wurde Head Sampling mit 100\,\% verwendet. Tail Sampling oder niedrigere Raten könnten andere Overhead-Charakteristiken aufweisen~\cite{OpenTelemetrySampling}.
-    \item \textbf{Benchmark-Abdeckung:} Die fünf Microbenchmarks decken die häufigsten, aber nicht alle möglichen Anwendungsfälle ab. Insbesondere rechenintensive oder I/O-intensive Funktionen wurden nicht getestet.
-    \item \textbf{Kaltstart-Definition:} Kaltstarts wurden durch wiederholtes Redeployment erzwungen. In realen Szenarien können Kaltstarts seltener auftreten, aber auch unvorhersehbarer sein.
-    \item \textbf{Statistische Unsicherheit:} Trotz Bonferroni-Korrektur bleibt das Risiko von Fehlern 1. Art aufgrund der Vielzahl der Tests bestehen. Die Bootstrap-Konfidenzintervalle sind jedoch robust~\cite{Efron1994Introduction}.
-\end{itemize}
-
-\section{Zusammenfassung der Diskussion}
-
-Zusammenfassend zeigt die Studie, dass Python die konsistent beste Wahl für AWS-Lambda-Anwendungen mit OpenTelemetry ist. 
-Node.js ist stets die zwitbeste Wahl, leidet aber unter extrem hohen Kaltstart-Overheads. Java ist absolut gesehen die Sprache mit 
-der schlechtesten Performance, hat aber einen moderaten relativen Overhead. Die Ergebnisse erweitern die Erkenntnisse von 
-Eder et al.~\cite{Eder2023Comparison} um die sprachspezifische Dimension für OpenTelemetry und bestätigen die absoluten 
-Performancetrends von Rodriguez et al.~\cite{Rodriguez2024Evaluation}. Die Limitationen der Arbeit bieten Ansatzpunkte für 
-zukünftige Forschungsarbeiten, die in Kapitel~\ref{ch:chapter07} diskutiert werden.
+Ein wichtiger Hinweis für die Praxis ist, dass je kleiner der Traffic ist, desto weniger relevant die Wahl der Sprache für die Kosten ist. 
+Anwendungen mit geringerem Traffic können daher den Kosten-Trade-off zugunsten anderer Faktoren wie Entwicklerproduktivität, Vertrautheit 
+mit der Sprache, vorhandene Codebasen oder andere Aspekte eingehen.
