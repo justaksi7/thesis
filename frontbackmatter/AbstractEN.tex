@@ -6,13 +6,19 @@
 
 \begin{otherlanguage}{american}
 	\chapter*{Abstract}
-The motivation for this work is the increasing use of distributed tracing with OpenTelemetry in serverless architectures. While OpenTelemetry is very useful for monitoring distributed systems, it also causes a significant performance overhead in terms of runtime, memory, and cold start times. However, there has been no systematic investigation so far of how this overhead affects different programming languages.
+This work investigated the language-specific performance overhead of OpenTelemetry in AWS 
+Lambda for Java, Python, and Node.js.
+Based on five microbenchmarks, instrumented and non-instrumented functions were compared in 
+a controlled environment.
+The performance metrics runtime, memory consumption, and initialization times were measured and 
+statistically evaluated.
 
-This work investigates and empirically evaluates the language-specific overhead of OpenTelemetry in AWS Lambda for Java, Python, and Node.js.
-Instrumented and non-instrumented functions are compared based on five microbenchmarks which represent the five most 
-common use cases of a FaaS (Function as a Service).
-The performance metrics runtime, memory consumption, and cold start times are measured in a controlled environment and statistically evaluated 
-with regards to the five microbenchmarks.
+The results show that Python has the lowest overhead, 
+followed by Java and Node.js. Node.js causes extremely high overheads, particularly in Init Duration.
+In absolute performance, Python is the fastest language in nearly all scenarios.
+A cost analysis confirms that Python is the most economical option in 4 out of 5 benchmarks, 
+while Java is only more cost-effective for asynchronous Lambda invocation.
 
-The results of this work will be included here after completion of the experiments.
+For practical applications, Python is recommended for most synchronous use cases, while Java remains 
+competitive in asynchronous Lambda chaining scenarios.
 \end{otherlanguage}

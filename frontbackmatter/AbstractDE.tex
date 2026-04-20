@@ -4,21 +4,20 @@
 \begin{otherlanguage}{ngerman}
 	\pdfbookmark[0]{Zusammenfassung}{Zusammenfassung}
 	\chapter*{Zusammenfassung}
-Die Motivation für diese Arbeit ist der zunhemnede Einsatz von verteiltem Tracing mit OpenTelemetry in 
-serverlosen Architekturen. Während OpenTelemetry sehr nützlich für das Monitoring verteilter Systeme ist, verursacht 
-es auch einen erheblichen Performance-Overhead im Bezug auf Laufzeit, Speicher und Kaltstartzeiten. 
-Bisher gibt es jedoch keine systematische Untersuchung, wie sich dieser Overhead auf verschiedene Programmiersprachen 
-auswirkt.
-\\
-In dieser Arbeit wird der sprachspezifische Overhead von OpenTelemetry in AWS Lambda für Jave, Python und Node.js
-untersucht und empirisch evaluiert.
-Auf basis von fünf Microbenchmarks, die die fünf häufigsten Anwendungsfälle von FaaS (Function as a Service) repräsentieren 
-werden instrumentierte 
-und nicht-instrumentierte Funktionen verglichen.
-Die Performance-Metriken Laufzeit, Speicherverbrauch und Kaltstartzeiten werden in einer kontrollierten Umgebung im
-Bezug auf die fünf Microbenchmarks gemessen und statistisch ausgewertet.
-\\
-Die Ergebnisse der Arbeit werden nach Abschluss der Experimente hier eingefügt.
+Diese Arbeit untersuchte den sprachspezifischen Performance-Overhead von OpenTelemetry in AWS 
+Lambda für Java, Python und Node.js. 
+Basierend auf fünf Microbenchmarks wurden instrumentierte und nicht-instrumentierte Funktionen in 
+einer kontrollierten Umgebung verglichen. 
+Die Performance-Metriken Laufzeit, Speicherverbrauch und Initialisierungszeiten wurden gemessen und 
+statistisch ausgewertet.
 
+Die Ergebnisse zeigen, dass Python den geringsten Overhead aufweist, 
+gefolgt von Java und Node.js. Node.js verursacht insbesondere bei der Init Duration extrem hohe Overheads. 
+In der absoluten Performance ist Python in nahezu allen Szenarien die schnellste Sprache. 
+Eine Kostenanalyse bestätigt, dass Python in 4 von 5 Benchmarks die günstigste Option ist, 
+während Java nur bei der asynchronen Lambdaverkettung wirtschaftlicher ist.
+
+Für die Praxis empfiehlt sich Python für die meisten synchronen Anwendungsfälle, während Java bei 
+asynchronen Aufrufen von Lambda konkurrenzfähig ist.
 
 \end{otherlanguage}
