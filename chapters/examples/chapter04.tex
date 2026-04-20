@@ -15,7 +15,7 @@ die auf einer umfassenden Analyse der häufigsten Anwendungsfälle von AWS Lambd
 basieren.
 
 
-Alle fünf Benchmarks werden in den drei zu untersuchenden Sprachen Java, Python und NodeJS implementiert. 
+Alle fünf Benchmarks werden in den drei zu untersuchenden Sprachen Java, Python und Node.js implementiert. 
 Die Funktionalität ist dabei jeweils identisch. Der Kern der Funktion besteht ausschließlich aus dem Aufruf der 
 entsprechenden AWS-SDK-Methode, um den Overhead der Geschäftslogik minimal zu halten und den Instrumentierungsoverhead 
 möglichst gut zu isolieren.
@@ -74,7 +74,7 @@ verschiedenen Funktionen verfälscht.
 Für die Implementierung wurden ausschließlich die offiziellen AWS SDKs und Standardbibliotheken für HTTP-Requests für alle 3 
 Sprachen verwendet. Für jeden AWS-Dienst (Lambda, DynamoDB usw.) gibt es ein separates SDK-Modul in den jeweiligen Sprachen 
 und für jede Sprache und Region gibt es eine dedizierte ADOT-Lambda-Layer, die über den \ac{ARN} referenziert wird.
-Eine detailierte Übersicht über die \textbf{importierten} \footnote{Bibliotheken und SDKs, 
+Eine detaillierte Übersicht über die \textbf{importierten} \footnote{Bibliotheken und SDKs, 
 die in den jeweiligen Sprachen bereits integriert sind (wie z. B. fetch in NodeJS) wurden hier nicht aufgeführt. 
 Die vollständigen Implementierungen sind im GitHub-Repository unter \url{https://github.com/justaksi7/opentelemetry-overhead-java-nodejs-python/} verfügbar.} 
 Bibliotheken und SDKs für die Implementierungen ist in 

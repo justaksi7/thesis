@@ -8,7 +8,7 @@ Limitationen diskutiert und ein Ausblick auf mögliche weiterführende Fragestel
 
 Die vorliegende Arbeit analysierte die sprachspezifischen Performanceveränderungen durch OpenTelemetry in AWS-Lambda-Funktionen für Java, 
 Python und Node.js. Dazu wurden fünf praxisnahe Microbenchmarks jeweils in instrumentierter und nicht instrumentierter Variante 
-unter kontrollierten Bedingungen gemessen. Die Auswertung erfolgte auf Basis von Bootstrap-Resampling und Konfidenzintervallen .
+unter kontrollierten Bedingungen gemessen. Die Auswertung erfolgte auf Basis von Bootstrap-Resampling und Konfidenzintervallen.
 
 Die Ergebnisse zeigen konsistent, dass Python den geringsten relativen Overhead hat, gefolgt von Java, während Node.js vor allem 
 wegen hoher Init-Durations bei Kaltstarts am schwächsten abschneidet. Auch in der absoluten Performance mit OpenTelemetry liegt 
@@ -28,7 +28,7 @@ durch andere Forschende ermöglicht.
 \section{Limitationen der Arbeit}
 
 Die vorliegende Studie ist durch mehrere Faktoren eingeschränkt. Alle Experimente wurden ausschließlich auf AWS Lambda durchgeführt, 
-sodass sich die Erkentnisse nicht ohne Weiteres auf andere FaaS-Plattformen wie Azure Functions oder Google Cloud Functions übertragen 
+sodass sich die Erkenntnisse nicht ohne Weiteres auf andere FaaS-Plattformen wie Azure Functions oder Google Cloud Functions übertragen 
 lassen. Zudem wurde nur eine Speichergröße von 1024 MB verwendet, obwohl der verfügbare Speicher Laufzeit und Kaltstartverhalten 
 erheblich beeinflussen kann, insbesondere bei Java~\cite{Rodriguez2024Evaluation}. Auch die Analyse bleibt auf Head Sampling mit einer 
 Rate von 100\,\% beschränkt. Schließlich decken die fünf Microbenchmarks zwar zentrale Anwendungsfälle ab, bilden aber weder 

@@ -1,7 +1,7 @@
 ﻿\chapter{Theoretische Grundlagen}
 \label{ch:chapter02}
 
-In diesem Kapitel werden die wesentlichen theoretischen Grundlagen vorgestellt, die für das Verständnis dieser Arbeit notwendig sind. Zunächst werden die grundlegenden Konzepte von Cloud Computing und Microservices-Architektur erläutert, um die Ausgangslage verteilter Systeme zu verstehen. Darauffolgend werden Serverless-Computing und \ac{FaaS} erläutert, wobei \ac{AWS} als konkrete Plattform und \ac{AWS} Lambda als konkrete \ac{FaaS}-Implementierung im Mittelpunkt stehen. Anschließend werden Observability, Distributed Tracing, OpenTelemetry und die \ac{ADOT} vorgestellt. Abschließend werden Cloud-Ressourcen und -Dienste von \ac{AWS} wie z. B. \ac{AWS} CloudWatch, \ac{AWS} X‑Ray beschrieben, die für die Implementierung und Evaluierung der in dieser Arbeit vorgeschlagenen Lösung relevant sind.
+In diesem Kapitel werden die wesentlichen theoretischen Grundlagen vorgestellt, die für das Verständnis dieser Arbeit notwendig sind. Zunächst werden die grundlegenden Konzepte von Cloud Computing und Microservices-Architektur erläutert, um die Ausgangslage verteilter Systeme zu verstehen. Anschließend werden Serverless-Computing und \ac{FaaS} erläutert, wobei \ac{AWS} als konkrete Plattform und \ac{AWS} Lambda als konkrete \ac{FaaS}-Implementierung im Mittelpunkt stehen. Anschließend werden Observability, Distributed Tracing, OpenTelemetry und die \ac{ADOT} vorgestellt. Abschließend werden Cloud-Ressourcen und -Dienste von \ac{AWS} wie z. B. \ac{AWS} CloudWatch, \ac{AWS} X‑Ray beschrieben, die für die Implementierung und Evaluierung der in dieser Arbeit vorgeschlagenen Lösung relevant sind.
 
 \section{Cloud Computing}
 \label{sec:cloud}
@@ -19,7 +19,7 @@ Cloud Computing zeichnet sich durch fünf wesentliche Merkmale aus, die Huawei T
 Cloud-Dienste werden üblicherweise in drei Servicemodelle unterteilt.\\ \ac{IaaS}, \ac{PaaS} und \ac{SaaS}.  
 Da für diese Arbeit nur ein grundlegendes Verständnis von \ac{PaaS} relevant ist, wird das Modell kurz erläutert. 
 \emph{Platform as a Service} stellt eine komplette Entwicklungsumgebung bereit, die die technische Infrastruktur abstrahiert. 
-Nutzer entwickeln und betreiben ihre Anwendungen direkt auf dieser Plattform, ohne sich um Betriebssystemen, Skalierung oder Wartung 
+Nutzer entwickeln und betreiben ihre Anwendungen direkt auf dieser Plattform, ohne sich um Betriebssysteme, Skalierung oder Wartung 
 kümmern zu müssen~\cite{Huawei2023CloudComputing}. 
 Eine besondere Ausprägung von PaaS ist das \ac{FaaS}-Modell. 
 Die in dieser Arbeit untersuchten AWS-Lambda-Funktionen folgen genau diesem FaaS-Modell 
@@ -36,7 +36,7 @@ Für diese Arbeit ist das Zusammenspiel beider Konzepte zentral, weil \ac{FaaS} 
 Microservices sind unabhängige, lose gekoppelte Dienste, die jeweils einen eigenen Bereich der Geschäftslogik einer Anwendung abdecken. 
 Die zentralen Merkmale von Microservices sind, dass sie in unterschiedlichen Programmiersprachen implementiert, separat getestet, gewartet, skaliert und deployed werden können, ohne
 dass die anderen Dienste beeinflusst werden~\cite{Fowler2024Microservices}. Dieser Architekturstil ist relevant, 
-da die Serverless-Technologien und die FaaS-Platformen speziell für die Entwicklung von Microservices konzipiert sind (siehe Abschnitt~\ref{sec:serverless}). 
+da die Serverless-Technologien und die FaaS-Plattformen speziell für die Entwicklung von Microservices konzipiert sind (siehe Abschnitt~\ref{sec:serverless}). 
 Zudem sind die 5 Microbenchmarks typische Beispiele für Microservices (siehe Abschnitt~\ref{subsec:lambda-benchmarks}).
 
 \begin{figure}[H]
@@ -50,11 +50,10 @@ Abbildung~\ref{fig:chapter02:EDA} stellt das obige Konzept der Microservices vis
 
 \subsection{Event-Driven Architecture}
 In einer \ac{EDA} kommunizieren Dienste nicht synchron über \ac{HTTP}-Anfragen, sondern asynchron über Ereignisse~\cite{AWSEventDrivenArchitecture}.
-Der Gedanke hinter \ac{EDA} ist dass Dienste lose gekoppelt sind und dass sie auf Ereignisse reagieren, anstatt direkt miteinander zu kommunizieren. 
+Der Gedanke hinter \ac{EDA} ist, dass Dienste lose gekoppelt sind und dass sie auf Ereignisse reagieren, anstatt direkt miteinander zu kommunizieren. 
 Ein \textit{Event Producer} sendet ein Ereignis an einen \textit{Event Broker}. Ein Event Broker ist ein Vermittler, der die Ereignisse 
-empfängt, speichert und an die entsprechenden Event Consumer weiterleitet. Beispliele für Event Broker sind AWS \ac{SNS}, \ac{SQS} usw. oder 
-auch platforminterne Event-Puffer, die Events nur kurzfristig speichern bis sie von den \textit{Event Consumern} abgeholt werden~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}.
-\textit{Event Consumern} abgeholt wird~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}. 
+empfängt, speichert und an die entsprechenden Event Consumer weiterleitet. Beispiele für Event Broker sind AWS \ac{SNS}, \ac{SQS} usw. oder 
+auch platforminterne Event-Puffer, die Events nur kurzfristig speichern bis sie von den \textit{Event Consumern} abgeholt werden~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}. 
 Event Consumer sind Dienste, die auf bestimmte Ereignisse reagieren, indem sie eine Aktion ausführen (z. B. eine Lambda-Funktion ausführen, eine Datenbank aktualisieren).
 Den Prozess, bei dem ein Event Producer ein Ereignis an einen Event Broker sendet und der Event Broker dieses Ereignis an die entsprechenden Event Consumer weiterleitet, bezeichnet man
 als \textit{Event Ingestion} oder auch \textit{Event Processing}.

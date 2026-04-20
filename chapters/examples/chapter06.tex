@@ -37,7 +37,7 @@ den ersten Platz (Benchmark 1 - Lambdaverkettung).
 Eine mögliche Erklärung für die insgesamt beste Performance von Python wäre, dass die Standardbibliothek für HTTP-Anfragen urllib3 sehr viele in C 
 implementierte Module auf TLS- / SSL-Ebene verwendet~\cite{Urllib3}. Die AWS-SDKs für Python verwenden stets die urllib3-Bibliothek~\cite{Boto3}. 
 Die schlechteste Duration von Python bei der Lambdaverkettung könnte auf die synchrone Natur von Python 
-zurückzuführen sein. Während Node.js und Java die Lambdaverkettung asynchron implenetieren können, wird 
+zurückzuführen sein. Während Node.js und Java die Lambdaverkettung asynchron implementieren können, wird 
 bei Python ein Thread-basierter HTTP-Client-Stack verwendet und das ist keine asynchrone Verarbeitung~\cite{Boto3}. 
 \subsection{Negative Overheads}
 
@@ -51,7 +51,7 @@ sehr plausible Erklärung für dieses Phänomen.
 OpenTelemetry nutzt das \ac{OTLP}, um Telemetrie-Daten von der Lambda-Funktion an das Backend zu 
 senden~\cite{OTelProtoSpec}. Das Protokoll selbst basiert zum Teil auf HTTP und wärmt bei der 
 Initialisierungsphase (Init Duration) die HTTP-Stacks auf. Da bei den HTTP-Benchmarks keine 
-AWS-SDKs verwendet weden, findet bei der Initialisierung kein Aufwärmen der HTTP-Stacks statt. 
+AWS-SDKs verwendet werden, findet bei der Initialisierung kein Aufwärmen der HTTP-Stacks statt. 
 Das führt zu längeren Durations bei den nicht-instrumentierten Funktionen, da die HTTP-Stacks 
 erst beim ersten Request initialisiert werden müssen. Das kann auch an den Overheads der 
 Init-Duration-Metrik von Node.js und Python erkannt werden, die bei den HTTP-Benchmarks absolut am 
@@ -97,7 +97,7 @@ besten absoluten Performances bedeuten. Python hat bei den Ranglisten der Overhe
 den absoluten Performances 24 von 25 erste Plätze. Das zeigt, dass es nicht unbedingt eine Korellation zwischen relativem Overhead 
 und absoluter Performance gibt - zumindest nicht in allen Fällen und nicht proportional.
 Die Implikationen für die Praxis sind, dass die Wahl der Programmiersprache einen erheblichen Einfluss auf die Performance einer 
-AWS-Lambda-Funktion mit Opentelemetry-Instrumentierung hat. Python ist in allen fällen der synchronen Benchmarks die performanteste 
+AWS-Lambda-Funktion mit OpenTelemetry-Instrumentierung hat. Python ist in allen Fällen der synchronen Benchmarks die performanteste 
 Option, während bei der asynchronen Lambdaverkettung Java die beste Performance und die niedrigsten Kosten bietet. 
 
 \subsection{Teilfrage 1: Prozentualer Overhead in Java, Python und Node.js}
