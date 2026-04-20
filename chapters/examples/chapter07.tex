@@ -1,2 +1,50 @@
 \chapter{Fazit und Ausblick}
 \label{ch:chapter07}
+
+In diesem Kapitel werden die wesentlichen Erkenntnisse der Arbeit zusammengefasst, der wissenschaftliche Beitrag eingeordnet, die 
+Limitationen diskutiert und ein Ausblick auf mögliche weiterführende Fragestellungen gegeben.
+
+\section{Zusammenfassung der Arbeit}
+
+Die vorliegende Arbeit analysierte die sprachspezifischen Performanceveränderungen durch OpenTelemetry in AWS-Lambda-Funktionen für Java, 
+Python und Node.js. Dazu wurden fünf praxisnahe Microbenchmarks jeweils in instrumentierter und nicht instrumentierter Variante 
+unter kontrollierten Bedingungen gemessen. Die Auswertung erfolgte auf Basis von Bootstrap-Resampling und Konfidenzintervallen .
+
+Die Ergebnisse zeigen konsistent, dass Python den geringsten relativen Overhead hat, gefolgt von Java, während Node.js vor allem 
+wegen hoher Init-Durations bei Kaltstarts am schwächsten abschneidet. Auch in der absoluten Performance mit OpenTelemetry liegt 
+Python vorn, und die Kostenanalyse bestätigt Python in vier von fünf Benchmarks als günstigste Option. Die beobachteten negativen 
+Overheads bei HTTP-Kaltstarts in Node.js und Python sind statistisch signifikant, praktisch jedoch vernachlässigbar.
+
+\section{Wissenschaftlicher Beitrag}
+
+Die Arbeit leistet einen empirischen Beitrag zur Serverless-Forschung, indem sie erstmals den sprachspezifischen Overhead von 
+OpenTelemetry auf AWS Lambda systematisch quantifiziert. In Kontrast zu früheren Studien, die entweder nur eine Sprache 
+(Eder et al.~\cite{10254754}) oder nur die absolute Performance ohne Tracing (Rodriguez et al.~\cite{Rodriguez2024Evaluation}) 
+untersuchten, kombiniert diese Arbeit beide Perspektiven. Die Verwendung von fünf realitätsnahen Microbenchmarks, die strikte 
+Kontrolle der Konfigurationsparameter und die statistische Absicherung durch Hypothesentests erhöhen die Aussagekraft der Ergebnisse. 
+Zudem werden alle Skripte und Rohdaten in einem öffentlichen GitHub-Repository bereitgestellt, was die Reproduzierbarkeit und Nachnutzung 
+durch andere Forschende ermöglicht.
+
+\section{Limitationen der Arbeit}
+
+Die vorliegende Studie ist durch mehrere Faktoren eingeschränkt. Alle Experimente wurden ausschließlich auf AWS Lambda durchgeführt, 
+sodass sich die Erkentnisse nicht ohne Weiteres auf andere FaaS-Plattformen wie Azure Functions oder Google Cloud Functions übertragen 
+lassen. Zudem wurde nur eine Speichergröße von 1024 MB verwendet, obwohl der verfügbare Speicher Laufzeit und Kaltstartverhalten 
+erheblich beeinflussen kann, insbesondere bei Java~\cite{Rodriguez2024Evaluation}. Auch die Analyse bleibt auf Head Sampling mit einer 
+Rate von 100\,\% beschränkt. Schließlich decken die fünf Microbenchmarks zwar zentrale Anwendungsfälle ab, bilden aber weder 
+rechenintensive noch stark I/O-lastige Szenarien vollständig ab. Insgesamt verringern diese Einschränkungen nicht den Wert der 
+Ergebnisse, zeigen jedoch, dass weitere Untersuchungen für andere Plattformen, Konfigurationen und Workloads sinnvoll wären.
+
+\section{Ausblick auf zukünftige Arbeiten}
+
+Aus den Limitationen dieser Arbeit ergeben sich mehrere Forschungsrichtungen. Empfehlenswert sind zunächst vergleichende Untersuchungen 
+auf anderen FaaS-Plattformen wie Azure Functions oder Google Cloud Functions, um die Allgemeinheit der beobachteten sprachspezifischen 
+Overheads zu prüfen. Ebenso sollte analysiert werden, wie sich der sprachspezifische Overhead bei anderen Plattformen verhält, etwa durch 
+Vergleiche mit leichteren Frameworks wie Zipkin oder nativen Alternativen wie AWS X-Ray. Darüber hinaus ist offen, wie sich 
+unterschiedliche Sampling-Strategien, insbesondere Tail Sampling oder niedrigere Sampling-Raten, auf Performance und Kosten auswirken. 
+Für Node.js erscheint zudem eine vertiefte Ursachenanalyse der hohen Init-Duration-Overheads sinnvoll. Das gleiche gilt für die 
+auffälligen negativen Overheads bei HTTP-Kaltstarts, die in kontrollierten Experimenten weiter untersucht werden sollten. 
+Schließlich könnte eine Ausweitung auf weitere Programmiersprachen wie Go, .NET (C\#) oder Rust die Generalisierbarkeit der Ergebnisse erhöhen. 
+\section{Abschließende Bemerkung}
+
+Abschließend zeigt die Arbeit, dass die Programmiersprache einen deutlichen Einfluss auf den durch OpenTelemetry verursachten Performance-Overhead in serverlosen Umgebungen hat. Python ist für die meisten synchronen Anwendungsfälle die beste Wahl, während Java in einzelnen asynchronen Szenarien konkurrenzfähig sein kann. Node.js ist wegen der hohen Kaltstart-Overheads nur eingeschränkt empfehlenswert. Damit bietet die Arbeit eine Grundlage für die Sprachauswahl bei observierbaren serverlosen Systemen.
