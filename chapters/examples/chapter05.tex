@@ -177,7 +177,7 @@ Max Memory & 141,00 MB (Java 250,00 vs Python 109,00) & Lambda-Invocation \\
 \end{tabular}
 \end{table}
 
-Für die absoluten Messwerte zeigen die Kaltstarts die größten Abstände in Duration und Init Duration jeweils bei DynamoDB-Write, während die größte Speicher-Differenz bei der Lambdaverkettung auftritt. Bei Warmstarts bleibt die größte Duration-Differenz ebenfalls bei der Lambdaverkettung sichtbar, die größte Speicher-Differenz zeigt sich ebenfalls dort. Die detaillierte Interpretation wird im folgenden Kapitel vorgenommen.
+Für die absoluten Messwerte zeigen die Kaltstarts die größten Abstände in Duration und Init Duration jeweils bei DynamoDB-Write, während die größte Speicher-Differenz bei dem Lambda-Funktionsaufruf auftritt. Bei Warmstarts bleibt die größte Duration-Differenz ebenfalls bei der Lambda-Funktionsaufruf sichtbar, die größte Speicher-Differenz zeigt sich ebenfalls dort. Die detaillierte Interpretation wird im folgenden Kapitel vorgenommen.
 
 \section{Kostenabschätzung für die instrumentierten Funktionen}
 Die Kosten für die instrumentierten Funktionen wurden auf Basis der Bootstrap-Mediane der 
@@ -193,7 +193,7 @@ Alle vollständigen Kostenvergleiche aufgeschlüsselt nach Benchmarks sind im An
 \includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_cheapest_per_benchmark_bar.pdf}
 \end{figure}
 Wie man auf der Abbildung sehen kann, ist Python in 4 von 5 Benchmarks die günstigste Variante, während Java in einem Benchmark 
-die günstigste Variante ist (Benchmark 1 - Lambdaverkettung). Node.js ist in keinem Benchmark die günstigste Variante.
+die günstigste Variante ist (Benchmark 1 - Lambda-Funktionsaufruf). Node.js ist in keinem Benchmark die günstigste Variante.
 
 Auf der unten stehenden Abbildung~\ref{fig:prices-all-main} sind die Kosten aller Varianten der 5 Microbenchmarks für 1 Million Anfragen dargestellt.
 \begin{figure}[H]

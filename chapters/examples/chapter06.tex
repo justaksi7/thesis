@@ -32,12 +32,12 @@ Python ist die schnellste und speichereffizienteste Sprache (24 erste Plätze vo
 (24 zweite Plätze), Java ist am langsamsten (23 dritte Plätze). Das ist konsistent mit den Ergebnissen von Rodriguez et 
 al.~\cite{Rodriguez2024Evaluation}, die ebenfalls Python als die Sprache mit der besten Performance auf AWS Lambda identifiziert haben. 
 Interessant ist der einzige Fall, in dem Python nicht den ersten Platz belegt. Bei Warmstarts der Duration erreicht Java einmal 
-den ersten Platz (Benchmark 1 - Lambdaverkettung). 
+den ersten Platz (Benchmark 1 - Lambda-Funktionsaufruf). 
 
 Eine mögliche Erklärung für die insgesamt beste Performance von Python wäre, dass die Standardbibliothek für HTTP-Anfragen urllib3 sehr viele in C 
 implementierte Module auf TLS- / SSL-Ebene verwendet~\cite{Urllib3}. Die AWS-SDKs für Python verwenden stets die urllib3-Bibliothek~\cite{Boto3}. 
-Die schlechteste Duration von Python bei der Lambdaverkettung könnte auf die synchrone Natur von Python 
-zurückzuführen sein. Während Node.js und Java die Lambdaverkettung asynchron implementieren können, wird 
+Die schlechteste Duration von Python bei dem Lambda-Funktionsaufruf könnte auf die synchrone Natur von Python 
+zurückzuführen sein. Während Node.js und Java die Lambda-Funktionsaufruf asynchron implementieren können, wird 
 bei Python ein Thread-basierter HTTP-Client-Stack verwendet und das ist keine asynchrone Verarbeitung~\cite{Boto3}. 
 \subsection{Negative Overheads}
 
@@ -63,7 +63,7 @@ auftreten (Kaltstarts).
 \subsection{Kostenanalyse}
 \label{subsec:kosten-analyse}
 Die Kostenabschätzung (Abbildung~\ref{fig:best-prices-main}) zeigt, dass Python bei 4 von 5 Benchmarks die günstigste Sprache ist. 
-Java ist nur bei der Lambdaverkettung die günstigste Option. Da die Kosten direkt proportional zur Laufzeit und Speicherzuweisung sind (GB-Sekunden), 
+Java ist nur bei dem Lambda-Funktionsaufruf die günstigste Option. Da die Kosten direkt proportional zur Laufzeit und Speicherzuweisung sind (GB-Sekunden), 
 spiegelt dies die absolute Performance wider. Die konfigurierte Speichergröße dient als Multiplikator für den Preis pro GB-Sekunde - 
 1 Sekunde Laufzeit zählt bei 1 GB Speicher als 1 GB-Sekunde, bei 2 GB Speicher als 2 GB-Sekunden. Aufgrund der langen Lebensdauer der 
 Lambda-Funktionen (durchschnittlich 130 Minuten), spielt die Init Duration von 1-2 Sekunden bei Kaltstarts kaum eine Rolle für die Gesamtkosten. 
@@ -82,7 +82,7 @@ Python den geringsten Overhead hat, gefolgt von Java, während Node.js den höch
 
 Rodriguez et al.~\cite{Rodriguez2024Evaluation} verglichen die absolute Performance von Java, Python und Node.js auf AWS Lambda ohne 
 Tracing. Ihre Rangfolge (Python am schnellsten, gefolgt von Node.js, dann Java) wird durch die vorliegende Arbeit für alle synchronen 
-Szenarien bestätigt. Die einzige Ausnahme ist die asynchrone Lambdaverkettung bei Warmstarts - da hat Java die geringste Duration, 
+Szenarien bestätigt. Die einzige Ausnahme ist der asynchrone Lambda-Funktionsaufruf bei Warmstarts - da hat Java die geringste Duration, 
 gefolgt von Node.js und Python. Dieses Muster ist für die Overheads unterschiedlich. Generell hat Python den geringsten Overhead, 
 gefolgt von Java, während Node.js den höchsten Overhead aufweist.
 
@@ -98,7 +98,7 @@ den absoluten Performances 24 von 25 ersten Plätzen. Das zeigt, dass es nicht u
 und absoluter Performance gibt - zumindest nicht in allen Fällen und nicht proportional.
 Die Implikationen für die Praxis sind, dass die Wahl der Programmiersprache einen erheblichen Einfluss auf die Performance einer 
 AWS-Lambda-Funktion mit OpenTelemetry-Instrumentierung hat. Python ist in allen Fällen der synchronen Benchmarks die performanteste 
-Option, während bei der asynchronen Lambdaverkettung Java die beste Performance und die niedrigsten Kosten bietet. 
+Option, während bei dem asynchronen Lambda-Funktionsaufruf Java die beste Performance und die niedrigsten Kosten bietet. 
 
 \subsection{Teilfrage 1: Prozentualer Overhead in Java, Python und Node.js}
 
@@ -134,12 +134,12 @@ Die größten sprachspezifischen Unterschiede in den absoluten Messwerten mit Op
 \begin{itemize}
 \item \textbf{Init Duration:} DynamoDB-Schreibeoperation – Java weist einen um 3129,38 ms höheren Medianwert auf als Python.
 \item \textbf{Duration:} DynamoDB-Schreibeoperation – Java weist einen um 1800,79 ms höheren Medianwert auf als Python.
-\item \textbf{Max Memory Used:} Lambda-Verkettung – Java weist einen um 142,00 MB höheren Medianwert auf als Python.
+\item \textbf{Max Memory Used:} Lambda-Funktionsaufruf – Java weist einen um 142,00 MB höheren Medianwert auf als Python.
 \end{itemize}
 bei den Kaltstarts und
 \begin{itemize}
-\item \textbf{Duration:} Lambda-Verkettung – Python weist einen um 14,73 ms höheren Medianwert auf als Java.
-\item \textbf{Max Memory Used:} Lambda-Verkettung – Java weist einen um 141,00 MB höheren Medianwert auf als Python.
+\item \textbf{Duration:} Lambda-Funktionsaufruf – Python weist einen um 14,73 ms höheren Medianwert auf als Java.
+\item \textbf{Max Memory Used:} Lambda-Funktionsaufruf – Java weist einen um 141,00 MB höheren Medianwert auf als Python.
 \end{itemize}
 bei den Warmstarts.
 
@@ -147,7 +147,7 @@ bei den Warmstarts.
 Die Ergebnisse der Arbeit legen nahe, dass die Duration-Metrik der wichtigste Kostentreiber 
 ist. Wie bereits in Abschnitt~\ref{subsec:kosten-analyse} erwähnt, haben die Funktionen mit der kürzesten Duration auch die 
 niedrigsten Kosten. Daher sind die Empfehlungen für die Praxis eindeutig. Für die synchronen Benchmarks HTTP-GET, HTTP-POST, DynamoDB-Leseoperation und DynamoDB-Schreiboperation
-ist Python die beste Wahl, da es die beste Performance und die niedrigsten Kosten bietet. Für die asynchrone Lambdaverkettung 
+ist Python die beste Wahl, da es die beste Performance und die niedrigsten Kosten bietet. Für den asynchronen Lambda-Funktionsaufruf 
 ist Java die beste Option. Außerdem hat Python mit den niedrigsten Initialisierungszeiten die schnellsten Antwortzeiten sowohl bei 
 Kalt- als auch bei Warmstarts. Die Preisunterschiede zwischen den Sprachen für eine Million Anfragen sind bei den meisten Benchmarks 
 relativ gering. Das ändert sich jedoch mit wachsenden Aufrufzahlen. Eine Softwarearchitektur besteht üblicherweise aus mehr als nur 
