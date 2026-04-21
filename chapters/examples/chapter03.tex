@@ -85,7 +85,7 @@ Die Studie von Eder et al. liefert erstmals einen systematischen Vergleich von T
 Umgebung. Die Ergebnisse zeigen, dass der Overhead erheblich variieren kann. Besonders auffällig ist der hohe 
 Speicher- und Kaltstart-Overhead von ADOT, der von den Autoren auf den zusätzlichen Collector zurückgeführt wird.
 Allerdings beschränkt sich die Untersuchung auf Node.js als Laufzeitumgebung. 
-Zudem wurden bei den Kaltstarts leere Funktionen verwendet, was den 5 Microbenchmark nicht entspricht. 
+Zudem wurden bei den Kaltstarts leere Funktionen verwendet, was den fünf Microbenchmarks nicht entspricht. 
 Die Autoren selbst regen an, weitere Sprachen und Plattformen in zukünftige Vergleiche einzubeziehen – eine 
 zentrale Motivation für die vorliegende Arbeit.
 
@@ -193,10 +193,10 @@ Verbesserung & 83,4\,\% & 85,2\,\% & 81,9\,\% & 85,4\,\% \\
 
 \paragraph{Skalierbarkeit}
 Tabelle~\ref{tab:rodriguez-scalability} zeigt die Laufzeiten der Leseoperation (Read) bei steigender Anzahl paralleler Aufrufe.
-Java startet mit einer hohen Latenz (52 ms) aufgrund von Kaltstarts, verbessert sich aber bei 10 Aufrufen  und 
+Java startet mit einer hohen Latenz (52 ms) aufgrund von Kaltstarts, verbessert sich aber bei 10 Aufrufen und 
 unterbietet damit Node.js und Python. Bei 25 Aufrufen treten in Java erneut Kaltstarts auf, 
 während Node.js und Python stabil bleiben. Ab 50 Aufrufen stabilisieren sich alle Sprachen. Bei 200 Aufrufen erreicht 
-den besten Wert, gefolgt von Python und Node.js.
+Java den besten Wert, gefolgt von Python und Node.js.
 
 \begin{table}[H]
 \centering
@@ -221,7 +221,7 @@ bei geringerem Speicher akzeptable Werte liefern. Bei 4096 MB gleichen sich die 
 
 \subsection{Einordnung}
 \label{subsec:rodriguez-discussion}
-Die Arbeit bestätigt, dass verschiedene Programmiersprachen unterschiedliche Stärken und Schwächen im Bezug auf 
+Die Arbeit bestätigt, dass verschiedene Programmiersprachen unterschiedliche Stärken und Schwächen in Bezug auf 
 die Performance aufweisen. Die Studie unterstreicht 
 die Notwendigkeit, die Sprachwahl anhand des erwarteten Lastprofils und der verfügbaren Ressourcen zu treffen.
 
@@ -258,7 +258,7 @@ Die Untersuchung von Eder et al.~\cite{10254754} beschränkt sich auf Node.js, w
 immerhin drei Sprachen vergleichen, aber ohne Berücksichtigung von Tracing-Overhead. Dabei fehlt die Kombination beider Aspekte.
 
 \paragraph{Statistische Aussagekraft}
-Die Stichprobengrößen sind teils gering (100 Aufrufe pro Benchmark bei Eder et al. und 5 bei Aufrufe bei Rodriguez et al.), 
+Die Stichprobengrößen sind teils gering (100 Aufrufe pro Benchmark bei Eder et al. und bei 5 Aufrufen bei Rodriguez et al.), 
 was die Verallgemeinerbarkeit einschränkt und die statistische Aussagekraft der Ergebnisse beeinträchtigt.
 
 \section{Fazit}

@@ -25,10 +25,10 @@ möglichst gut zu isolieren.
 \paragraph{Entwicklung der Funktionen}
 Für jede der drei Sprachen und jeden der fünf Microbenchmarks wurde eine eigene Lambda-Funktion erstellt. 
 Alle Funktionen nutzen die offiziellen AWS SDKs. 
-Die Funktionen basieren auf der Arbeit von Eder et al \cite{10254754} und wurden für Zwecke der Konsistenz weitgehend repliziert. 
-Alle Funktionen verwenden dieselbe, minimal notwendige Logik. Entgegennahme eines Events, Ausführen der Zieloperation und Rückgabe einer 
+Die Funktionen basieren auf der Arbeit von Eder et al. \cite{10254754} und wurden zu Zwecken der Konsistenz weitgehend repliziert. 
+Alle Funktionen verwenden dieselbe, minimal notwendige Logik - Entgegennahme eines Events, Ausführen der Zieloperation und Rückgabe einer 
 einfachen Bestätigung. 
-Um den ökologischen Fußabdruck dieser Arbeit zu reduzieren und Ressourcen zu schonen, wurde ähnlich wie bei der Arbeit von Eder et al \cite{10254754} 
+Um den ökologischen Fußabdruck dieser Arbeit zu reduzieren und Ressourcen zu schonen, wurde ähnlich wie bei der Arbeit von Eder et al. \cite{10254754} 
 auf den Abdruck von Quellcode, Konfigurationsdateien und weiterführenden technischen Materialien im Anhang verzichtet. 
 Alle relevanten Implementierungen sowie deren vollständige Dokumentation sind öffentlich in einem GitHub-Repository verfügbar und 
 können unter folgender Adresse eingesehen werden: [https://github.com/justaksi7/opentelemetry-overhead-java-nodejs-python/]. Dies gewährleistet nicht nur Nachhaltigkeit, 
@@ -59,9 +59,9 @@ Timeout & 15 Sekunden & Ausreichend für alle Benchmarks (auch langsamste Kombin
 \hline
 Reservierte Konkurrenz & 200 & Begrenzung der parallelen Ausführungen, um kontrollierte Last zu erzeugen und Überlastung zu vermeiden. \\
 \hline
-Laufzeit (Runtime Environment) & Java 21, Python 3.13, NodeJS 22.x & Aktuelle, von \ac{ADOT}-Lambda-Layers unterstützte Versionen der Sprachen. \\
+Laufzeit (Runtime Environment) & Java 21, Python 3.13, Node.js 22.x & Aktuelle, von \ac{ADOT}-Lambda-Layers unterstützte Versionen der Sprachen. \\
 \hline
-IAM-Rolle &  Rolle mit minimalen Berechtigungen & Erlaubt nur die notwendigen Aktionen: \texttt{lambda:InvokeFunction} für Benchmark 1 
+IAM-Rolle & Rolle mit minimalen Berechtigungen & Erlaubt nur die notwendigen Aktionen: \texttt{lambda:InvokeFunction} für Benchmark 1 
 und \texttt{dynamodb:GetItem} / \texttt{PutItem} für Benchmarks 4 / 5, sowie das Schreiben von Logs auf CloudWatch. \\
 \hline
 \end{tabular}
@@ -75,7 +75,7 @@ Für die Implementierung wurden ausschließlich die offiziellen AWS SDKs und Sta
 Sprachen verwendet. Für jeden AWS-Dienst (Lambda, DynamoDB usw.) gibt es ein separates SDK-Modul in den jeweiligen Sprachen 
 und für jede Sprache und Region gibt es eine dedizierte ADOT-Lambda-Layer, die über den \ac{ARN} referenziert wird.
 Eine detaillierte Übersicht über die \textbf{importierten} \footnote{Bibliotheken und SDKs, 
-die in den jeweiligen Sprachen bereits integriert sind (wie z. B. fetch in NodeJS) wurden hier nicht aufgeführt. 
+die in den jeweiligen Sprachen bereits integriert sind (wie z. B. fetch in Node.js) wurden hier nicht aufgeführt. 
 Die vollständigen Implementierungen sind im GitHub-Repository unter \url{https://github.com/justaksi7/opentelemetry-overhead-java-nodejs-python/} verfügbar.} 
 Bibliotheken und SDKs für die Implementierungen ist in 
 Tabellen~\ref{tab:java-libraries}, \ref{tab:python-libraries} und \ref{tab:nodejs-libraries} dargestellt.
@@ -124,7 +124,7 @@ Tabellen~\ref{tab:java-libraries}, \ref{tab:python-libraries} und \ref{tab:nodej
 
 \begin{table}[H]
 \centering
-\caption{Verwendete Bibliotheken und Module für NodeJS}
+\caption{Verwendete Bibliotheken und Module für Node.js}
 \label{tab:nodejs-libraries}
 \begin{tabular}{|p{3.5cm}|p{9cm}|}
 \hline
@@ -153,7 +153,7 @@ Faktor, der die Messergebnisse beeinflussen kann. Daher ist es wichtig, diese Ko
 um die Reproduzierbarkeit der Ergebnisse zu gewährleisten.
 
 \paragraph{Benchmark 1 - Aufgerufene Lambda-Funktion}
-Die aufgerufene Lambda Funktion für Benchmark 1 wurde mit einer minimalen Konfiguration erstellt. Sie wurde asynchron mithilfe von Events 
+Die aufgerufene Lambda-Funktion für Benchmark 1 wurde mit einer minimalen Konfiguration erstellt. Sie wurde asynchron mithilfe von Events 
 aufgerufen. Das bedeutet, dass die aufrufende Funktion nicht auf die Antwort der 
 aufgerufenen Funktion wartet, sondern sofort fortfährt. Die vollständige Konfiguration der aufgerufenen Lambda-Funktion ist in Tabelle~\ref{tab:aufgerufene-lambda-config} dargestellt.
 \begin{table}[H]
@@ -182,8 +182,8 @@ IAM-Rolle & Standard-Lambda-Rolle (Standardausführung) \\
 \end{table}
 
 \paragraph{Benchmark 2 und 3 - HTTP-GET- und HTTP-POST-Anfrage}
-Für die Durchführung der HTTP-GET- und HTTP-POST-Benchmarktests wurde ein minimalistischer HTTP-Server in NodeJS v25 implementiert, der auf 
-einer AWS-EC2-Instanz bereitgestellt wurde. Der Server hatte 2 Endpunkte für die GET- und POST-Anfragen. Als Package-Manager für NodeJS wurde 
+Für die Durchführung der HTTP-GET- und HTTP-POST-Benchmarktests wurde ein minimalistischer HTTP-Server in Node.js v25 implementiert, der auf 
+einer AWS-EC2-Instanz bereitgestellt wurde. Der Server hatte 2 Endpunkte für die GET- und POST-Anfragen. Als Package-Manager für Node.js wurde 
 \textit{npm} verwendet und der Server wurde mit dem Produktionsmanager \textit{PM2} betrieben. Zum Starten des Servers wurde der Befehl 
 \begin{verbatim}
 pm2 start "servername" -i max
@@ -223,7 +223,7 @@ EBS-Bandbreite (Baseline) & 312 Mbps \\
 
 \paragraph{Benchmark 4 und 5 DynamoDB-Lese- und DynamoDB-Schreibeoperation}
 Für die DynamoDB-Benchmarktests wurde eine DynamoDB-Tabelle nur mit Partition Key, mit automatischem Skalierungsmodus (On-Demand) erstellt. 
-Die detallierte Konfiguration der DynamoDB-Tabelle ist in Tabelle~\ref{tab:dynamodb-config} dargestellt.
+Die detaillierte Konfiguration der DynamoDB-Tabelle ist in Tabelle~\ref{tab:dynamodb-config} dargestellt.
 
 \begin{table}[H]
 \centering
@@ -257,7 +257,7 @@ Um den Tracing-Overhead zu messen, wurden die Lambda-Funktionen mit OpenTelemetr
 OpenTelemetry \ac{ADOT} zum Einsatz. ADOT bietet vorgefertigte Lambda-Layer für jede unterstützte Sprache, die alle notwendigen 
 Abhängigkeiten (SDK, Collector, Exporters) enthalten. Um im Rahmen der Zeit- und Ressourcenbeschränkungen dieser Arbeit zu bleiben, 
 wurde auf eine manuelle, Code-basierte Instrumentierung verzichtet. Stattdessen erfolgte die Instrumentierung, wie in der Arbeit von
-Eder. et al \cite{10254754}, ausschließlich über die automatische Erfassung von Traces durch \ac{ADOT}.
+Eder et al. \cite{10254754}, ausschließlich über die automatische Erfassung von Traces durch \ac{ADOT}.
 Als Sampling-Strategie wurde \emph{Head Sampling} mit einer Rate von 100\,\% verwendet, d.~h. jeder Trace wurde vollständig aufgezeichnet. 
 Die so instrumentierten Funktionen exportieren die Trace-Daten über den ADOT-Collector an \emph{AWS X-Ray}. 
 X-Ray dient als Tracing-Backend und ermöglicht die spätere Überprüfung der Vollständigkeit der Traces. 
@@ -308,7 +308,7 @@ um die reservierte Konkurrenz von 200 zu nutzen und eine realistische Last zu si
 von 200 erreicht, da die Funktionen aufgrund der kurzen Ausführungszeiten schnell freigegeben wurden. Nur in einigen Fällen, 
 insbesondere bei Java, kam es zu kurzzeitigen Spitzen von bis zu 200 parallelen Ausführungen bei den Kaltstarts. Die Parallelität sank 
 unmittelbar nach einigen Aufrufen im Anschluss an die Kaltstarts wieder auf wenige parallele Aufrufe (15 bis 30). Dies gewährleistet, 
-dass die Einschwingphase der Funktionen (\ac{JIT}-Optimierung~\cite{FromWarmToHotStarts} bei Java und NodeJS und Bytecode-Optimierung~\cite{CPythonPEP659} bei Python) 
+dass die Einschwingphase der Funktionen (\ac{JIT}-Optimierung~\cite{FromWarmToHotStarts} bei Java und Node.js und Bytecode-Optimierung~\cite{CPythonPEP659} bei Python) 
 gut abgedeckt wird, da es genug Warmstarts nach den Optimierungen gab und ein stabiler Zustand erreicht wurde. Da mindestens 
 2.000 Kaltstarts pro Kombination angestrebt wurden, wurden die Funktionen ergänzend zu den 10 Messvorgängen solange redeployed und 
 aufgerufen, bis die gewünschte Anzahl an Kaltstarts erreicht wurde.
@@ -323,7 +323,7 @@ sowie die Abweichungen zwischen den einzelnen Programmiersprachen (H2).
 \paragraph{H1 – Sprachspezifischer Overhead}
 Die Performance ohne Einsatz von OpenTelemetry ist ungleich der Performance bei Verwendung von OpenTelemetry in einer bestimmten Programmiersprache \(s\). Formal ausgedrückt:
 \[
-H_0: M_{\text{ohne}} \ne M_s \quad \text{vs.} \quad H_1: M_{\text{ohne}} = M_s,
+H_0: M_{\text{ohne}} = M_s \quad \text{vs.} \quad H_1: M_{\text{ohne}} \neq M_s,
 \]
 wobei \(M_{\text{ohne}}\) den Median der betrachteten Metrik (z.B. Laufzeit, Speicherverbrauch, Initialisierungsdauer) ohne Instrumentierung und \(M_s\) den entsprechenden Wert mit Instrumentierung in Sprache \(s\) bezeichnet.
 
@@ -359,7 +359,7 @@ führt zur Ablehnung der Nullhypothese.
 
 \section{Kostenmodell zur Preisberechnung von AWS Lambda}
 \label{sec:kostenmodell}
-Um Praxisrelevante Empfehlungen ableiten zu können, wurden die Kosten für jede 
+Um praxisrelevante Empfehlungen ableiten zu können, wurden die Kosten für jede 
 Lambda-Funktion basierend auf den gemessenen Metriken und den aktuellen AWS Lambda-Preismodellen berechnet.
 Zur Abschätzung der Kosten einer Funktion wurde ein Zyklus mit fester Time-To-Live-Dauer, die auf einer umfassenden
 Analyse von Xebia basiert~\cite{XebiaLambdaTermination}, betrachtet:

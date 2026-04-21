@@ -3,14 +3,14 @@
 
 \section{Einleitung und Datenaufbereitung}
 In diesem Kapitel werden die Ergebnisse der Performance-Messungen präsentiert. Da sehr viele Daten vorliegen, werden die wichtigsten 
-Erkentnisse in zusammengefasster Form dargestellt. Alle Rohdaten und detaillierten Analysen sind im Anhang zu finden und werden an den 
+Erkenntnisse in zusammengefasster Form dargestellt. Alle Rohdaten und detaillierten Analysen sind im Anhang zu finden und werden an den 
 entsprechenden Stellen in diesem Kapitel referenziert.
 
 \section{Statistische Signifikanz}
 \paragraph[short]{Hypothesentests H1}
 Die Performance-Veränderungen durch die Instrumentierung der Funktionen mit OpenTelemetry haben sich anhand der 
-Bootstrap-Konfidenzintervalle, für alle Metriken und Benchmarks als statistisch signifikant erwiesen, da keines 
-der der Intervalle die Null einschließt (siehe Anhang~\ref{app:boot:cold}).
+Bootstrap-Konfidenzintervalle für alle Metriken und Benchmarks als statistisch signifikant erwiesen, da keines 
+der Intervalle die Null einschließt (siehe Anhang~\ref{app:boot:cold}).
 
 \paragraph[short]{Hypothesentests H2}
 Die Unterschiede im Performance-Overhead zwischen allen 3 Sprachen für alle Benchmarks und Metriken wurden ebenfalls als 
@@ -20,8 +20,8 @@ statistisch signifikant bestätigt, da alle p-Werte unter dem korrigierten Signi
 \section{Absolute Messwerte und relativer Overhead (Median)}
 Aufgrund der Vielzahl der Ergebnisse \footnote{Die vollständigen absoluten Werte sowie Overheads sind im Anhang zu sehen. Originaldaten~\ref{app:raw:cold} und~\ref{app:raw:hot}, Bootstrap~\ref{app:boot:cold} und~\ref{app:boot:hot}.} (jeweils 75 Kombinationen aus 
 3 Sprachen, 5 Benchmarks, 3 Metriken und 2 Starttypen), werden die Ergebnisse anhand von Ranglisten präsentiert. Die Ranglisten 
-wurden in Form von Tabellen, separat für mediane absolute Messwerte ohne OTel, mit OTel und Overhead basierend auf sowohl den 
-Originaldaten als auch den Bootstrap-Resamples erstellt. 
+wurden in Form von Tabellen, separat für mediane absolute Messwerte ohne OTel, mit OTel und Overhead, basierend sowohl auf den 
+Originaldaten als auch auf den Bootstrap-Resamples, erstellt. 
 Die Tabellen zeigen, 
 wie häufig jede Sprache bei den fünf Benchmarks den ersten, zweiten oder dritten Platz belegt hat (aufgeschlüsselt nach 
 Metriken) für Kalt- und Warmstarts. Der kleinste mediane absolute Messwert (in MB oder ms) oder Overhead (in \%) erhält den ersten Platz. 
@@ -202,10 +202,10 @@ Auf der unten stehenden Abbildung~\ref{fig:prices-all-main} sind die Kosten alle
 \label{fig:prices-all-main}
 \includegraphics[width=1\textwidth]{gfx/examples/lambda_cost_1m_requests_otel_all_functions_bar.pdf}
 \end{figure}
-Wie es auf der Abbildung zu sehen ist, sind die Kosten für 1 Million Anfragen bei einigen Benchmarks nicht weit von einander entfernt, 
+Wie es auf der Abbildung zu sehen ist, sind die Kosten für 1 Million Anfragen bei einigen Benchmarks nicht weit voneinander entfernt, 
 es wird jedoch in Kapitel~\ref{ch:chapter06} eine genauere Analyse der Kostenunterschiede vorgenommen.
-\section{Besondere Auffäligkeiten - negative Overheads}
-Bei den Kaltstartmessungen der GET- und POST-Anfragen in Node.js und Python wurden negative Overheads im Bezug auf die Duration-Metrik 
+\section{Besondere Auffälligkeiten - negative Overheads}
+Bei den Kaltstartmessungen der GET- und POST-Anfragen in Node.js und Python wurden negative Overheads in Bezug auf die Duration-Metrik 
 festgestellt. Das bedeutet, dass die instrumentierten Funktionen schneller ausgeführt wurden als die nicht-instrumentierten. 
 Die Bootstrap-Konfidenzintervalle für diese Overheads schließen die Null nicht ein, was auf statistische Signifikanz hinweist (siehe Anhang~\ref{app:boot:cold}). 
 In Tabelle~\ref{tab:negative-overheads} sind die konkreten Overhead-Werte zu sehen. 

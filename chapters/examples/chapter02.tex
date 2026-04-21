@@ -30,7 +30,7 @@ Die in dieser Arbeit untersuchten AWS-Lambda-Funktionen folgen genau diesem FaaS
 
 Microservices und \ac{EDA} sind zwei eng verbundene Architekturstile moderner Cloud-nativer Systeme~\cite{Fowler2024Microservices,Katzer2024Serverless}.  
 Während Microservices eine Anwendung in kleine, unabhängig bereitstellbare Dienste unterteilen~\cite{Fowler2024Microservices}, definiert \ac{EDA} ein asynchrones Kommunikationsmuster über Ereignisse~\cite{AWSEventDrivenArchitecture}.  
-Für diese Arbeit ist das Zusammenspiel beider Konzepte zentral, weil \ac{FaaS} typischerweise als Event-Consumer und / oder -Producer in einer ereignisgesteuerten Microservices-Umgebung agieren~\cite{AWSLambdaDocs}.
+Für diese Arbeit ist das Zusammenspiel beider Konzepte zentral, weil \ac{FaaS} typischerweise als Event-Consumer und oder Event-Producer in einer ereignisgesteuerten Microservices-Umgebung agieren~\cite{AWSLambdaDocs}.
 
 \subsection{Microservices}
 Microservices sind unabhängige, lose gekoppelte Dienste, die jeweils einen eigenen Bereich der Geschäftslogik einer Anwendung abdecken. 
@@ -53,7 +53,7 @@ In einer \ac{EDA} kommunizieren Dienste nicht synchron über \ac{HTTP}-Anfragen,
 Der Gedanke hinter \ac{EDA} ist, dass Dienste lose gekoppelt sind und dass sie auf Ereignisse reagieren, anstatt direkt miteinander zu kommunizieren. 
 Ein \textit{Event Producer} sendet ein Ereignis an einen \textit{Event Broker}. Ein Event Broker ist ein Vermittler, der die Ereignisse 
 empfängt, speichert und an die entsprechenden Event Consumer weiterleitet. Beispiele für Event Broker sind AWS \ac{SNS}, \ac{SQS} usw. oder 
-auch platforminterne Event-Puffer, die Events nur kurzfristig speichern bis sie von den \textit{Event Consumern} abgeholt werden~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}. 
+auch platforminterne Event-Puffer, die Events nur kurzfristig speichern, bis sie von den \textit{Event Consumern} abgeholt werden~\cite{AWSEventDrivenArchitecture,AzureEventDrivenArchitecture}. 
 Event Consumer sind Dienste, die auf bestimmte Ereignisse reagieren, indem sie eine Aktion ausführen (z. B. eine Lambda-Funktion ausführen, eine Datenbank aktualisieren).
 Den Prozess, bei dem ein Event Producer ein Ereignis an einen Event Broker sendet und der Event Broker dieses Ereignis an die entsprechenden Event Consumer weiterleitet, bezeichnet man
 als \textit{Event Ingestion} oder auch \textit{Event Processing}.
@@ -73,7 +73,7 @@ Die Kombination von Microservices und \ac{EDA} adressiert zentrale Herausforderu
 Durch lose Kopplung müssen Dienste keine Kenntnis voneinander haben. Ein Producer publiziert ein Event, ohne die Consumer zu kennen. 
 Fällt ein Consumer aus, bleibt der Producer funktionsfähig, was die Ausfallsicherheit erhöht~\cite{Rocha2021Practical}.  
 Für diese Arbeit ist dieses Zusammenspiel fundamental, da die AWS-Lambda-Funktionen sowohl Events konsumieren als auch produzieren 
-können~\cite{AWSLambdaDocs}. Damit sind sie in ihrem Kern, ereignisgesteuerte Microservices.
+können~\cite{AWSLambdaDocs}. Damit sind sie in ihrem Kern ereignisgesteuerte Microservices.
 
 \section{Serverless-Computing und Function as a Service}
 \label{sec:serverless}
@@ -87,8 +87,8 @@ Dabei wird die Geschäftslogik einer Anwendung in kleine, unabhängige und zusta
 Jede Funktion ist eine eigenständige Einheit (\ac{FaaS}-Instanz).
 Die wichtigsten Eigenschaften von \ac{FaaS}, die für die Messung relevant sind, sind:
 \begin{itemize}
-    \item \textbf{Ereignisgesteuerte Ausführung:} Funktionen werden nur bei Bedarf aktiviert und verbrauchen im Leerlauf keine Ressourcen. Das beeinflusst die Messung von sowohl Warmstarts als auch Kaltstarts für alle  zu messenden Metriken (siehe Kapitel \ref{ch:chapter04}).
-    \item \textbf{Automatische Skalierung:} Die Plattform skaliert die Anzahl der Instanzen dynamisch, was die Messung bei steigender Last relevant macht und eine Präzise Dokumentation erfordert.
+    \item \textbf{Ereignisgesteuerte Ausführung:} Funktionen werden nur bei Bedarf aktiviert und verbrauchen im Leerlauf keine Ressourcen. Das beeinflusst die Messung sowohl von Warmstarts als auch von Kaltstarts für alle zu messenden Metriken (siehe Kapitel \ref{ch:chapter04}).
+    \item \textbf{Automatische Skalierung:} Die Plattform skaliert die Anzahl der Instanzen dynamisch, was die Messung bei steigender Last relevant macht und eine präzise Dokumentation erfordert.
     \item \textbf{Pay-per-Use-Abrechnung:} Abgerechnet wird nach Ausführungszeit und Speicherzuweisung. Dadurch wirkt sich jeder durch Tracing verursachte Overhead direkt auf die Kosten aus.
 \end{itemize}
 FaaS-Plattformen setzen intern auf Container-Technologie. Bei einem Aufruf wird die Funktion in einen vorkonfigurierten Container geladen und ausgeführt. Nach Abschluss bleibt der Container kurz erhalten (Warmstart) oder wird freigegeben (Kaltstart)~\cite{ServerlessAWSLambda}.
@@ -156,7 +156,7 @@ Die in Abbildung~\ref{fig:chapter02:aws_lambda_use_cases} dargestellten fünf Mi
     \item Eine Lambda-Funktion führt eine Leseoperation aus einer DynamoDB-Tabelle durch.
     \item Eine Lambda-Funktion führt eine Schreiboperation in eine DynamoDB-Tabelle durch.
 \end{enumerate}
-Diese fünf Szenarien basieren auf einer umfassenden Analyse (siehe~\cite{Winzinger2021DataFlow}) und bilden die Grundlage für die experimentelle Evaluation in Kapitel~\ref{ch:methodik} und Kapitel~\ref{ch:results}. Für jedes Szenario wird jeweils eine instrumentierte und eine nicht-instrumentierte Version der Funktion in den drei Sprachen Java, Python und Node.js implementiert.
+Diese fünf Szenarien basieren auf einer umfassenden Analyse (siehe~\cite{Winzinger2021DataFlow}) und bilden die Grundlage für die experimentelle Evaluation in Kapitel~\ref{ch:chapter04} und Kapitel~\ref{ch:chapter05}. Für jedes Szenario wird jeweils eine instrumentierte und eine nicht-instrumentierte Version der Funktion in den drei Sprachen Java, Python und Node.js implementiert.
 
 \section{Observability in verteilten Systemen}
 \label{sec:observability}
@@ -262,4 +262,4 @@ Die gesammelten Traces werden genutzt, um zu überprüfen, ob die Instrumentieru
 \label{sec:dynamodb}
 
 Amazon DynamoDB ist ein vollständig verwalteter, serverloser \ac{NoSQL}-Datenbankservice, der für konsistente Latenzen im einstelligen Millisekundenbereich ausgelegt ist~\cite{AWSDynamoDBDocs}.  
-In dieser Arbeit wird DynamoDB in zwei der fünf Microbenchmarks verwendet -  Lese- und Schreiboperationen. Diese Szenarien repräsentieren typische Datenzugriffsmuster in serverlosen Anwendungen und ermöglichen die Messung des durch OpenTelemetry verursachten Overheads bei Datenbankoperationen.
+In dieser Arbeit wird DynamoDB in zwei der fünf Microbenchmarks verwendet - Lese- und Schreiboperationen. Diese Szenarien repräsentieren typische Datenzugriffsmuster in serverlosen Anwendungen und ermöglichen die Messung des durch OpenTelemetry verursachten Overheads bei Datenbankoperationen.
